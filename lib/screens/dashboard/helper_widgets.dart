@@ -1,5 +1,5 @@
 import 'package:market_place_customer/screens/dashboard/search_vendors.dart';
-import 'package:market_place_customer/screens/location/search_location.dart';
+import 'package:market_place_customer/screens/location/search_manual_location.dart';
 
 import '../../utils/exports.dart';
 
@@ -16,10 +16,10 @@ Widget offersCardChipAndFavoriteWidget(String offersCounts) => Row(
                 fit: BoxFit.cover,
                 width: size.width * 0.24),
             Padding(
-              padding: EdgeInsets.only(right: size.width * 0.02),
+              padding: EdgeInsets.only(right: size.width * 0.022,bottom: 2),
               child: Text(offersCounts,
                   textAlign: TextAlign.center,
-                  style: AppStyle.medium_16(AppColors.white10)),
+                  style: AppStyle.medium_15(AppColors.white10)),
             ),
           ],
         ),
@@ -29,8 +29,9 @@ Widget offersCardChipAndFavoriteWidget(String offersCounts) => Row(
             child: Align(
               alignment: Alignment.topRight,
               child: CircleAvatar(
+                radius: 18,
                   backgroundColor: AppColors.theme60,
-                  child: Icon(Icons.favorite_border, color: AppColors.white80)),
+                  child: Icon(Icons.favorite_border, color: AppColors.white80,size: 20)),
             )),
       ],
     );
@@ -392,5 +393,159 @@ backBtn(BuildContext context, double opacity) => IconButton(
         Icons.arrow_back_ios_new,
         size: 20,
         color: Color.lerp(AppColors.whiteColor, AppColors.blackColor, opacity),
+      ),
+    );
+
+/// CALCULATE DISTANCE
+
+/// find address and distance
+Future<Map<String, String>> getAddressAndDistance(
+    double vendorLat, double vendorLng) async {
+  // 1️ Get vendor address
+  String address = await getExactAddressFromLatLng(vendorLat, vendorLng);
+
+  // Get distance from user to vendor
+  double distanceKm = await getDistanceBetweenPoints(vendorLat, vendorLng);
+
+  return {
+    "address": address,
+    "distance": "${distanceKm.toStringAsFixed(1)} km",
+  };
+}
+
+/// UI WIDGET CARDS FOR NEARBY VENDORS
+class RestaurantCard extends StatelessWidget {
+  final String imageUrl;
+  final String name;
+  final String location;
+  final String distance;
+  final String cuisines;
+  final String offersCount;
+  final String offerText;
+  double carWidth;
+  double imgHeight;
+
+  RestaurantCard(
+      {super.key,
+        required this.imageUrl,
+        required this.name,
+        required this.location,
+        required this.distance,
+        required this.cuisines,
+        required this.offersCount,
+        required this.offerText,
+        required this.imgHeight,
+        required this.carWidth});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: carWidth,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            blurRadius: 8,
+            spreadRadius: 2,
+          )
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            alignment: Alignment.topRight,
+            children: [
+              ClipRRect(
+                borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(16)),
+                child: FadeInImage(
+                  height: imgHeight,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  placeholder: const AssetImage(Assets.dummy),
+                  image: imageUrl.isNotEmpty
+                      ? NetworkImage(imageUrl)
+                      : const AssetImage(Assets.dummy) as ImageProvider,
+                  imageErrorBuilder: (_, child, st) => Image.asset(
+                      Assets.dummy,
+                      height: size.height * 0.17,
+                      fit: BoxFit.cover,
+                      width: double.infinity),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: size.height * 0.025),
+                child: offersCardChipAndFavoriteWidget(offersCount),
+              ),
+            ],
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name,
+                    style: AppStyle.medium_18(AppColors.themeColor),
+                    overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 2),
+                Text("$location • $distance",
+                    style: AppStyle.normal_13(AppColors.greyColor)),
+                const SizedBox(height: 2),
+                Text(cuisines, style: AppStyle.medium_13(AppColors.black20)),
+              ],
+            ),
+          ),
+
+          const Divider(height: 1),
+
+          // Offer section
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+                color: AppColors.themeColor,
+                borderRadius:
+                BorderRadius.vertical(bottom: Radius.circular(16))),
+            child: Row(
+              children: [
+                const Icon(Icons.local_offer,
+                    size: 18, color: AppColors.whiteColor),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(offerText,
+                      style: AppStyle.medium_14(AppColors.whiteColor)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// VIEW ALL WIDGET
+
+Widget ViewAllWidget({required String title, void Function()? onPressed}) =>
+    Padding(
+      padding:
+      EdgeInsets.only(left: size.width * 0.034, right: size.width * 0.005),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: AppStyle.normal_19(AppColors.themeColor)),
+          TextButton(
+              onPressed: onPressed,
+              child: Row(
+                children: [
+                  Text("View All", style: AppStyle.normal_15(AppColors.orange)),
+                  const Icon(Icons.arrow_forward_ios_outlined,
+                      size: 15, color: AppColors.orange)
+                ],
+              ))
+        ],
       ),
     );

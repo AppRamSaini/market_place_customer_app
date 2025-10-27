@@ -19,23 +19,29 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _startTimer() async {
-    // Fetch business categories
+    /// Fetch business categories
     context.read<BusinessCategoryCubit>().fetchBusinessCategory();
+
+    /// vendors data in home page
+    context
+        .read<FetchDashboardOffersBloc>()
+        .add(DashboardOffersEvent(context: context));
 
     // Get stored token and role
     String? token = LocalStorage.getString(Pref.token);
     String? role = LocalStorage.getString(Pref.roleType);
-   await LocalStorage.setString(Pref.location,"Devi Marg, Bani Park, Jaipur - 302006, Rajasthan, India");
+    String? address = LocalStorage.getString(Pref.location);
 
     // Optional: debug prints
     print('TOKEN==>>$token');
     print('ROLE==>>$role');
+    print('ADD==>>$address');
 
-    context
-        .read<FetchDashboardOffersBloc>()
-        .add(DashboardOffersEvent(context: context));
     // Navigate after 2.5 seconds
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    Future.delayed(const Duration(milliseconds: 2500), () async{
+      final locationService = LocationService();
+
+      final location = await locationService.fetchAndSaveCurrentLocation();
       if (token != null && role != null) {
         AppRouter().navigateAndClearStack(context, const CustomerDashboard());
       } else {

@@ -1,4 +1,6 @@
 
+import 'package:market_place_customer/data/models/merchant_category_model.dart';
+
 import '../../../utils/exports.dart';
 part 'business_category_state.dart';
 

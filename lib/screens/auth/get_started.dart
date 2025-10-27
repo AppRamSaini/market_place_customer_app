@@ -1,4 +1,5 @@
-import 'package:market_place_customer/screens/location/search_location.dart';
+import 'package:market_place_customer/screens/location/location_services.dart';
+import 'package:market_place_customer/screens/location/search_manual_location.dart';
 import 'package:market_place_customer/utils/exports.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -9,6 +10,23 @@ class DetectLocation extends StatefulWidget {
 }
 
 class _DetectLocationState extends State<DetectLocation> {
+  final locationService = LocationService();
+
+  void getUserLocationAndNavigate() async {
+    EasyLoading.show(status: "Please wait...");
+    try {
+      final location = await locationService.fetchAndSaveCurrentLocation();
+
+      if (location != null) {
+        AppRouter().navigateAndClearStack(context, const CustomerDashboard());
+      }
+      EasyLoading.dismiss();
+      print("📍 Current Location Data: $location");
+    } catch (e) {
+      print("❌ Error: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,18 +57,7 @@ class _DetectLocationState extends State<DetectLocation> {
                   ).animate().fadeIn(duration: 800.ms, delay: 0.ms),
                   SizedBox(height: size.height * 0.02),
                   CustomButton3(
-                      onPressed: () {
-                        print('object');
-                        EasyLoading.show(status: "Please wait...");
-                        LocalStorage.setString(Pref.location,
-                            "Devi Marg, Bani Park, Jaipur - 302006, Rajasthan, India");
-                        Future.delayed(const Duration(seconds: 4), () {
-                          AppRouter().navigateAndClearStack(
-                              context, const CustomerDashboard());
-                          // AppRouter().navigateTo(context, const LoginScreen());
-                          EasyLoading.dismiss();
-                        });
-                      },
+                      onPressed: getUserLocationAndNavigate,
                       minWidth: size.width * 0.4,
                       txt: "Detect My Location",
                       bgColor: AppColors.yellowColor),

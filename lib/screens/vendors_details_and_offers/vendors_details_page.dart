@@ -1,0 +1,493 @@
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:market_place_customer/data/models/vendor_details_model.dart';
+import 'package:market_place_customer/screens/vendors_details_and_offers/offers_details.dart';
+import 'package:market_place_customer/screens/vendors_details_and_offers/vendor_details_helper.dart';
+import 'package:market_place_customer/screens/vendors_details_and_offers/vendors_gallery_view.dart';
+import 'package:market_place_customer/utils/exports.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../../bloc/vendors_data_bloc/view_vendors_details/vendor_details_state.dart';
+
+class OffersDetailsPage extends StatefulWidget {
+  final String vendorId;
+  const OffersDetailsPage({super.key, required this.vendorId});
+
+  @override
+  State<OffersDetailsPage> createState() => _OffersDetailsPageState();
+}
+
+class _OffersDetailsPageState extends State<OffersDetailsPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  double _appBarOpacity = 0.0;
+  double _flexTitleOpacity = 1.0;
+  int _currentIndex = 0;
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      double offset = _scrollController.offset;
+      double maxOffset = size.height * 0.3;
+
+      double opacity = (offset / maxOffset).clamp(0.0, 1.0);
+      setState(() {
+        _appBarOpacity = opacity; // appbar title opacity
+        _flexTitleOpacity = 1.0 - opacity; // flexible title opacity
+      });
+    });
+    refreshData();
+  }
+
+  refreshData() {
+    context.read<VendorDetailsBloc>().add(ViewVendorDetailsEvent(
+        context: context, vendorId: widget.vendorId.toString()));
+  }
+
+  late BuildContext dialogContext;
+
+  /// calculate distance
+  Map<String, Map<String, String>> locationCache = {};
+  Future<Map<String, String>> getVendorAddressAndDistance(
+      String lat, String lng) async {
+    final key = '$lat,$lng';
+
+    if (locationCache.containsKey(key)) {
+      return locationCache[key]!;
+    }
+    final data =
+        await getAddressAndDistance(double.parse(lat), double.parse(lng));
+    locationCache[key] = data;
+    return data;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: BlocBuilder<VendorDetailsBloc, VendorDetailsState>(
+          builder: (context, state) {
+        if (state is VendorDetailsLoading) {
+          return const BurgerKingShimmer();
+        } else if (state is VendorDetailsFailure) {
+          return Padding(
+            padding: const EdgeInsets.all(40),
+            child: Center(
+              child: Text(
+                state.error.toString(),
+                textAlign: TextAlign.center,
+                style: AppStyle.medium_14(AppColors.redColor),
+              ),
+            ),
+          );
+        } else if (state is VendorDetailsSuccess) {
+          final vendorsData = state.vendorsDetailsModel.data;
+
+          List<BusinessImage> businessImages =
+              vendorsData!.businessDetails!.businessImage ?? [];
+          List<Offer>? offers = vendorsData.offers ?? [];
+
+          List<Similar>? similarVendors = vendorsData.similar ?? [];
+
+          final timingText = getTodayTiming(vendorsData.timing!);
+
+          final vendor = vendorsData.businessDetails;
+          final lat = vendor!.lat ?? "0.0";
+          final lng = vendor.long ?? "0.0";
+          final key = '$lat,$lng';
+
+          return RefreshIndicator(
+            onRefresh: () async => refreshData(),
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: size.height * 0.3,
+                  floating: false,
+                  pinned: true,
+                  snap: false,
+                  stretch: true,
+                  backgroundColor: AppColors.themeColor,
+                  leading: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: AppColors.theme10.withOpacity(0.1)),
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(Icons.arrow_back_ios_new,
+                            size: 20,
+                            color: _flexTitleOpacity == 1.0
+                                ? AppColors.blackColor
+                                : AppColors.whiteColor),
+                      ),
+                    ),
+                  ),
+                  title: Opacity(
+                      opacity: _appBarOpacity,
+                      child: Text(
+                          vendorsData.businessDetails!.businessName ?? '',
+                          style: AppStyle.medium_15(AppColors.whiteColor))),
+                  flexibleSpace: FlexibleSpaceBar(
+                      collapseMode: CollapseMode.parallax,
+                      titlePadding: const EdgeInsets.only(left: 10, bottom: 10),
+                      title: Opacity(
+                          opacity: _flexTitleOpacity,
+                          child: Text(
+                              vendorsData.businessDetails!.businessName ?? '',
+                              textScaleFactor: 0.8,
+                              style: AppStyle.medium_14(AppColors.whiteColor))),
+                      background: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          ...List.generate(businessImages.length, (index) {
+                            bool isActive = index == _currentIndex;
+                            return AnimatedOpacity(
+                              duration: const Duration(
+                                  milliseconds: 2000), // Fade duration
+                              opacity: isActive ? 1.0 : 0.0,
+                              curve: Curves.easeInOut,
+                              child: FadeInImage(
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                placeholder: const AssetImage(Assets.dummy),
+                                image: businessImages.isNotEmpty
+                                    ? NetworkImage(
+                                        businessImages[index].url ?? '')
+                                    : const AssetImage(Assets.dummy)
+                                        as ImageProvider,
+                                imageErrorBuilder: (_, child, st) =>
+                                    Image.asset(Assets.dummy,
+                                        fit: BoxFit.cover),
+                              ),
+                            );
+                          }),
+
+                          // CarouselSlider for controlling the page index
+                          CarouselSlider.builder(
+                            itemCount: businessImages.length,
+                            itemBuilder: (context, index, realIndex) {
+                              return const SizedBox.shrink();
+                            },
+                            carouselController: _carouselController,
+                            options: CarouselOptions(
+                              height: double.infinity,
+                              viewportFraction: 1.0,
+                              autoPlay: true,
+                              autoPlayInterval: const Duration(seconds: 5),
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _currentIndex = index;
+                                });
+                              },
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 20),
+                              decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(4)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  AnimatedSmoothIndicator(
+                                    activeIndex: _currentIndex,
+                                    count: 7,
+                                    duration:
+                                        const Duration(milliseconds: 1800),
+                                    effect: const ScrollingDotsEffect(
+                                      activeDotColor: Colors.white,
+                                      dotColor: Colors.white54,
+                                      dotHeight: 3,
+                                      dotWidth: 12,
+                                      spacing: 4,
+                                      radius: 4,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      )),
+                ),
+                SliverToBoxAdapter(
+                    child: SizedBox(height: size.height * 0.015)),
+                SliverToBoxAdapter(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: size.height * 0.01,
+                          horizontal: size.width * 0.03),
+                      child: Row(
+                        children: [
+                           Icon(Icons.access_time_rounded, size: 18,color: AppColors.black20),
+                          const SizedBox(width: 5),
+                          Text(timingText ?? '',
+                              style: AppStyle.medium_14(AppColors.black20))
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          bottom: size.height * 0.01,
+                          left: size.width * 0.03,
+                          right: size.width * 0.03),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined, size: 20),
+                          const SizedBox(width: 5),
+                          FutureBuilder<Map<String, String>>(
+                              future: getVendorAddressAndDistance(
+                                  lat.toString(), lng.toString()),
+                              builder: (context, snapshot) {
+                                String distance = '';
+                                if (snapshot.connectionState ==
+                                        ConnectionState.done &&
+                                    snapshot.hasData) {
+                                  distance = snapshot.data!['distance'] ?? '';
+                                } else if (locationCache.containsKey(key)) {
+                                  distance =
+                                      locationCache[key]!['distance'] ?? '';
+                                } else {
+                                  distance = '...';
+                                }
+
+                                return Flexible(
+                                    child: Text(
+                                        "${vendorsData.businessDetails!.address ?? ''}  • $distance",
+                                        style: AppStyle.medium_14(
+                                            AppColors.black20)));
+                              }),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.01),
+                    Padding(
+                        padding: EdgeInsets.only(left: size.width * 0.03),
+                        child: Text("Popular Offers",
+                            style: AppStyle.medium_18(AppColors.themeColor))),
+                    SizedBox(height: size.height * 0.01),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                          children: List.generate(offers.length, (index) {
+                        var offersData = offers[index];
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              left: size.width * 0.03,
+                              right: index == offers.length - 1
+                                  ? size.width * 0.03
+                                  : 0.0),
+                          child: SizedBox(
+                            width: size.height * 0.19,
+                            child: GestureDetector(
+                              onTap: () => AppRouter().navigateTo(
+                                  context,
+                                  ViewOffersDetails(
+                                      offersId: offersData.id ?? '')),
+                              child: OffersDataCardWidget(
+                                imgHeight: size.height * 0.16,
+                                imgWidth: size.height * 0.19,
+                                imageUrl: offersData.flat != null
+                                    ? offersData.flat!.offerImage.toString()
+                                    : offersData.percentage!.offerImage
+                                        .toString(),
+                                name: offersData.flat != null
+                                    ? offersData.flat!.title.toString()
+                                    : offersData.percentage!.title.toString(),
+                                amount:
+                                    "on orders above ₹${offersData.flat != null ? offersData.flat!.minBillAmount.toString() : offersData.percentage!.minBillAmount.toString()}",
+                                offerText: offersData.flat != null
+                                    ? "Flat ₹${offersData.flat!.maxDiscountCap.toString()}"
+                                    : "Flat ${offersData.percentage!.discountPercentage.toString()}%",
+                              ),
+                            ),
+                          ),
+                        );
+                      })),
+                    ),
+                    SizedBox(height: size.height * 0.03),
+                    Padding(
+                        padding: EdgeInsets.only(left: size.width * 0.03),
+                        child: Text("Gallery",
+                            style: AppStyle.medium_18(AppColors.black20))),
+                    SizedBox(height: size.height * 0.01),
+                  ],
+                )),
+                SliverToBoxAdapter(
+                    child: Padding(
+                        padding: EdgeInsets.only(
+                            left: size.width * 0.03,
+                            right: size.width * 0.03,
+                            bottom: size.height * 0.02),
+                        child: buildMediaMessage(context, businessImages))),
+                SliverToBoxAdapter(
+                    child: Padding(
+                        padding: EdgeInsets.only(
+                            left: size.width * 0.03,
+                            bottom: size.height * 0.01),
+                        child: Text("Similar Vendors",
+                            style: AppStyle.medium_18(AppColors.themeColor)))),
+                SliverToBoxAdapter(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        similarVendors.length,
+                        (index) {
+                          final vendor = similarVendors[index];
+                          final lat = vendor.vendor!.lat!;
+                          final lng = vendor.vendor!.long!;
+                          final key = '$lat,$lng';
+
+                          return FutureBuilder<Map<String, String>>(
+                            future: getVendorAddressAndDistance(
+                                lat.toString(), lng.toString()),
+                            builder: (context, snapshot) {
+                              String distance = '';
+
+                              if (snapshot.connectionState ==
+                                      ConnectionState.done &&
+                                  snapshot.hasData) {
+                                distance = snapshot.data!['distance']!;
+                              } else if (locationCache.containsKey(key)) {
+                                distance = locationCache[key]!['distance']!;
+                              }
+
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                    left: size.width * 0.03,
+                                    right: index == similarVendors.length - 1
+                                        ? size.width * 0.03
+                                        : size.height * 0.0),
+                                child: SizedBox(
+                                  width: size.width * 0.9,
+                                  child: GestureDetector(
+                                    onTap: () => AppRouter().navigateTo(
+                                        context,
+                                        OffersDetailsPage(
+                                            vendorId:
+                                                vendor.vendor!.user!.id ?? '')),
+                                    child: NearbyRestaurantCard(
+                                      carWidth: size.width * 0.9,
+                                      imgHeight: size.height * 0.3,
+                                      imageUrl:
+                                          vendor.vendor!.businessLogo ?? '',
+                                      name: vendor.vendor!.businessName ?? '',
+                                      location:
+                                          "${vendor.vendor!.area}, ${vendor.vendor!.city}" ??
+                                              '',
+                                      distance: distance,
+                                      cuisines:
+                                          vendor.vendor!.category!.name ?? '',
+                                      flatData: vendor.maxOffer != null
+                                          ? vendor.maxOffer!.type ==
+                                                  'percentage'
+                                              ? "Flat ${vendor.maxOffer!.amount}%"
+                                              : "Flat ₹${vendor.maxOffer!.amount}"
+                                          : 'FREE',
+                                      offerText: vendor.maxOffer != null
+                                          ? vendor.maxOffer!.type ==
+                                                  'percentage'
+                                              ? "Flat ${vendor.maxOffer!.amount}% OFF"
+                                              : "Flat ₹${vendor.maxOffer!.amount} OFF"
+                                          : '',
+                                      offersCounts: vendor.activeOffersCount! >
+                                              0
+                                          ? '${vendor.activeOffersCount}+ OFFER'
+                                          : '',
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(child: SizedBox(height: size.height * 0.15)),
+              ],
+            ),
+          );
+        } else {
+          return const SizedBox();
+        }
+      }),
+    );
+  }
+}
+
+Widget buildMediaMessage(BuildContext context, List<BusinessImage> imageList) {
+  if ((imageList == null || imageList.isEmpty)) {
+    return const SizedBox(); // Nothing to show
+  }
+
+  final mediaCount = imageList.length;
+
+  return GridView.builder(
+    shrinkWrap: true,
+    padding: EdgeInsets.zero,
+    physics: const BouncingScrollPhysics(),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3, crossAxisSpacing: 10, mainAxisSpacing: 0),
+    itemCount: mediaCount > 6 ? 6 : mediaCount,
+    itemBuilder: (_, index) {
+      final url = imageList[index].url;
+      final isLastAndMore = index == 5 && mediaCount > 6;
+      return Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: GestureDetector(
+              onTap: () => AppRouter().navigateTo(
+                  context,
+                  FullImageView(
+                      imageList: imageList ?? [], initialIndex: index)),
+              child: FadeInImage(
+                height: size.height * 0.12,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                color: isLastAndMore ? Colors.black.withOpacity(0.4) : null,
+                colorBlendMode: isLastAndMore ? BlendMode.darken : null,
+                placeholder: const AssetImage(Assets.dummy),
+                image: url!.isNotEmpty
+                    ? NetworkImage(url)
+                    : const AssetImage(Assets.dummy) as ImageProvider,
+                imageErrorBuilder: (_, child, st) => Image.asset(
+                  Assets.dummy,
+                  height: size.height * 0.12,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+          ),
+          if (isLastAndMore)
+            Positioned.fill(
+              child: Center(
+                child: Text(
+                  '+${mediaCount - 3}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+    },
+  );
+}

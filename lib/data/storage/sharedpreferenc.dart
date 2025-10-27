@@ -23,10 +23,15 @@ class LocalStorage {
     await _preferences?.setInt(key, value);
   }
 
+  static Future<void> setDouble(String key, double value) async {
+    await _preferences?.setDouble(key, value);
+  }
+
   // Get data
   static String? getString(String key) => _preferences?.getString(key);
   static bool? getBool(String key) => _preferences?.getBool(key);
   static int? getInt(String key) => _preferences?.getInt(key);
+  static double? getDouble(String key) => _preferences?.getDouble(key);
 
   // Remove data
   static Future<void> remove(String key) async {
@@ -35,7 +40,7 @@ class LocalStorage {
 
   // Clear all
   static Future<void> clearAll(BuildContext context) async {
-    AppRouter().navigateAndClearStack(context, LoginScreen());
+    AppRouter().navigateAndClearStack(context, const LoginScreen());
     await _preferences?.clear();
   }
 }
@@ -47,4 +52,6 @@ class Pref {
   static const roleType = 'role_type';
   static const userName = 'user_name';
   static const location = 'location';
+  static const userLat = 'user_lat';
+  static const userLng = 'userLng';
 }

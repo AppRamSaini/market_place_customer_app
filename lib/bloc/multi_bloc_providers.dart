@@ -17,18 +17,18 @@ class AppBlocProviders extends StatelessWidget {
             create: (context) => CustomerSignupBloc()),
         BlocProvider<FetchDashboardOffersBloc>(
             create: (context) => FetchDashboardOffersBloc()),
-
         BlocProvider<FetchVendorsBloc>(
             create: (context) => FetchVendorsBloc()),
-
-
+        BlocProvider<VendorDetailsBloc>(
+            create: (context) => VendorDetailsBloc()),
+        BlocProvider<ViewOffersBloc>(create: (context) => ViewOffersBloc()),
         BlocProvider<BusinessCategoryCubit>(
             create: (context) => BusinessCategoryCubit()),
-        BlocProvider<AddOffersBloc>(create: (context) => AddOffersBloc()),
-        BlocProvider<FetchOffersBloc>(create: (context) => FetchOffersBloc()),
-        BlocProvider<DeleteOffersBloc>(create: (context) => DeleteOffersBloc()),
-        BlocProvider<UpdateOffersBloc>(create: (context) => UpdateOffersBloc()),
-        BlocProvider<ViewOffersBloc>(create: (context) => ViewOffersBloc()),
+
+
+        ///====>>>>
+
+
         BlocProvider<FetchProfileDetailsBloc>(
             create: (context) => FetchProfileDetailsBloc()),
         BlocProvider<UpdateProfileBloc>(

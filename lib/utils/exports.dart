@@ -42,10 +42,8 @@ export 'package:flutter/gestures.dart';
 export 'package:market_place_customer/bloc/auth_bloc/otp_bloc/otp_bloc.dart';
 export 'package:market_place_customer/data/storage/sharedpreferenc.dart';
 export 'package:market_place_customer/bloc/customer_registration/business_categories/business_category_cubit.dart';
-export 'package:market_place_customer/bloc/fetch_vendors/add_offers/add_offers_bloc.dart';
 export 'package:market_place_customer/bloc/notification_bloc/notifications_bloc.dart';
 export 'package:market_place_customer/bloc/support_bloc/support_bloc.dart';
-export 'package:market_place_customer/bloc/fetch_vendors/add_offers/add_offers_state.dart';
 export 'package:market_place_customer/data/repository/offers_repository.dart';
 export 'package:market_place_customer/utils/exports.dart';
 export 'package:market_place_customer/utils/image_picker_tools.dart';
@@ -53,34 +51,33 @@ export 'package:market_place_customer/utils/dialogs.dart';
 export 'package:percent_indicator/circular_percent_indicator.dart';
 export 'package:market_place_customer/screens/profile_and_settings/settings_ui_page.dart';
 export 'package:dio/dio.dart';
-export 'package:market_place_customer/bloc/fetch_vendors/view_offers_details/view_offers_bloc.dart';
-export 'package:market_place_customer/bloc/fetch_vendors/view_offers_details/view_offers_state.dart';
-export 'package:market_place_customer/data/models/fetchoffers_model.dart';
 export 'package:market_place_customer/screens/simmer_effects/offers_details_simmer_effects.dart';
-export 'package:market_place_customer/bloc/fetch_vendors/delete_offers/delete_offers_bloc.dart';
-export 'package:market_place_customer/bloc/fetch_vendors/delete_offers/delete_offers_state.dart';
-export 'package:market_place_customer/bloc/fetch_vendors/update_offers/update_offers_bloc.dart';
-export 'package:market_place_customer/bloc/fetch_vendors/update_offers/update_offers_state.dart';
-export 'package:market_place_customer/screens/my_offers/view_offers_details.dart';
 export 'package:ticket_widget/ticket_widget.dart';
 export 'package:market_place_customer/bloc/customer_registration/signup_customer/create_customer_event.dart';
 export 'package:market_place_customer/bloc/customer_registration/signup_customer/create_customer_state.dart';
 export 'package:market_place_customer/bloc/customer_registration/signup_customer/create_customer_bloc.dart';
 export 'package:market_place_customer/data/models/customer_signup_model.dart';
-export 'package:market_place_customer/data/models/merchant_category_model.dart';
 export 'package:market_place_customer/screens/profile_and_settings/delete_account.dart';
-
 export 'package:market_place_customer/bloc/customer_registration/fetch_profile_bloc/fetch_profile_bloc.dart';
 export 'package:market_place_customer/bloc/update_profile/update_profile_bloc.dart';
 export 'package:market_place_customer/bloc/vendors_data_bloc/fetch_all_vendors/fetch_all_vendors_bloc.dart';
 export 'package:market_place_customer/bloc/vendors_data_bloc/fetch_dashbaord_offers/dashboard_offers_bloc.dart';
-export 'package:market_place_customer/bloc/fetch_vendors/fetch_offers/fetch_offers_bloc.dart';
-
-
 export 'package:market_place_customer/bloc/vendors_data_bloc/fetch_all_vendors/fetch_all_vendors_state.dart';
 export 'package:market_place_customer/screens/dashboard/helper_widgets.dart';
 export 'package:market_place_customer/screens/profile/business_gallery.dart';
 export 'package:market_place_customer/screens/vendors_category/categories.dart';
+export 'package:flutter_dotenv/flutter_dotenv.dart';
+export 'package:google_maps_flutter/google_maps_flutter.dart';
+export 'package:market_place_customer/bloc/vendors_data_bloc/fetch_dashbaord_offers/dashboard_offers_state.dart';
+export 'package:market_place_customer/screens/dashboard/popular_vendors.dart';
+export 'package:market_place_customer/screens/location/location_heper.dart';
+export 'package:market_place_customer/screens/location/location_services.dart';
+export 'package:market_place_customer/bloc/vendors_data_bloc/view_offers_details/view_offers_state.dart';
+export 'package:market_place_customer/bloc/vendors_data_bloc/view_offers_details/view_offers_bloc.dart';
+export 'package:market_place_customer/bloc/vendors_data_bloc/view_vendors_details/vendor_details_bloc.dart';
+export 'package:market_place_customer/bloc/vendors_data_bloc/fetch_all_vendors/fetch_all_vendors_event.dart';
+export 'package:market_place_customer/bloc/vendors_data_bloc/view_offers_details/view_offers_event.dart';
+export 'package:market_place_customer/bloc/vendors_data_bloc/view_vendors_details/vendor_details_event.dart';
 
 
 

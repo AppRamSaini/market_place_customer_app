@@ -5,7 +5,7 @@ import 'package:market_place_customer/utils/exports.dart';
 class PopularCategories extends StatelessWidget {
   final List<VendorsCategory>? categoryData;
 
-  PopularCategories({super.key, required this.categoryData});
+  const PopularCategories({super.key, required this.categoryData});
 
   @override
   Widget build(BuildContext context) {

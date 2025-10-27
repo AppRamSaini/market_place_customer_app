@@ -6,10 +6,9 @@ import 'package:market_place_customer/screens/dashboard/nearby_vendors.dart';
 import 'package:market_place_customer/screens/dashboard/popular_categories.dart';
 import 'package:market_place_customer/screens/dashboard/search_vendors.dart';
 import 'package:market_place_customer/screens/dashboard/view_all_vendors_page.dart';
-import 'package:market_place_customer/screens/location/search_location.dart';
+import 'package:market_place_customer/screens/location/search_manual_location.dart';
 import 'package:market_place_customer/screens/dashboard/most_visited_vendors.dart';
 import 'package:market_place_customer/utils/exports.dart';
-import '../../bloc/fetch_vendors/fetch_offers/fetch_offers_event.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,20 +36,17 @@ class _HomePageState extends State<HomePage> {
         _flexTitleOpacity = 1.0 - opacity;
       });
     });
-    // refreshData();
+    refreshData();
   }
 
   refreshData() {
-    context.read<FetchOffersBloc>().add(GetOffersEvent(context: context));
     context
         .read<FetchDashboardOffersBloc>()
         .add(DashboardOffersEvent(context: context));
   }
 
   bool searchValue = false;
-
   String location = 'fetching your location...';
-
   findLocation() => setState(() {
         var address = LocalStorage.getString(Pref.location);
         if (address != null) {
@@ -91,36 +87,10 @@ class _HomePageState extends State<HomePage> {
       },
       child: MultiBlocListener(
         listeners: [
-          BlocListener<DeleteOffersBloc, DeleteOffersState>(
+
+          BlocListener<FetchDashboardOffersBloc, FetchDashboardOffersState>(
             listener: (context, state) {
-              EasyLoading.dismiss();
-              if (state is DeleteOffersLoading) {
-                EasyLoading.show();
-              } else if (state is DeleteOffersSuccess) {
-                final data = state.offersData;
-                snackBar(context, data['message'].toString(), AppColors.green);
-                refreshData();
-              } else if (state is DeleteOffersFailure) {
-                snackBar(context, state.error.toString(), AppColors.redColor);
-                refreshData();
-              } else if (state is DeleteOffersInvalidResult) {
-                EasyLoading.dismiss();
-              } else {
-                EasyLoading.dismiss();
-              }
-            },
-          ),
-          BlocListener<AddOffersBloc, AddOffersState>(
-            listener: (context, state) {
-              if (state is AddOffersSuccess) {
-                refreshData();
-              }
-            },
-          ),
-          BlocListener<UpdateOffersBloc, UpdateOffersState>(
-            listener: (context, state) {
-              if (state is UpdateOffersSuccess) {
-                refreshData();
+              if (state is FetchDashboardOffersSuccess) {
               }
             },
           ),
@@ -146,8 +116,10 @@ class _HomePageState extends State<HomePage> {
               final offersData = state.dashboardOffersModel.data;
               List<NearbyvendorElement> nearbyVendorsList =
                   offersData!.nearbyvendor!;
-              List<NearbyvendorElement> popularVendor =
+
+              List<PopularVendorElement> popularVendor =
                   offersData!.popularvendor!;
+
               List<VendorsCategory> popularCategory = offersData!.category!;
 
               return RefreshIndicator(

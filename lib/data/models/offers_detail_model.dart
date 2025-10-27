@@ -61,7 +61,7 @@ class Record {
   String? id;
   Vendor? vendor;
   Flat? flat;
-  dynamic percentage;
+  Flat? percentage;
   String? type;
   String? status;
   DateTime? createdAt;
@@ -84,7 +84,7 @@ class Record {
     id: json["_id"],
     vendor: json["vendor"] == null ? null : Vendor.fromJson(json["vendor"]),
     flat: json["flat"] == null ? null : Flat.fromJson(json["flat"]),
-    percentage: json["percentage"],
+    percentage: json["percentage"] == null ? null : Flat.fromJson(json["percentage"]),
     type: json["type"],
     status: json["status"],
     createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
@@ -96,7 +96,7 @@ class Record {
     "_id": id,
     "vendor": vendor?.toJson(),
     "flat": flat?.toJson(),
-    "percentage": percentage,
+    "percentage": percentage?.toJson(),
     "type": type,
     "status": status,
     "createdAt": createdAt?.toIso8601String(),
@@ -112,9 +112,9 @@ class Flat {
   int? discountPercentage;
   int? maxDiscountCap;
   int? minBillAmount;
+  int? amount;
   DateTime? expiryDate;
   String? offerImage;
-  int? amount;
   bool? isExpired;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -127,9 +127,9 @@ class Flat {
     this.discountPercentage,
     this.maxDiscountCap,
     this.minBillAmount,
+    this.amount,
     this.expiryDate,
     this.offerImage,
-    this.amount,
     this.isExpired,
     this.createdAt,
     this.updatedAt,
@@ -143,9 +143,9 @@ class Flat {
     discountPercentage: json["discountPercentage"],
     maxDiscountCap: json["maxDiscountCap"],
     minBillAmount: json["minBillAmount"],
+    amount: json["amount"],
     expiryDate: json["expiryDate"] == null ? null : DateTime.parse(json["expiryDate"]),
     offerImage: json["offer_image"],
-    amount: json["amount"],
     isExpired: json["isExpired"],
     createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
     updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
@@ -159,9 +159,9 @@ class Flat {
     "discountPercentage": discountPercentage,
     "maxDiscountCap": maxDiscountCap,
     "minBillAmount": minBillAmount,
+    "amount": amount,
     "expiryDate": expiryDate?.toIso8601String(),
     "offer_image": offerImage,
-    "amount": amount,
     "isExpired": isExpired,
     "createdAt": createdAt?.toIso8601String(),
     "updatedAt": updatedAt?.toIso8601String(),
@@ -173,50 +173,50 @@ class Vendor {
   String? id;
   String? name;
   int? phone;
+  String? email;
   String? avatar;
   String? status;
   String? role;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
-  String? email;
 
   Vendor({
     this.id,
     this.name,
     this.phone,
+    this.email,
     this.avatar,
     this.status,
     this.role,
     this.createdAt,
     this.updatedAt,
     this.v,
-    this.email,
   });
 
   factory Vendor.fromJson(Map<String, dynamic> json) => Vendor(
     id: json["_id"],
     name: json["name"],
     phone: json["phone"],
+    email: json["email"],
     avatar: json["avatar"],
     status: json["status"],
     role: json["role"],
     createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
     updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
     v: json["__v"],
-    email: json["email"],
   );
 
   Map<String, dynamic> toJson() => {
     "_id": id,
     "name": name,
     "phone": phone,
+    "email": email,
     "avatar": avatar,
     "status": status,
     "role": role,
     "createdAt": createdAt?.toIso8601String(),
     "updatedAt": updatedAt?.toIso8601String(),
     "__v": v,
-    "email": email,
   };
 }

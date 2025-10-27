@@ -7,7 +7,19 @@ class ApiEndPoints {
   static const dashboard = '$baseUrl/customer/dashboard';
   static getVendors(String? category, String? type, String? search) =>
       '$baseUrl/customer/getVendor?category=$category&name=$search&type=$type';
+  static const vendorDetails = '$baseUrl/customer/getVendorbyId';
+  static const offersDetails = '$baseUrl/customer/offer/get_details';
 
+
+
+
+
+
+
+
+
+
+  ///=================>>
   static const updateMerchantBusiness = '$baseUrl/vendor/update';
   static const merchantCategory = '$baseUrl/vendor/categroy';
   static const merchantSubCategory = '$baseUrl/vendor/sub_categroy';

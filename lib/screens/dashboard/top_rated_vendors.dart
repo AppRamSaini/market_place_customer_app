@@ -1,7 +1,4 @@
-import 'package:market_place_customer/screens/profile/business_gallery.dart';
 import 'package:market_place_customer/utils/exports.dart';
-
-import 'helper_widgets.dart';
 
 class TopRatedVendors extends StatelessWidget {
   const TopRatedVendors({super.key});

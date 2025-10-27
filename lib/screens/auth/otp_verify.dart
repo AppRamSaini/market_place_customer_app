@@ -23,7 +23,7 @@ class OtpVerifyState extends State<OtpVerify> {
       timer!.cancel();
     }
     startOtpTimer = 30;
-    timer = Timer.periodic(Duration(seconds: 1), (callback) {
+    timer = Timer.periodic(const Duration(seconds: 1), (callback) {
       if (startOtpTimer == 0) {
         callback.cancel();
         setState(() {});

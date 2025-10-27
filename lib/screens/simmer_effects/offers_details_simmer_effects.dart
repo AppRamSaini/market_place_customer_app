@@ -6,7 +6,7 @@ class BurgerKingShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(10),
+        padding:  EdgeInsets.symmetric(horizontal: size.width*0.03),
         child: Shimmer.fromColors(
           baseColor: Colors.grey.shade300,
           highlightColor: Colors.grey.shade100,
@@ -14,7 +14,7 @@ class BurgerKingShimmer extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Container(
                     height: size.height * 0.2,
                     width: size.width,

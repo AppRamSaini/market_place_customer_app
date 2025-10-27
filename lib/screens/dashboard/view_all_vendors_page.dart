@@ -1,7 +1,5 @@
 import 'package:market_place_customer/bloc/vendors_data_bloc/fetch_all_vendors/fetch_all_vendors_event.dart';
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
-import 'package:market_place_customer/screens/location/location_from_map.dart';
-import 'package:market_place_customer/screens/location/search_location.dart';
 import '../../utils/exports.dart';
 
 class ViewAllVendorsPage extends StatefulWidget {
@@ -16,7 +14,7 @@ class ViewAllVendorsPage extends StatefulWidget {
 class _ViewAllVendorsPageState extends State<ViewAllVendorsPage> {
   final ScrollController _scrollController = ScrollController();
   double _flexTitleOpacity = 1.0;
-  Map<String, String> addressCache = {};
+  Map<String, Map<String, String>> locationCache = {};
 
   @override
   void initState() {
@@ -33,143 +31,166 @@ class _ViewAllVendorsPageState extends State<ViewAllVendorsPage> {
     });
   }
 
+  /// fetch vendors
   Future fetchVendors({String? type, String? category}) async {
     context
         .read<FetchVendorsBloc>()
         .add(GetVendorsEvent(context: context, type: type, category: category));
   }
 
+  /// calculate distance
+  Future<Map<String, String>> getVendorAddressAndDistance(
+      String lat, String lng) async {
+    final key = '$lat,$lng';
+
+    if (locationCache.containsKey(key)) {
+      return locationCache[key]!;
+    }
+    final data =
+        await getAddressAndDistance(double.parse(lat), double.parse(lng));
+    locationCache[key] = data;
+    return data;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverAppBar(
-            backgroundColor: AppColors.themeColor,
-            expandedHeight: size.height * 0.11,
-            floating: false,
-            pinned: true,
-            snap: false,
-            stretch: true,
-            leadingWidth: size.width * 0.1,
-            leading: Padding(
-                padding: const EdgeInsets.all(3),
-                child: backBtn(context, _flexTitleOpacity)),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Popular Nearby Vendors",
-                    style: AppStyle.medium_18(Color.lerp(AppColors.whiteColor,
-                        AppColors.blackColor, _flexTitleOpacity)!)),
-                searchBtn(context, _flexTitleOpacity)
-              ],
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.parallax,
-              titlePadding: EdgeInsets.zero,
-              background: Container(
-                color: AppColors.whiteColor,
-                child: SafeArea(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: size.height * 0.07),
-                      Opacity(
-                        opacity: _flexTitleOpacity,
-                        child: CategoriesList(
+      body: RefreshIndicator(
+        onRefresh: fetchVendors,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          controller: _scrollController,
+          slivers: [
+            SliverAppBar(
+              backgroundColor: AppColors.themeColor,
+              expandedHeight: size.height * 0.11,
+              pinned: true,
+              leadingWidth: size.width * 0.1,
+              leading: Padding(
+                  padding: const EdgeInsets.all(3),
+                  child: backBtn(context, _flexTitleOpacity)),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Popular Vendors",
+                    style: AppStyle.medium_18(
+                      Color.lerp(AppColors.whiteColor, AppColors.blackColor,
+                          _flexTitleOpacity)!,
+                    ),
+                  ),
+                  searchBtn(context, _flexTitleOpacity)
+                ],
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  color: AppColors.whiteColor,
+                  child: SafeArea(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: size.height * 0.07),
+                        Opacity(
+                          opacity: _flexTitleOpacity,
+                          child: CategoriesList(
                             popularCategory: widget.popularCategory,
-                            type: widget.type),
-                      ),
-                    ],
+                            type: widget.type,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child:
-              RefreshIndicator(
-                onRefresh: fetchVendors,
+            SliverToBoxAdapter(
               child: BlocBuilder<FetchVendorsBloc, FetchVendorsState>(
                 builder: (context, state) {
                   if (state is FetchVendorsLoading) {
-                    return SizedBox(
-                        height: size.height * 0.7,
-                        child: const BurgerKingShimmer());
+                    return const BurgerKingShimmer();
                   } else if (state is FetchVendorsFailure) {
                     return Center(
-                        child: Text(state.error,
-                            style: AppStyle.medium_14(AppColors.redColor)));
+                      child: Text(
+                        state.error,
+                        style: AppStyle.medium_14(AppColors.redColor),
+                      ),
+                    );
                   } else if (state is FetchVendorsSuccess) {
                     final vendorsList = state.model.data ?? [];
 
-                    return
+                    return Padding(
+                      padding:  EdgeInsets.only(top: size.height * 0.012),
+                      child: ListView.builder(
+                        itemCount: vendorsList.length,
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (_, index) {
+                          final vendor = vendorsList[index];
+                          final lat = vendor.vendor!.lat!;
+                          final lng = vendor.vendor!.long!;
+                          final key = '$lat,$lng';
 
+                          return FutureBuilder<Map<String, String>>(
+                            future: getVendorAddressAndDistance(
+                                lat.toString(), lng.toString()),
+                            builder: (context, snapshot) {
+                              String location = 'Fetching...';
+                              String distance = '';
 
+                              if (snapshot.connectionState ==
+                                      ConnectionState.done &&
+                                  snapshot.hasData) {
+                                location = snapshot.data!['address']!;
+                                distance = snapshot.data!['distance']!;
+                              } else if (locationCache.containsKey(key)) {
+                                // Use cached data even while building
+                                location = locationCache[key]!['address']!;
+                                distance = locationCache[key]!['distance']!;
+                              }
 
-
-                      ListView.builder(
-                      itemCount: vendorsList.length,
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (_, index) {
-                        final vendor = vendorsList[index];
-
-                        return FutureBuilder<Map<String, String>>(
-                          future: getAddressAndDistance(
-                              vendor.vendor!.lat!, vendor.vendor!.long!),
-                          builder: (context, snapshot) {
-                            String location = 'Loading...';
-                            String distance = '';
-
-                            if (snapshot.connectionState ==
-                                    ConnectionState.done &&
-                                snapshot.hasData) {
-                              location = snapshot.data!['address']!;
-                              distance = snapshot.data!['distance']!;
-                            }
-
-                            return Padding(
-                              padding: EdgeInsets.only(
-                                  top: size.height * 0.015,
-                                  left: size.width * 0.03,
-                                  right: size.width * 0.03,
-                                  bottom: index == vendorsList.length - 1
-                                      ? size.height * 0.1
-                                      : 0.0),
-                              child: NearbyRestaurantCard(
-                                carWidth: size.width * 0.9,
-                                imgHeight: size.height * 0.3,
-                                imageUrl: vendor.vendor!.businessLogo ?? '',
-                                name: vendor.vendor!.businessName ?? '',
-                                location: location,
-                                distance: distance,
-                                cuisines: vendor.vendor!.category!.name ?? '',
-                                flatData: "Flat 36%",
-                                offerText: vendor.maxOffer != null
-                                    ? vendor.maxOffer!.type == 'percentage'
-                                        ? "Flat ${vendor.maxOffer!.amount}% OFF"
-                                        : "Flat ₹${vendor.maxOffer!.amount} OFF"
-                                    : '',
-                                offersCounts: vendor.activeOffersCount! > 0
-                                    ? '${vendor.activeOffersCount}+ OFFER'
-                                    : '',
-                              ),
-                            );
-                          },
-                        );
-                      },
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                    left: size.width * 0.03,
+                                    right: size.width * 0.03,
+                                    bottom: index == vendorsList.length - 1
+                                        ? size.height * 0.1
+                                        : size.height * 0.012),
+                                child: NearbyRestaurantCard(
+                                  carWidth: size.width * 0.9,
+                                  imgHeight: size.height * 0.3,
+                                  imageUrl: vendor.vendor!.businessLogo ?? '',
+                                  name: vendor.vendor!.businessName ?? '',
+                                  location: location,
+                                  distance: distance,
+                                  cuisines: vendor.vendor!.category!.name ?? '',
+                                  flatData: vendor.maxOffer != null
+                                      ? vendor.maxOffer!.type == 'percentage'
+                                          ? "Flat ${vendor.maxOffer!.amount}%"
+                                          : "Flat ₹${vendor.maxOffer!.amount}"
+                                      : 'FREE',
+                                  offerText: vendor.maxOffer != null
+                                      ? vendor.maxOffer!.type == 'percentage'
+                                          ? "Flat ${vendor.maxOffer!.amount}% OFF"
+                                          : "Flat ₹${vendor.maxOffer!.amount} OFF"
+                                      : '',
+                                  offersCounts: vendor.activeOffersCount! > 0
+                                      ? '${vendor.activeOffersCount}+ OFFER'
+                                      : '',
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
                     );
                   }
                   return const SizedBox();
                 },
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:market_place_customer/bloc/vendors_data_bloc/fetch_all_vendors/fetch_all_vendors_event.dart';
-import 'package:market_place_customer/screens/location/search_location.dart';
 import '../../utils/exports.dart';
 
 class SearchVendorsPage extends StatefulWidget {
@@ -40,7 +39,7 @@ class _SearchVendorsPageState extends State<SearchVendorsPage> {
     return Scaffold(
         body: CustomScrollView(
       controller: _scrollController,
-      physics: AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverAppBar(
           backgroundColor: AppColors.whiteColor,

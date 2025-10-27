@@ -1,9 +1,8 @@
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
-import 'package:market_place_customer/screens/location/search_location.dart';
 import '../../utils/exports.dart';
 
 class PopularVendors extends StatelessWidget {
-  List<NearbyvendorElement> popularVendor;
+  List<PopularVendorElement> popularVendor;
   PopularVendors({super.key, required this.popularVendor});
 
   @override
