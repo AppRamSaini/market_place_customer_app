@@ -41,14 +41,14 @@ class LocalStorage {
   // Clear all
   static Future<void> clearAll(BuildContext context) async {
     AppRouter().navigateAndClearStack(context, const LoginScreen());
-    await _preferences?.clear();
+    await _preferences?.remove(Pref.token);
   }
 }
 
 class Pref {
   static const token = 'token';
   static const vendorId = 'vendorId';
-  static const userUUID = 'user_UUID';
+  static const userId = 'user_id';
   static const roleType = 'role_type';
   static const userName = 'user_name';
   static const location = 'location';

@@ -13,6 +13,8 @@ class ApiManager {
     try {
       final token = useToken ? LocalStorage.getString(Pref.token) : null;
 
+      print('$url \n$token ');
+
       final headers = {
         if (useToken && token != null) 'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -59,7 +61,9 @@ class ApiManager {
           validateStatus: (status) {
             // Allow 200, 201 and 401 as valid responses
             return status != null &&
-                (status >= 200 && status < 300 || status == 401 || status==500);
+                (status >= 200 && status < 300 ||
+                    status == 401 ||
+                    status == 500);
           },
         ),
       );
@@ -83,8 +87,7 @@ class ApiManager {
   }) async {
     final token = useToken ? LocalStorage.getString(Pref.token) : null;
     try {
-      print(url);
-      print(token);
+      print('$url \n$token ');
       final response = await _dio.get(
         url,
         queryParameters: queryParams,
@@ -97,7 +100,9 @@ class ApiManager {
           receiveTimeout: const Duration(minutes: 1),
           validateStatus: (status) {
             return status != null &&
-                (status >= 200 && status < 300 || status == 401 || status==500);
+                (status >= 200 && status < 300 ||
+                    status == 401 ||
+                    status == 500);
           },
         ),
       );
@@ -111,9 +116,10 @@ class ApiManager {
     }
   }
 
-
   /// Handle response status codes
   dynamic _handleStatusCode(Response response, {BuildContext? context}) {
+    print(response.statusCode);
+
     switch (response.statusCode) {
       case 200:
       case 201:

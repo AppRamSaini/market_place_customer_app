@@ -1,9 +1,10 @@
-
-import 'package:market_place_customer/utils/exports.dart';
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
 import 'package:market_place_customer/data/models/fetch_vendors_model.dart';
 import 'package:market_place_customer/data/models/offers_detail_model.dart';
 import 'package:market_place_customer/data/models/vendor_details_model.dart';
+import 'package:market_place_customer/utils/exports.dart';
+
+import '../models/purchased_offers_history_model.dart';
 
 class OffersRepository {
   final api = ApiManager();
@@ -20,9 +21,11 @@ class OffersRepository {
   }
 
   /// fetch vendors list data
-  Future fetchVendorsApi(BuildContext context,GetVendorsEvent event) async {
-    final result =
-        await api.get(url: ApiEndPoints.getVendors(event.category??'',event.type??'',event.search??''), context: context);
+  Future fetchVendorsApi(BuildContext context, GetVendorsEvent event) async {
+    final result = await api.get(
+        url: ApiEndPoints.getVendors(
+            event.category ?? '', event.type ?? '', event.search ?? ''),
+        context: context);
     print('===>>$result');
     if (result is String) {
       return result;
@@ -33,8 +36,10 @@ class OffersRepository {
 
   /// fetch vendors details data
   Future fetchVendorDetailsApi(ViewVendorDetailsEvent event) async {
+    var userId = LocalStorage.getString(Pref.userId);
     final result = await api.get(
-        url: "${ApiEndPoints.vendorDetails}/${event.vendorId}",
+        url:
+            ApiEndPoints.vendorDetails(event.vendorId.toString(), userId ?? ''),
         context: event.context);
     if (result is String) {
       return result;
@@ -43,11 +48,12 @@ class OffersRepository {
     }
   }
 
-
-  /// fetch offers list data
+  /// fetch offers details data
   Future fetchOffersDetailsApi(ViewOffersDetailsEvent event) async {
+    var userId = LocalStorage.getString(Pref.userId);
     final result = await api.get(
-        url: "${ApiEndPoints.offersDetails}/${event.offersId}",
+        url:
+            ApiEndPoints.offersDetails(event.offersId.toString(), userId ?? ''),
         context: event.context);
     if (result is String) {
       return result;
@@ -56,5 +62,13 @@ class OffersRepository {
     }
   }
 
-
+  /// fetch purchased offers list
+  Future fetchPurchasedOffersApi() async {
+    final result = await api.get(url: ApiEndPoints.fetchPurchasedOffers);
+    if (result is String) {
+      return result;
+    } else {
+      return PurchasedOffersHistoryModel.fromJson(result);
+    }
+  }
 }

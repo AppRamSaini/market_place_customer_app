@@ -5,15 +5,12 @@ plugins {
 }
 
 def dotenv = new Properties()
-def dotenvFile = rootProject.file('.env')
+def dotenvFile = rootProject.file('../.env')
 if (dotenvFile.exists()) {
     dotenvFile.withInputStream { stream ->
         dotenv.load(stream)
     }
 }
-
-
-
 
 android {
     namespace = "com.fp.marketplacecustomer"
@@ -43,6 +40,9 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }

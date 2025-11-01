@@ -1,9 +1,11 @@
 import 'package:market_place_customer/screens/auth/registration.dart';
+import 'package:market_place_customer/screens/fetch_data.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class OtpVerify extends StatefulWidget {
   final String mobileNumber;
   final String location;
+
   const OtpVerify(
       {super.key, required this.mobileNumber, required this.location});
 
@@ -48,6 +50,7 @@ class OtpVerifyState extends State<OtpVerify> {
   }
 
   String? validOtpText;
+
   returnValidation(String value) {
     if (value == null || value.isEmpty) {
       validOtpText = 'Please enter OTP';
@@ -89,6 +92,13 @@ class OtpVerifyState extends State<OtpVerify> {
               }
               await LocalStorage.setString(Pref.roleType, role);
               if (state.userOtpModel.data!.user != null && role == 'customer') {
+                final userId = state.userOtpModel.data!.user!.id.toString();
+                final customerName =
+                    state.userOtpModel.data!.user!.name.toString();
+
+                await LocalStorage.setString(Pref.userName, customerName);
+                await LocalStorage.setString(Pref.userId, userId);
+
                 AppRouter()
                     .navigateAndClearStack(context, const CustomerDashboard());
               } else {
@@ -97,6 +107,9 @@ class OtpVerifyState extends State<OtpVerify> {
                     CustomerRegistrationPage(
                         mobile: widget.mobileNumber.toString()));
               }
+
+              /// fetch the api data
+              fetchApiData(context);
             } else if (state is OtpVerifyFailure) {
               snackBar(context, state.error.toString(), Colors.red);
             }

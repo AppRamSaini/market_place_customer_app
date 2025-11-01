@@ -1,40 +1,60 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/screens/dashboard/search_vendors.dart';
-import 'package:market_place_customer/screens/location/search_manual_location.dart';
 
 import '../../utils/exports.dart';
 
 /// OFFERS CHIP FOR GLOBAL DATA
-Widget offersCardChipAndFavoriteWidget(String offersCounts) => Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Image.asset(Assets.offersChip,
-                height: size.height * 0.04,
-                fit: BoxFit.cover,
-                width: size.width * 0.24),
-            Padding(
-              padding: EdgeInsets.only(right: size.width * 0.022,bottom: 2),
-              child: Text(offersCounts,
-                  textAlign: TextAlign.center,
-                  style: AppStyle.medium_15(AppColors.white10)),
+Widget offersCardChipAndFavoriteWidget(String offersCounts,
+    {String? expireTime}) {
+  bool hasExpireTime = expireTime != null && expireTime.isNotEmpty;
+
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(
+            Assets.offersChip,
+            height: size.height * 0.04,
+            fit: BoxFit.cover,
+            width: size.width * 0.24,
+          ),
+          Padding(
+            padding: EdgeInsets.only(right: size.width * 0.022, bottom: 2),
+            child: Text(
+              offersCounts,
+              textAlign: TextAlign.center,
+              style: AppStyle.medium_15(AppColors.white10),
             ),
-          ],
+          ),
+        ],
+      ),
+
+      // ✅ Expiry Time Safe Condition
+      if (hasExpireTime)
+        Container(
+          margin: const EdgeInsets.only(right: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.orange,
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.access_time, size: 14, color: Colors.white),
+              const SizedBox(width: 4),
+              Text(
+                "Expires in $expireTime",
+                style: AppStyle.normal_12(AppColors.whiteColor),
+              ),
+            ],
+          ),
         ),
-        Padding(
-            padding: EdgeInsets.only(
-                right: size.width * 0.03, bottom: size.height * 0.012),
-            child: Align(
-              alignment: Alignment.topRight,
-              child: CircleAvatar(
-                radius: 18,
-                  backgroundColor: AppColors.theme60,
-                  child: Icon(Icons.favorite_border, color: AppColors.white80,size: 20)),
-            )),
-      ],
-    );
+    ],
+  );
+}
 
 /// OFFERS CARD FOR GLOBAL DATA
 
@@ -49,19 +69,24 @@ class NearbyRestaurantCard extends StatelessWidget {
   final String? offersCounts;
   double carWidth;
   double imgHeight;
+  final bool isExpired;
+  final bool isPurchased;
 
-  NearbyRestaurantCard(
-      {super.key,
-      required this.imageUrl,
-      required this.name,
-      required this.location,
-      required this.distance,
-      required this.cuisines,
-      required this.flatData,
-      required this.offerText,
-      required this.offersCounts,
-      required this.imgHeight,
-      required this.carWidth});
+  NearbyRestaurantCard({
+    super.key,
+    required this.imageUrl,
+    required this.name,
+    required this.location,
+    required this.distance,
+    required this.cuisines,
+    required this.flatData,
+    required this.offerText,
+    required this.offersCounts,
+    required this.imgHeight,
+    required this.carWidth,
+    required this.isExpired,
+    required this.isPurchased,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +181,67 @@ class NearbyRestaurantCard extends StatelessWidget {
               ),
             ],
           ),
-        )
+        ),
+
+        /// Purchased Badge
+        if (isPurchased)
+          Positioned(
+            top: 10,
+            right: -25,
+            child: FadeInDown(
+              duration: const Duration(milliseconds: 700),
+              child: Transform.rotate(
+                angle: 0.5,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 6),
+                  color: Colors.green.withOpacity(0.8),
+                  child: const Text(
+                    "PURCHASED",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+        /// Expired Overlay
+        if (isExpired)
+          AnimatedOpacity(
+            opacity: 1.0,
+            duration: const Duration(milliseconds: 700),
+            child: Container(
+              height: imgHeight,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: AppColors.black50),
+              child: Center(
+                child: BounceInDown(
+                  duration: const Duration(milliseconds: 800),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      "OFFER EXPIRED",
+                      style: TextStyle(
+                          color: Colors.yellowAccent,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -175,26 +260,26 @@ Widget offerChipAndFavoriteWidget(String offersCounts) => Row(
             Image.asset(Assets.offersChip,
                 height: size.height * 0.04,
                 fit: BoxFit.cover,
-                width: size.width * 0.24),
+                width: size.width * 0.22),
             Padding(
               padding: EdgeInsets.only(right: size.width * 0.02),
               child: Text(offersCounts,
                   textAlign: TextAlign.center,
-                  style: AppStyle.medium_14(AppColors.white10)),
+                  style: AppStyle.medium_13(AppColors.white10)),
             ),
           ],
         ),
-        Padding(
-            padding: EdgeInsets.only(
-                right: size.width * 0.03, bottom: size.height * 0.012),
-            child: Align(
-              alignment: Alignment.topRight,
-              child: CircleAvatar(
-                  radius: 15,
-                  backgroundColor: AppColors.theme60,
-                  child: Icon(Icons.favorite_border,
-                      color: AppColors.white80, size: 15)),
-            )),
+        // Padding(
+        //     padding: EdgeInsets.only(
+        //         right: size.width * 0.03, bottom: size.height * 0.012),
+        //     child: Align(
+        //       alignment: Alignment.topRight,
+        //       child: CircleAvatar(
+        //           radius: 15,
+        //           backgroundColor: AppColors.theme60,
+        //           child: Icon(Icons.favorite_border,
+        //               color: AppColors.white80, size: 15)),
+        //     )),
       ],
     );
 
@@ -427,15 +512,15 @@ class RestaurantCard extends StatelessWidget {
 
   RestaurantCard(
       {super.key,
-        required this.imageUrl,
-        required this.name,
-        required this.location,
-        required this.distance,
-        required this.cuisines,
-        required this.offersCount,
-        required this.offerText,
-        required this.imgHeight,
-        required this.carWidth});
+      required this.imageUrl,
+      required this.name,
+      required this.location,
+      required this.distance,
+      required this.cuisines,
+      required this.offersCount,
+      required this.offerText,
+      required this.imgHeight,
+      required this.carWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -460,7 +545,7 @@ class RestaurantCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(16)),
+                    const BorderRadius.vertical(top: Radius.circular(16)),
                 child: FadeInImage(
                   height: imgHeight,
                   fit: BoxFit.cover,
@@ -469,8 +554,7 @@ class RestaurantCard extends StatelessWidget {
                   image: imageUrl.isNotEmpty
                       ? NetworkImage(imageUrl)
                       : const AssetImage(Assets.dummy) as ImageProvider,
-                  imageErrorBuilder: (_, child, st) => Image.asset(
-                      Assets.dummy,
+                  imageErrorBuilder: (_, child, st) => Image.asset(Assets.dummy,
                       height: size.height * 0.17,
                       fit: BoxFit.cover,
                       width: double.infinity),
@@ -508,7 +592,7 @@ class RestaurantCard extends StatelessWidget {
             decoration: const BoxDecoration(
                 color: AppColors.themeColor,
                 borderRadius:
-                BorderRadius.vertical(bottom: Radius.circular(16))),
+                    BorderRadius.vertical(bottom: Radius.circular(16))),
             child: Row(
               children: [
                 const Icon(Icons.local_offer,
@@ -532,7 +616,7 @@ class RestaurantCard extends StatelessWidget {
 Widget ViewAllWidget({required String title, void Function()? onPressed}) =>
     Padding(
       padding:
-      EdgeInsets.only(left: size.width * 0.034, right: size.width * 0.005),
+          EdgeInsets.only(left: size.width * 0.034, right: size.width * 0.005),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

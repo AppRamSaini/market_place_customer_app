@@ -1,13 +1,13 @@
-import 'package:market_place_customer/bloc/customer_registration/fetch_profile_bloc/fetch_profile_event.dart';
-import 'package:market_place_customer/screens/dashboard/top_rated_vendors.dart';
-import 'package:market_place_customer/screens/payment_approval_request/payment_approval_request.dart';
-import 'package:market_place_customer/screens/profile_and_settings/profile_and_settings.dart';
+import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
 import 'package:market_place_customer/utils/exports.dart';
 import 'package:upgrader/upgrader.dart';
 
+import '../../bloc/customer_registration/fetch_profile_bloc/fetch_profile_event.dart';
 
 class CustomerDashboard extends StatefulWidget {
-  const CustomerDashboard({super.key});
+  final int? selectedTabIndex;
+
+  const CustomerDashboard({super.key, this.selectedTabIndex = 0});
 
   @override
   State<CustomerDashboard> createState() => CustomerDashboardState();
@@ -17,7 +17,7 @@ class CustomerDashboardState extends State<CustomerDashboard> {
   int currentIndex = 0;
   List pagesList = [
     const HomePage(),
-    TopRatedVendors(),
+    PurchasedOffersHistory(),
     ViewPaymentApprovalRequest(),
     SettingsPage(),
   ];
@@ -25,11 +25,19 @@ class CustomerDashboardState extends State<CustomerDashboard> {
   @override
   void initState() {
     super.initState();
-    fetchData();
+    setState(() => currentIndex = widget.selectedTabIndex!);
   }
 
   fetchData() {
-    context.read<FetchProfileDetailsBloc>().add(FetchProfileEvent(context: context));
+    var token = LocalStorage.getString(Pref.token);
+    if (token != null) {
+      context
+          .read<PurchasedOffersHistoryBloc>()
+          .add(GetPurchasedOffersHistoryEvent(context: context));
+      context
+          .read<FetchProfileDetailsBloc>()
+          .add(FetchProfileEvent(context: context));
+    }
   }
 
   @override
@@ -65,7 +73,11 @@ class CustomerDashboardState extends State<CustomerDashboard> {
   ];
 
   Widget _tabWidget(int index) => GestureDetector(
-        onTap: () {
+        onTap: () async {
+          if (index == 1 || index == 3) {
+            bool isLoggedIn = await checkedLogin(context);
+            if (!isLoggedIn) return;
+          }
           setState(() {
             currentIndex = index;
           });

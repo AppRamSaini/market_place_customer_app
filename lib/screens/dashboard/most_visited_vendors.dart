@@ -1,13 +1,11 @@
 import 'package:draggable_carousel_slider/draggable_carousel_slider.dart';
-import 'package:flutter/material.dart';
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
-import 'package:market_place_customer/screens/dashboard/helper_widgets.dart';
-import 'package:market_place_customer/screens/location/search_manual_location.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendors_details_page.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class MostVisitedVendors extends StatefulWidget {
   final List<PopularVendorElement>? popularVendor;
+
   const MostVisitedVendors({super.key, required this.popularVendor});
 
   @override
@@ -38,8 +36,6 @@ class _MostVisitedVendorsState extends State<MostVisitedVendors> {
 
   Widget _image(String path, double width, double height,
       {bool shimmer = false, OfferData? offerData}) {
-    final size = MediaQuery.of(context).size;
-
     return Stack(
       children: [
         ClipRRect(
@@ -49,6 +45,12 @@ class _MostVisitedVendorsState extends State<MostVisitedVendors> {
             width: size.width * 0.8,
             height: size.height * 0.5,
             fit: BoxFit.fitHeight,
+            errorBuilder: (context, child, loadingProgress) => Image.asset(
+              Assets.dummy,
+              width: size.width * 0.8,
+              height: size.height * 0.5,
+              fit: BoxFit.fitHeight,
+            ),
             loadingBuilder: (context, child, loadingProgress) =>
                 AnimatedCrossFade(
               firstChild: child,
@@ -95,7 +97,7 @@ class _MostVisitedVendorsState extends State<MostVisitedVendors> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(offerData!.title ?? '',
+                        Text(offerData.title ?? '',
                             style: AppStyle.medium_18(AppColors.whiteColor),
                             overflow: TextOverflow.ellipsis),
                         Row(

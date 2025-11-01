@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "216006217728",
+    "firebase_url": "https://transport-issue-tracking-app-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "transport-issue-tracking-app",
+    "storage_bucket": "transport-issue-tracking-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216006217728:android:2f617aea48209e489ec8e5",
+        "android_client_info": {
+          "package_name": "com.fp.transportapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2cEi_WIyk5Cu7RyjEAZABcGSD3okigPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

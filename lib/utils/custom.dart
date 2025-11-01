@@ -17,7 +17,7 @@ void snackBar(BuildContext context, String title,
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: color,
       // behavior: SnackBarBehavior.floating,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
+      clipBehavior: Clip.antiAlias,
       content: Text(title, style: AppStyle.normal_12(AppColors.whiteColor))));
 }
 

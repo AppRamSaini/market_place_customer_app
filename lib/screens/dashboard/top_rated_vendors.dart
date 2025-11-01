@@ -5,27 +5,28 @@ class TopRatedVendors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: size.height * 0.35,
-      child: PageView.builder(
-        itemCount: images.length,
-        physics: const BouncingScrollPhysics(),
-        padEnds: true,
-        itemBuilder: (_, index) => Padding(
-          padding: EdgeInsets.only(
-              left: size.width * 0.03, right: size.width * 0.03),
-          child: NearbyRestaurantCard(
-            carWidth: size.width * 0.9,
-            imgHeight: size.height * 0.35,
-            imageUrl: images![index]['url'] ?? '',
-            name: "The Burger Farm",
-            location: "Shayam Nagar Sodala, Jaipur",
-            distance: "7.3 km",
-            cuisines: "Chinese, North Indian",
-            flatData: "700",
-            offerText: "Flat 20% OFF On Total Bill",
-            offersCounts: "20",
-          ),
+    return ListView.builder(
+      itemCount: images.length,
+      scrollDirection: Axis.vertical,
+      physics: const BouncingScrollPhysics(),
+      itemBuilder: (_, index) => Padding(
+        padding: EdgeInsets.only(
+            left: size.width * 0.03,
+            right: size.width * 0.03,
+            top: size.height * 0.01),
+        child: NearbyRestaurantCard(
+          carWidth: size.width * 0.9,
+          imgHeight: size.height * 0.3,
+          isPurchased: false,
+          isExpired: false,
+          imageUrl: images[index]['url'] ?? '',
+          name: "The Burger Farm",
+          location: "Shayam Nagar Sodala, Jaipur",
+          distance: "7.3 km",
+          cuisines: "Chinese, North Indian",
+          flatData: "700",
+          offerText: "Flat 20% OFF On Total Bill",
+          offersCounts: "20",
         ),
       ),
     );

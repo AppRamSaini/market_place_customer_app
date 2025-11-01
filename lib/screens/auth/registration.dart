@@ -1,8 +1,11 @@
+import 'package:market_place_customer/screens/fetch_data.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class CustomerRegistrationPage extends StatefulWidget {
   final String mobile;
+
   const CustomerRegistrationPage({super.key, required this.mobile});
+
   @override
   State<CustomerRegistrationPage> createState() =>
       CustomerRegistrationPageState();
@@ -13,6 +16,7 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   void dispose() {
     nameController.dispose();
@@ -28,6 +32,7 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
   }
 
   XFile? businessLogo;
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<CustomerSignupBloc, CustomerSignupState>(
@@ -36,18 +41,36 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
         if (state is CustomerSignupLoading) {
           EasyLoading.show();
         } else if (state is CustomerSignupSuccess) {
-          final message = state.customerSignupModel.message.toString();
+          final signupData = state.customerSignupModel.data;
+          final message =
+              state.customerSignupModel.message ?? "Signup successful!";
           snackBar(context, message, AppColors.green);
 
-          final role = state.customerSignupModel.data!.role.toString();
-          await LocalStorage.setString(Pref.roleType, role);
+          if (signupData != null) {
+            final role = signupData.role ?? '';
+            await LocalStorage.setString(Pref.roleType, role);
 
-          if (state.customerSignupModel.data!.token != null) {
-            final token = state.customerSignupModel.data!.token.toString();
-            await LocalStorage.setString(Pref.token, token);
+            final token = signupData.token;
+            if (token != null && token.isNotEmpty) {
+              await LocalStorage.setString(Pref.token, token);
+            }
+
+            final user = signupData.user;
+            if (user != null) {
+              await LocalStorage.setString(
+                  Pref.userId, user.id?.toString() ?? '');
+              await LocalStorage.setString(Pref.userName, user.name ?? '');
+            }
+
+            /// fetch the api data
+            fetchApiData(context);
+
+            AppRouter()
+                .navigateAndClearStack(context, const CustomerDashboard());
+          } else {
+            snackBar(context, "Invalid response from server. Please try again.",
+                AppColors.redColor);
           }
-
-          AppRouter().navigateAndClearStack(context, const CustomerDashboard());
         } else if (state is CustomerSignupFailure) {
           snackBar(context, state.error.toString(), AppColors.redColor);
           EasyLoading.dismiss();

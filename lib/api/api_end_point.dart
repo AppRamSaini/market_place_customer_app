@@ -7,8 +7,12 @@ class ApiEndPoints {
   static const dashboard = '$baseUrl/customer/dashboard';
   static getVendors(String? category, String? type, String? search) =>
       '$baseUrl/customer/getVendor?category=$category&name=$search&type=$type';
-  static const vendorDetails = '$baseUrl/customer/getVendorbyId';
-  static const offersDetails = '$baseUrl/customer/offer/get_details';
+  static  vendorDetails(String vendorId, String userId) => '$baseUrl/customer/getVendorbyId/$vendorId?user_id=$userId';
+  static  offersDetails(String offerId, String userId) => '$baseUrl/customer/offer/get_details/$offerId?user_id=$userId';
+  static const  makePayment = '$baseUrl/customer/add_payment';
+  static const  fetchPurchasedOffers = '$baseUrl/customer/brought-offer';
+
+
 
 
 
@@ -24,19 +28,8 @@ class ApiEndPoints {
   static const merchantCategory = '$baseUrl/vendor/categroy';
   static const merchantSubCategory = '$baseUrl/vendor/sub_categroy';
   static const addOffers = '$baseUrl/offer/add';
-  static const fetchOffers = '$baseUrl/offer/get';
-  static const disableOffers = '$baseUrl/offer/status';
-  static const deleteOffers = '$baseUrl/offer/offer_delete';
-  static const updateOffers = '$baseUrl/offer/update';
-  static const viewOffers = '$baseUrl/offer/get_details';
-  static const fetchBusinessProfile = '$baseUrl/vendor/get_details';
-
   static const getUserProfile = '$baseUrl/get-user';
   static const updateProfile = '$baseUrl/update-user';
-  static const homeData = '$baseUrl/dashboard';
-  static const deliveryListing = '$baseUrl/delivery/listing';
-  static const deliveryDetails = '$baseUrl/delivery/details';
-  static const issueCategory = '$baseUrl/issues/categories';
   static const createReport = '$baseUrl/issues/report/create';
   static const issueReportHistory = '$baseUrl/issues/report/history';
   static const issueReportDetails = '$baseUrl/issues/report/detail';

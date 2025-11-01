@@ -3,6 +3,7 @@ import 'package:market_place_customer/utils/exports.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -18,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   String? validText;
+
   returnValidation(String value) {
     if (value == null || value.isEmpty) {
       validText = 'Please enter number';

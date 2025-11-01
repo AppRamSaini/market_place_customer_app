@@ -1,16 +1,14 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
-class AppColors{
+class AppColors {
   static const themeColor = Color(0xFF004AAD);
-  static  Color theme10 = const Color(0xFF004AAD).withOpacity(0.1);
-  static  Color theme50 = const Color(0xFF004AAD).withOpacity(0.5);
-  static  Color theme30 = const Color(0xFF004AAD).withOpacity(0.3);
-  static  Color theme60 = const Color(0xFF004AAD).withOpacity(0.6);
-  static  Color theme20 = const Color(0xFF004AAD).withOpacity(0.2);
-  static  Color theme5 = const Color(0xFF004AAD).withOpacity(0.05);
-  static  Color theme1 = const Color(0xFF0B274F);
+  static Color theme10 = const Color(0xFF004AAD).withOpacity(0.1);
+  static Color theme50 = const Color(0xFF004AAD).withOpacity(0.5);
+  static Color theme30 = const Color(0xFF004AAD).withOpacity(0.3);
+  static Color theme60 = const Color(0xFF004AAD).withOpacity(0.6);
+  static Color theme20 = const Color(0xFF004AAD).withOpacity(0.2);
+  static Color theme5 = const Color(0xFF004AAD).withOpacity(0.05);
+  static Color theme1 = const Color(0xFF0B274F);
 
   static const grey50 = Color(0xFFF5F5F5);
   static const fill = Color(0xFF2C2B2B);
@@ -39,4 +37,5 @@ class AppColors{
   static const parrot = Color(0xFF9AFF00);
   static Color green20 = const Color(0xFF06A77D33).withOpacity(0.2);
   static const orange = Colors.deepOrange;
+  static const orange2 = Colors.orange;
 }

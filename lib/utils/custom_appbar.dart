@@ -5,16 +5,16 @@ import 'package:market_place_customer/utils/app_colors.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 AppBar customAppbar(
-        {BuildContext? context, String? title, List<Widget>? actions}) =>
+        {BuildContext? context, String? title, List<Widget>? actions, bool showLeading = false}) =>
     AppBar(
-      centerTitle: false,
       elevation: 0,
-      leading: IconButton(
+      leading:!showLeading?
+      IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
               size: 20, color: AppColors.blackColor),
-          onPressed: () => Navigator.pop(context!)),
+          onPressed: () => Navigator.pop(context!)):null,
       title: Text(title.toString(),
-          style: AppStyle.normal_19(AppColors.blackColor)),
+          style: AppStyle.medium_18(AppColors.themeColor)),
       actions: actions,
     );
 

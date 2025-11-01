@@ -1,10 +1,11 @@
-import 'package:market_place_customer/bloc/vendors_data_bloc/fetch_all_vendors/fetch_all_vendors_event.dart';
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
+
 import '../../utils/exports.dart';
 
 class ViewAllVendorsPage extends StatefulWidget {
   final String? type;
   final List<VendorsCategory>? popularCategory;
+
   const ViewAllVendorsPage({super.key, this.type, this.popularCategory});
 
   @override
@@ -119,7 +120,7 @@ class _ViewAllVendorsPageState extends State<ViewAllVendorsPage> {
                     final vendorsList = state.model.data ?? [];
 
                     return Padding(
-                      padding:  EdgeInsets.only(top: size.height * 0.012),
+                      padding: EdgeInsets.only(top: size.height * 0.012),
                       child: ListView.builder(
                         itemCount: vendorsList.length,
                         padding: EdgeInsets.zero,
@@ -157,6 +158,8 @@ class _ViewAllVendorsPageState extends State<ViewAllVendorsPage> {
                                         ? size.height * 0.1
                                         : size.height * 0.012),
                                 child: NearbyRestaurantCard(
+                                  isPurchased: false,
+                                  isExpired: false,
                                   carWidth: size.width * 0.9,
                                   imgHeight: size.height * 0.3,
                                   imageUrl: vendor.vendor!.businessLogo ?? '',

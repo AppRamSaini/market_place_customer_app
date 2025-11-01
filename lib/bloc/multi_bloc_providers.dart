@@ -1,10 +1,11 @@
-
-
+import 'package:market_place_customer/bloc/payment_bloc/payment_bloc.dart';
+import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_history/purchased_offers_history_bloc.dart';
 
 import '../utils/exports.dart';
 
 class AppBlocProviders extends StatelessWidget {
   final Widget child;
+
   const AppBlocProviders({super.key, required this.child});
 
   @override
@@ -17,17 +18,17 @@ class AppBlocProviders extends StatelessWidget {
             create: (context) => CustomerSignupBloc()),
         BlocProvider<FetchDashboardOffersBloc>(
             create: (context) => FetchDashboardOffersBloc()),
-        BlocProvider<FetchVendorsBloc>(
-            create: (context) => FetchVendorsBloc()),
+        BlocProvider<FetchVendorsBloc>(create: (context) => FetchVendorsBloc()),
         BlocProvider<VendorDetailsBloc>(
             create: (context) => VendorDetailsBloc()),
         BlocProvider<ViewOffersBloc>(create: (context) => ViewOffersBloc()),
         BlocProvider<BusinessCategoryCubit>(
             create: (context) => BusinessCategoryCubit()),
-
+        BlocProvider<PaymentBloc>(create: (context) => PaymentBloc()),
+        BlocProvider<PurchasedOffersHistoryBloc>(
+            create: (context) => PurchasedOffersHistoryBloc()),
 
         ///====>>>>
-
 
         BlocProvider<FetchProfileDetailsBloc>(
             create: (context) => FetchProfileDetailsBloc()),

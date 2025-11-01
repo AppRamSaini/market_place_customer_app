@@ -18,7 +18,7 @@ void logOutPermissionDialog(BuildContext context, {bool forDelete = false}) =>
             children: [
               Container(
                   width: size.width,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       color: AppColors.themeColor,
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
@@ -77,8 +77,6 @@ void logOutPermissionDialog(BuildContext context, {bool forDelete = false}) =>
         );
       },
     );
-
-/// delete
 
 /// LOG OUT DIALOG
 void deleteOffersDialog(
@@ -147,7 +145,6 @@ void deleteOffersDialog(
     );
 
 /// session expire dialog
-
 void sessionExpiredDialog(BuildContext context) {
   showGeneralDialog(
     barrierDismissible: false,
@@ -174,7 +171,7 @@ void sessionExpiredDialog(BuildContext context) {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CircularProgressIndicator.adaptive(
+                    const CircularProgressIndicator.adaptive(
                         backgroundColor: AppColors.themeColor),
                     const SizedBox(height: 20),
                     Text(
@@ -190,13 +187,13 @@ void sessionExpiredDialog(BuildContext context) {
         ),
       );
     },
-    transitionDuration: const Duration(milliseconds: 500),
+    transitionDuration: const Duration(milliseconds: 400),
   );
   // Auto redirect after 3 seconds
   Timer(const Duration(seconds: 3), () {
     Navigator.of(context, rootNavigator: true).pop();
     EasyLoading.show();
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       EasyLoading.dismiss();
       LocalStorage.clearAll(context);
     });
@@ -207,7 +204,7 @@ void sessionExpiredDialog(BuildContext context) {
 Future exitPageDialog(BuildContext context) async {
   await showModalBottomSheet(
     context: context,
-    shape: RoundedRectangleBorder(
+    shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(5))),
     builder: (_) => Padding(
       padding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
@@ -223,14 +220,14 @@ Future exitPageDialog(BuildContext context) async {
                     style: AppStyle.medium_16(AppColors.blackColor)),
                 IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.clear,
                       color: AppColors.blackColor,
                     ))
               ],
             ),
             customDivider(),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -254,4 +251,68 @@ Future exitPageDialog(BuildContext context) async {
     ),
   );
 }
-// utils/validators.dart
+
+/// pending payment verifications dialog
+void pendingPaymentDialog(BuildContext context) {
+  showGeneralDialog(
+    barrierDismissible: false,
+    barrierLabel: "Payment Verification Pending",
+    context: context,
+    pageBuilder: (ctx, anim1, anim2) {
+      return const SizedBox.shrink();
+    },
+    transitionBuilder: (ctx, anim1, anim2, child) {
+      return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Transform.scale(
+          scale: anim1.value,
+          child: Opacity(
+            opacity: anim1.value,
+            child: Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator.adaptive(
+                        backgroundColor: AppColors.themeColor),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Your payment has been received, but we couldn’t verify it right now.\n\n"
+                      "Don’t worry — it will be automatically verified soon. ",
+                      style: AppStyle.medium_16(AppColors.blackColor),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 20),
+                    Align(alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("OK"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+    transitionDuration: const Duration(milliseconds: 400),
+  );
+  // Auto redirect after 3 seconds
+  Timer(const Duration(seconds: 3), () {
+    Navigator.of(context, rootNavigator: true).pop();
+    EasyLoading.show();
+    Future.delayed(const Duration(seconds: 2), () {
+      EasyLoading.dismiss();
+      LocalStorage.clearAll(context);
+    });
+  });
+}

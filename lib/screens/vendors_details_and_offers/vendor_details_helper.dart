@@ -2,6 +2,9 @@ import 'package:market_place_customer/data/models/vendor_details_model.dart';
 
 import '../../utils/exports.dart';
 
+import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
+
 class OffersDataCardWidget extends StatelessWidget {
   final String imageUrl;
   final String name;
@@ -9,33 +12,44 @@ class OffersDataCardWidget extends StatelessWidget {
   final String offerText;
   final double imgHeight;
   final double imgWidth;
-  const OffersDataCardWidget(
-      {super.key,
-      required this.imageUrl,
-      required this.name,
-      required this.amount,
-      required this.offerText,required this.imgHeight,required this.imgWidth,
-      });
+  final bool isExpired;
+  final bool isPurchased;
+
+  const OffersDataCardWidget({
+    super.key,
+    required this.imageUrl,
+    required this.name,
+    required this.amount,
+    required this.offerText,
+    required this.imgHeight,
+    required this.imgWidth,
+    required this.isExpired,
+    required this.isPurchased,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        /// Background image
         ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(10), bottom: Radius.circular(10)),
-          child: FadeInImage(
+          borderRadius: BorderRadius.circular(14),
+          child: FadeInImage.assetNetwork(
+            placeholder: Assets.dummy,
+            image: imageUrl,
             fit: BoxFit.cover,
             height: imgHeight,
             width: imgWidth,
-            placeholder: const AssetImage(Assets.dummy),
-            image: imageUrl.isNotEmpty
-                ? NetworkImage(imageUrl)
-                : const AssetImage(Assets.dummy) as ImageProvider,
-            imageErrorBuilder: (_, child, st) => Image.asset(Assets.dummy,
-                height: imgHeight, fit: BoxFit.cover, width: imgWidth),
+            imageErrorBuilder: (_, __, ___) => Image.asset(
+              Assets.dummy,
+              fit: BoxFit.cover,
+              height: imgHeight,
+              width: imgWidth,
+            ),
           ),
         ),
+
+        /// Offer details (bottom text)
         Container(
           width: size.width,
           height: imgHeight,
@@ -51,9 +65,8 @@ class OffersDataCardWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.only(top: size.height * 0.02),
-                child: offerChipAndFavoriteWidget(offerText),
-              ),
+                  padding: EdgeInsets.only(top: size.height * 0.02),
+                  child: offerChipAndFavoriteWidget(offerText)),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -66,7 +79,6 @@ class OffersDataCardWidget extends StatelessWidget {
                         Text(name,
                             style: AppStyle.medium_14(AppColors.whiteColor),
                             overflow: TextOverflow.ellipsis),
-
                         Text(amount,
                             style: AppStyle.medium_13(AppColors.parrot)),
                       ],
@@ -76,12 +88,72 @@ class OffersDataCardWidget extends StatelessWidget {
               ),
             ],
           ),
-        )
+        ),
+
+        /// Purchased Badge
+        if (isPurchased)
+          Positioned(
+            top: 10,
+            right: -25,
+            child: FadeInDown(
+              duration: const Duration(milliseconds: 700),
+              child: Transform.rotate(
+                angle: 0.5,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 6),
+                  color: Colors.green.withOpacity(0.8),
+                  child: const Text(
+                    "PURCHASED",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+        /// Expired Overlay
+        if (isExpired)
+          AnimatedOpacity(
+            opacity: 1.0,
+            duration: const Duration(milliseconds: 700),
+            child: Container(
+              height: imgHeight,
+              width: imgWidth,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                color: AppColors.black50,
+              ),
+              child: Center(
+                child: BounceInDown(
+                  duration: const Duration(milliseconds: 800),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      "OFFER EXPIRED",
+                      style: TextStyle(
+                          color: Colors.yellowAccent,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
 }
-
 
 /// vendor open & close time format
 
@@ -155,15 +227,12 @@ String getTodayTiming(Timing timing) {
   return "Open Time : ${formatTime(todayTiming.open!)}  |  Close Time : ${formatTime(todayTiming.close!)}";
 }
 
-
-
-
 /// Custom Expansion Tile
 Widget customExpansionTile(
-    {required BuildContext context,
-      required String txt,
-      required String subTitle,
-      List<Widget> children = const <Widget>[]}) =>
+        {required BuildContext context,
+        required String txt,
+        required String subTitle,
+        List<Widget> children = const <Widget>[]}) =>
     Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10), color: AppColors.theme5),
@@ -173,11 +242,12 @@ Widget customExpansionTile(
           dense: true,
           initiallyExpanded: true,
           backgroundColor: AppColors.transparent,
-          childrenPadding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+          childrenPadding:
+              const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           title: Text(txt, style: AppStyle.medium_16(AppColors.black20)),
-          subtitle: Text(subTitle??"Tap to expand",
+          subtitle: Text(subTitle ?? "Tap to expand",
               style: AppStyle.normal_12(AppColors.black20)),
           children: children,
         ),

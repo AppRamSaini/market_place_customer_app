@@ -1,13 +1,11 @@
 import 'package:market_place_customer/bloc/vendors_data_bloc/fetch_dashbaord_offers/dashboard_offers_event.dart';
-import 'package:market_place_customer/bloc/vendors_data_bloc/fetch_dashbaord_offers/dashboard_offers_state.dart';
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
-import 'package:market_place_customer/screens/dashboard/helper_widgets.dart';
+import 'package:market_place_customer/screens/dashboard/most_visited_vendors.dart';
 import 'package:market_place_customer/screens/dashboard/nearby_vendors.dart';
 import 'package:market_place_customer/screens/dashboard/popular_categories.dart';
 import 'package:market_place_customer/screens/dashboard/search_vendors.dart';
 import 'package:market_place_customer/screens/dashboard/view_all_vendors_page.dart';
 import 'package:market_place_customer/screens/location/search_manual_location.dart';
-import 'package:market_place_customer/screens/dashboard/most_visited_vendors.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class HomePage extends StatefulWidget {
@@ -36,7 +34,6 @@ class _HomePageState extends State<HomePage> {
         _flexTitleOpacity = 1.0 - opacity;
       });
     });
-    refreshData();
   }
 
   refreshData() {
@@ -47,6 +44,7 @@ class _HomePageState extends State<HomePage> {
 
   bool searchValue = false;
   String location = 'fetching your location...';
+
   findLocation() => setState(() {
         var address = LocalStorage.getString(Pref.location);
         if (address != null) {
@@ -87,11 +85,9 @@ class _HomePageState extends State<HomePage> {
       },
       child: MultiBlocListener(
         listeners: [
-
           BlocListener<FetchDashboardOffersBloc, FetchDashboardOffersState>(
             listener: (context, state) {
-              if (state is FetchDashboardOffersSuccess) {
-              }
+              if (state is FetchDashboardOffersSuccess) {}
             },
           ),
         ],
@@ -118,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                   offersData!.nearbyvendor!;
 
               List<PopularVendorElement> popularVendor =
-                  offersData!.popularvendor!;
+                  offersData.popularvendor!;
 
               List<VendorsCategory> popularCategory = offersData!.category!;
 

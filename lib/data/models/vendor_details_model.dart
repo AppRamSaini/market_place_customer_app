@@ -255,6 +255,7 @@ class Offer {
   DateTime? updatedAt;
   int? v;
   String? status;
+  bool? purchaseStatus;
 
   Offer({
     this.id,
@@ -266,6 +267,7 @@ class Offer {
     this.updatedAt,
     this.v,
     this.status,
+    this.purchaseStatus,
   });
 
   factory Offer.fromJson(Map<String, dynamic> json) => Offer(
@@ -278,6 +280,8 @@ class Offer {
     updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
     v: json["__v"],
     status: json["status"],
+    purchaseStatus: json["purchase_status"],
+
   );
 
   Map<String, dynamic> toJson() => {
@@ -290,6 +294,8 @@ class Offer {
     "updatedAt": updatedAt?.toIso8601String(),
     "__v": v,
     "status": status,
+    "purchase_status": purchaseStatus,
+
   };
 }
 

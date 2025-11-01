@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:market_place_customer/bloc/multi_bloc_providers.dart';
 import 'package:market_place_customer/utils/exports.dart';
 import 'firebase_options.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +13,7 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
 
   /// Start App
-  runApp(AppBlocProviders(child: MyApp()));
+  runApp(const AppBlocProviders(child: MyApp()));
 
   /// EasyLoading config
   configLoading();
@@ -35,10 +35,9 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.whiteColor,
         fontFamily: 'AlanSans',
         appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          backgroundColor: AppColors.whiteColor,
-          iconTheme: IconThemeData(color: AppColors.blackColor),
-        ),
+            centerTitle: false,
+            backgroundColor: AppColors.whiteColor,
+            iconTheme: IconThemeData(color: AppColors.blackColor)),
         useMaterial3: true,
       ),
       home: const SplashScreen(),
