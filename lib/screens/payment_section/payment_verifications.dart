@@ -4,11 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../utils/exports.dart';
 
-/// 🧠 Listen to specific offer's verification status in real-time
-void listenSpecificOfferVerification({
-  required BuildContext context,
-  required String offerId,
-}) {
+///  Listen to specific offer's verification status in real-time
+void listenSpecificOfferVerification(
+    {required BuildContext context, required String offerId}) {
   final userId = LocalStorage.getString(Pref.userId);
   if (userId == null || userId.isEmpty) return;
 
@@ -27,39 +25,29 @@ void listenSpecificOfferVerification({
 
     debugPrint('🔥 Offer Status: $status');
 
-    // 🟡 Payment Pending
     if (status == 'pending' && !dialogShown) {
       dialogShown = true;
 
       _showPendingPaymentDialog(
         context,
         onClose: () {
-          dialogShown = false; // ✅ Correct toggle
+          dialogShown = false;
         },
       );
-    }
-
-    // ✅ Payment Verified
-    else if (status == 'success' && dialogShown) {
+    } else if (status == 'success' && dialogShown) {
       Navigator.of(context, rootNavigator: true).pop();
       dialogShown = false;
-      snackBar(context, "✅ Payment verified successfully!", AppColors.green);
-    }
-
-    // ❌ Payment Failed
-    else if (status == 'failed' && dialogShown) {
+      snackBar(context, "Payment verified successfully!", AppColors.green);
+    } else if (status == 'failed' && dialogShown) {
       Navigator.of(context, rootNavigator: true).pop();
       dialogShown = false;
       snackBar(
-        context,
-        "❌ Payment failed! Please try again.",
-        AppColors.redColor,
-      );
+          context, "Payment failed! Please try again.", AppColors.redColor);
     }
   });
 }
 
-/// 💬 Pending Payment Dialog
+///  Pending Payment Dialog
 void _showPendingPaymentDialog(BuildContext context,
     {required VoidCallback onClose}) {
   showGeneralDialog(

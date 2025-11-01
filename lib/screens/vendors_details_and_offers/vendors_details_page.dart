@@ -1,5 +1,4 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:market_place_customer/bloc/payment_bloc/payment_bloc.dart';
 import 'package:market_place_customer/data/models/vendor_details_model.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/offers_details.dart';

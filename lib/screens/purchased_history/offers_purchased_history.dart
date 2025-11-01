@@ -28,102 +28,91 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: customAppbar(title: "My Offers", showLeading: true),
+      body:
+          BlocBuilder<PurchasedOffersHistoryBloc, PurchasedOffersHistoryState>(
+        builder: (context, state) {
+          if (state is PurchasedOffersHistoryLoading) {
+            return const Center(child: BurgerKingShimmer());
+          } else if (state is PurchasedOffersHistoryFailure) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(40),
+                child: Text(
+                  state.error.toString(),
+                  textAlign: TextAlign.center,
+                  style: AppStyle.medium_14(AppColors.redColor),
+                ),
+              ),
+            );
+          } else if (state is PurchasedOffersHistorySuccess) {
+            final offersData = state.model.data ?? [];
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<PaymentBloc, PaymentState>(listener: (context, state) {
-          if (state is PaymentSuccess) {
-            fetchOffersHistory();
-          }
-        })
-      ],
-      child: Scaffold(
-        appBar: customAppbar(title: "My Offers", showLeading: true),
-        body: BlocBuilder<PurchasedOffersHistoryBloc,
-            PurchasedOffersHistoryState>(
-          builder: (context, state) {
-            if (state is PurchasedOffersHistoryLoading) {
-              return const Center(child: BurgerKingShimmer());
-            } else if (state is PurchasedOffersHistoryFailure) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(40),
-                  child: Text(
-                    state.error.toString(),
-                    textAlign: TextAlign.center,
-                    style: AppStyle.medium_14(AppColors.redColor),
+            // 🔹 Separate by Status
+            final activeOffers = offersData.where((offer) {
+              bool isExpired = offer.offer?.flat?.isExpired ??
+                  offer.offer?.percentage?.isExpired ??
+                  false;
+              return offer.status == 'active' && !isExpired;
+            }).toList();
+
+            final expiredOffers = offersData.where((offer) {
+              bool isExpired = offer.offer?.flat?.isExpired ??
+                  offer.offer?.percentage?.isExpired ??
+                  false;
+              return isExpired;
+            }).toList();
+
+            final usedOffers = offersData
+                .where((offer) => offer.status == 'redeemed')
+                .toList();
+
+            final tabs = [
+              "Active (${activeOffers.length})",
+              "Expired (${expiredOffers.length})",
+              "Used (${usedOffers.length})",
+            ];
+
+            return Column(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(color: Colors.grey, width: 0.4)),
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    indicator: const UnderlineTabIndicator(
+                        borderSide:
+                            BorderSide(width: 2, color: AppColors.themeColor)),
+                    labelColor: AppColors.themeColor,
+                    unselectedLabelColor: Colors.grey,
+                    labelStyle: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15),
+                    unselectedLabelStyle:
+                        const TextStyle(fontWeight: FontWeight.w400),
+                    tabs: tabs.map((e) => Tab(text: e)).toList(),
                   ),
                 ),
-              );
-            } else if (state is PurchasedOffersHistorySuccess) {
-              final offersData = state.model.data ?? [];
 
-              // 🔹 Separate by Status
-              final activeOffers = offersData.where((offer) {
-                bool isExpired = offer.offer?.flat?.isExpired ??
-                    offer.offer?.percentage?.isExpired ??
-                    false;
-                return offer.status == 'active' && !isExpired;
-              }).toList();
-
-              final expiredOffers = offersData.where((offer) {
-                bool isExpired = offer.offer?.flat?.isExpired ??
-                    offer.offer?.percentage?.isExpired ??
-                    false;
-                return offer.status == 'expired';
-              }).toList();
-
-              final usedOffers = offersData
-                  .where((offer) => offer.status == 'redeemed')
-                  .toList();
-
-              final tabs = [
-                "Active (${activeOffers.length})",
-                "Expired (${expiredOffers.length})",
-                "Used (${usedOffers.length})",
-              ];
-
-              return Column(
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(color: Colors.grey, width: 0.4)),
-                    ),
-                    child: TabBar(
-                      controller: _tabController,
-                      indicator: const UnderlineTabIndicator(
-                          borderSide: BorderSide(
-                              width: 2, color: AppColors.themeColor)),
-                      labelColor: AppColors.themeColor,
-                      unselectedLabelColor: Colors.grey,
-                      labelStyle: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 15),
-                      unselectedLabelStyle:
-                          const TextStyle(fontWeight: FontWeight.w400),
-                      tabs: tabs.map((e) => Tab(text: e)).toList(),
-                    ),
+                /// 🔹 Tab Views
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildOfferList(activeOffers, size, "Active"),
+                      _buildOfferList(expiredOffers, size, "Expired"),
+                      _buildOfferList(usedOffers, size, "Used"),
+                    ],
                   ),
-
-                  /// 🔹 Tab Views
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildOfferList(activeOffers, size, "Active"),
-                        _buildOfferList(expiredOffers, size, "Expired"),
-                        _buildOfferList(usedOffers, size, "Used"),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              return const SizedBox();
-            }
-          },
-        ),
+                ),
+              ],
+            );
+          } else {
+            return const SizedBox();
+          }
+        },
       ),
     );
   }
@@ -149,11 +138,10 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
         itemBuilder: (_, index) {
           final offer = offers[index];
           final isFlat = offer.offer?.flat != null;
-          bool isExpired = offer.status == 'expired';
+          bool isExpired = offer.offer?.flat?.isExpired ??
+              offer.offer?.percentage?.isExpired ??
+              false;
           bool isPurchased = offer.status == 'redeemed';
-          // offer.offer?.flat?.isExpired ??
-          // offer.offer?.percentage?.isExpired ??
-          // false;
 
           final title = isFlat
               ? offer.offer?.flat?.title ?? ""

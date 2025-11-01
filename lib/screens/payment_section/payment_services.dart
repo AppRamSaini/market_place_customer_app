@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:market_place_customer/bloc/payment_bloc/payment_bloc.dart';
 import 'package:market_place_customer/screens/payment_section/payment_success.dart';
-import 'package:market_place_customer/screens/payment_section/payment_verifications.dart';
 import 'package:market_place_customer/utils/exports.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
@@ -12,6 +10,7 @@ class BuyOfferPaymentModel {
   final String? offersId;
   final String? vendorId;
   final String? userId;
+  final String? orderId;
 
   BuyOfferPaymentModel(
       {this.customerName,
@@ -19,7 +18,8 @@ class BuyOfferPaymentModel {
       this.vendorId,
       required this.amount,
       this.offersId,
-      this.userId});
+      this.userId,
+      this.orderId});
 }
 
 class RazorpayPaymentServices {
@@ -31,8 +31,9 @@ class RazorpayPaymentServices {
     try {
       var options = {
         'key': razorpaykey,
-        'amount': (dataModel!.amount * 100).toInt(),
+        'amount': (dataModel!.amount).toInt(),
         'name': dataModel.customerName ?? '',
+        "order_id": dataModel.orderId,
         'description': 'Buying an offer',
         'retry': {'enabled': true, 'max_count': 1},
         'send_sms_hash': true,
@@ -77,21 +78,26 @@ class RazorpayPaymentServices {
   /// ✅ Payment Success
   void handlePaymentSuccessResponse(
       PaymentSuccessResponse response, BuyOfferPaymentModel dataModel) async {
+    updatePaymentDataOnFirebase(dataModel.offersId.toString(),
+        dataModel.vendorId.toString(), dataModel.userId.toString(), 'success');
 
+    dataModel.context
+        .read<PurchasedOffersHistoryBloc>()
+        .add(GetPurchasedOffersHistoryEvent(context: dataModel.context));
+
+    AppRouter().navigateTo(dataModel.context, const PaymentSuccessPage());
 
     // Bloc event trigger
-    dataModel.context.read<PaymentBloc>().add(
-          SubmitPaymentEvent(
-            dataModel.customerName.toString(),
-            dataModel.context,
-            dataModel.amount ?? 0,
-            dataModel.vendorId.toString(),
-            dataModel.offersId.toString(),
-            dataModel.userId.toString(),
-          ),
-        );
-
-
+    // dataModel.context.read<PaymentBloc>().add(
+    //       SubmitPaymentEvent(
+    //         dataModel.customerName.toString(),
+    //         dataModel.context,
+    //         dataModel.amount ?? 0,
+    //         dataModel.vendorId.toString(),
+    //         dataModel.offersId.toString(),
+    //         dataModel.userId.toString(),
+    //       ),
+    //     );
 
     // // Repository call (await result)
     // PaymentRepository paymentRepository = PaymentRepository();
@@ -107,7 +113,6 @@ class RazorpayPaymentServices {
     //     AppRouter().navigateTo(dataModel.context, const PaymentSuccessPage());
     //   }
     // }
-
   }
 
   /// 💳 External Wallet Selected

@@ -1,6 +1,4 @@
-import 'package:market_place_customer/bloc/payment_bloc/payment_bloc.dart';
 import 'package:market_place_customer/screens/payment_section/payment_services.dart';
-import 'package:market_place_customer/screens/payment_section/payment_success.dart';
 import 'package:market_place_customer/screens/payment_section/payment_verifications.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendor_details_helper.dart';
@@ -19,6 +17,7 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
   final ScrollController _scrollController = ScrollController();
   double _appBarOpacity = 0.0;
   double _flexTitleOpacity = 1.0;
+  RazorpayPaymentServices razorpay = RazorpayPaymentServices();
 
   @override
   void initState() {
@@ -55,21 +54,34 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
         BlocListener<PaymentBloc, PaymentState>(listener: (context, state) {
           EasyLoading.dismiss();
           if (state is PaymentLoading) {
-            EasyLoading.show(status: 'Verifying payment...');
+            EasyLoading.show();
           } else if (state is PaymentSuccess) {
-            var data = state.paymentEvent;
-            razorpayServices.updatePaymentDataOnFirebase(
-                data.offerId, data.vendorId, data.userId, 'success');
+            final data = state.paymentEvent;
+            final paymentData = state.paymentModel.data;
+            if (paymentData != null) {
+              BuyOfferPaymentModel buyOffersModal = BuyOfferPaymentModel(
+                  amount: data.amount,
+                  context: context,
+                  customerName: data.customerName,
+                  offersId: data.offerId ?? '',
+                  vendorId: data.vendorId ?? '',
+                  userId: data.userId,
+                  orderId: paymentData.id.toString());
 
-            onRefreshData();
-            if (state.paymentModel.status == true) {
-              AppRouter().navigateTo(context, const PaymentSuccessPage());
+              razorpay.verifyPaymentAndBuyOffers(dataModel: buyOffersModal);
+              // razorpayServices.updatePaymentDataOnFirebase(
+              //       data.offerId, data.vendorId, data.userId, 'success');
             }
+            //
+            // onRefreshData();
+            // if (state.paymentModel.status == true) {
+            //   AppRouter().navigateTo(context, const PaymentSuccessPage());
+            // }
           } else if (state is PaymentFailure) {
-            pendingPaymentDialog(context);
+            // pendingPaymentDialog(context);
             var data = state.paymentEvent;
             razorpayServices.updatePaymentDataOnFirebase(
-                data.offerId, data.vendorId, data.userId, 'pending');
+                data.offerId, data.vendorId, data.userId, 'failed');
             var msg = state.error;
             snackBar(context, msg, AppColors.redColor);
           }
@@ -282,8 +294,6 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                                       LocalStorage.getString(Pref.userId);
                                   var customerName =
                                       LocalStorage.getString(Pref.userName);
-                                  RazorpayPaymentServices razorpay =
-                                      RazorpayPaymentServices();
 
                                   double amount = double.parse(
                                       singleOffer.flat != null
@@ -293,6 +303,8 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
 
                                   String vendorId =
                                       offersData.record!.vendor!.id.toString();
+
+                                  String offerId = singleOffer.id.toString();
 
                                   bool isPurchased =
                                       offersData.purchaseStatus ?? false;
@@ -314,18 +326,17 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                                     showAlreadyPurchasedDialog(context);
                                     return;
                                   }
-                                  BuyOfferPaymentModel buyOffersModal =
-                                      BuyOfferPaymentModel(
-                                          amount: amount,
-                                          context: context,
-                                          customerName:
-                                              customerName ?? 'customerName',
-                                          offersId: widget.offersId ?? '',
-                                          vendorId: vendorId ?? '',
-                                          userId: userId);
 
-                                  razorpay.verifyPaymentAndBuyOffers(
-                                      dataModel: buyOffersModal);
+                                  context.read<PaymentBloc>().add(
+                                        SubmitPaymentEvent(
+                                          customerName.toString(),
+                                          context,
+                                          amount ?? 0,
+                                          vendorId.toString(),
+                                          offerId.toString(),
+                                          userId.toString(),
+                                        ),
+                                      );
                                 },
                                 txt: "Buy Now",
                                 minWidth: size.width)
