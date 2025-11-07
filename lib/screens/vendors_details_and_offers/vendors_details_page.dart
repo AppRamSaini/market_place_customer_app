@@ -1,4 +1,6 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:market_place_customer/data/models/vendor_details_model.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/offers_details.dart';
@@ -242,50 +244,68 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                           padding: EdgeInsets.symmetric(
                               vertical: size.height * 0.01,
                               horizontal: size.width * 0.03),
-                          child: Row(
-                            children: [
-                              Icon(Icons.access_time_rounded,
-                                  size: 18, color: AppColors.black20),
-                              const SizedBox(width: 5),
-                              Text(timingText ?? '',
-                                  style: AppStyle.medium_14(AppColors.black20))
-                            ],
-                          ),
+                          child: Animate(
+                              effects: [
+                                FadeEffect(
+                                    duration: 500.ms, curve: Curves.easeIn),
+                                const MoveEffect(
+                                    begin: Offset(0, 20), curve: Curves.easeOut)
+                              ],
+                              child: Row(
+                                children: [
+                                  Icon(Icons.access_time_rounded,
+                                      size: 18, color: AppColors.black20),
+                                  const SizedBox(width: 5),
+                                  FadeInDown(
+                                      from: 50,
+                                      duration:
+                                          const Duration(milliseconds: 600),
+                                      child: Text(timingText ?? '',
+                                          style: AppStyle.medium_14(
+                                              AppColors.black20)))
+                                ],
+                              )),
                         ),
                         Padding(
                           padding: EdgeInsets.only(
                               bottom: size.height * 0.01,
                               left: size.width * 0.03,
                               right: size.width * 0.03),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.location_on_outlined, size: 20),
-                              const SizedBox(width: 5),
-                              FutureBuilder<Map<String, String>>(
-                                  future: getVendorAddressAndDistance(
-                                      lat.toString(), lng.toString()),
-                                  builder: (context, snapshot) {
-                                    String distance = '';
-                                    if (snapshot.connectionState ==
-                                            ConnectionState.done &&
-                                        snapshot.hasData) {
-                                      distance =
-                                          snapshot.data!['distance'] ?? '';
-                                    } else if (locationCache.containsKey(key)) {
-                                      distance =
-                                          locationCache[key]!['distance'] ?? '';
-                                    } else {
-                                      distance = '...';
-                                    }
+                          child: FadeInUp(
+                              from: 50,
+                              duration: const Duration(milliseconds: 600),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.location_on_outlined,
+                                      size: 20),
+                                  const SizedBox(width: 5),
+                                  FutureBuilder<Map<String, String>>(
+                                      future: getVendorAddressAndDistance(
+                                          lat.toString(), lng.toString()),
+                                      builder: (context, snapshot) {
+                                        String distance = '';
+                                        if (snapshot.connectionState ==
+                                                ConnectionState.done &&
+                                            snapshot.hasData) {
+                                          distance =
+                                              snapshot.data!['distance'] ?? '';
+                                        } else if (locationCache
+                                            .containsKey(key)) {
+                                          distance =
+                                              locationCache[key]!['distance'] ??
+                                                  '';
+                                        } else {
+                                          distance = '...';
+                                        }
 
-                                    return Flexible(
-                                        child: Text(
-                                            "${vendorsData.businessDetails!.address ?? ''}  • $distance",
-                                            style: AppStyle.medium_14(
-                                                AppColors.black20)));
-                                  }),
-                            ],
-                          ),
+                                        return Flexible(
+                                            child: Text(
+                                                "${vendorsData.businessDetails!.address ?? ''}  • $distance",
+                                                style: AppStyle.medium_14(
+                                                    AppColors.black20)));
+                                      }),
+                                ],
+                              )),
                         ),
                         SizedBox(height: size.height * 0.01),
                         Padding(
@@ -308,53 +328,60 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                               child: SizedBox(
                                 width: size.height * 0.19,
                                 child: GestureDetector(
-                                  onTap: () {
-                                    bool isPurchased =
-                                        offersData.purchaseStatus ?? false;
-                                    bool isExpired = offersData.flat != null
-                                        ? (offersData.flat!.isExpired ?? false)
-                                        : (offersData.percentage?.isExpired ??
-                                            false);
-                                    if (isExpired) {
-                                      showOfferExpiredDialog(context);
-                                      return;
-                                    }
+                                    onTap: () {
+                                      bool isPurchased =
+                                          offersData.purchaseStatus ?? false;
+                                      bool isExpired = offersData.flat != null
+                                          ? (offersData.flat!.isExpired ??
+                                              false)
+                                          : (offersData.percentage?.isExpired ??
+                                              false);
+                                      if (isExpired) {
+                                        showOfferExpiredDialog(context);
+                                        return;
+                                      }
 
-                                    if (isPurchased) {
-                                      showAlreadyPurchasedDialog(context);
-                                      return;
-                                    }
+                                      // if (isPurchased) {
+                                      //   showAlreadyPurchasedDialog(context);
+                                      //   return;
+                                      // }
 
-                                    AppRouter().navigateTo(
-                                      context,
-                                      ViewOffersDetails(
-                                          offersId: offersData.id ?? ''),
-                                    );
-                                  },
-                                  child: OffersDataCardWidget(
-                                    imgHeight: size.height * 0.16,
-                                    imgWidth: size.height * 0.19,
-                                    isExpired: offersData.flat != null
-                                        ? offersData.flat!.isExpired ?? false
-                                        : offersData.percentage!.isExpired ??
-                                            false,
-                                    isPurchased:
-                                        offersData.purchaseStatus ?? false,
-                                    imageUrl: offersData.flat != null
-                                        ? offersData.flat!.offerImage.toString()
-                                        : offersData.percentage!.offerImage
-                                            .toString(),
-                                    name: offersData.flat != null
-                                        ? offersData.flat!.title.toString()
-                                        : offersData.percentage!.title
-                                            .toString(),
-                                    amount:
-                                        "on orders above ₹${offersData.flat != null ? offersData.flat!.minBillAmount.toString() : offersData.percentage!.minBillAmount.toString()}",
-                                    offerText: offersData.flat != null
-                                        ? "Flat ₹${offersData.flat!.maxDiscountCap.toString()}"
-                                        : "Flat ${offersData.percentage!.discountPercentage.toString()}%",
-                                  ),
-                                ),
+                                      AppRouter().navigateTo(
+                                        context,
+                                        ViewOffersDetails(
+                                            offersId: offersData.id ?? ''),
+                                      );
+                                    },
+                                    child: FadeInRightBig(
+                                      duration: Duration(
+                                          milliseconds: 800 + (index * 200)),
+                                      child: OffersDataCardWidget(
+                                        imgHeight: size.height * 0.16,
+                                        imgWidth: size.height * 0.19,
+                                        isExpired: offersData.flat != null
+                                            ? offersData.flat!.isExpired ??
+                                                false
+                                            : offersData
+                                                    .percentage!.isExpired ??
+                                                false,
+                                        isPurchased:
+                                            offersData.purchaseStatus ?? false,
+                                        imageUrl: offersData.flat != null
+                                            ? offersData.flat!.offerImage
+                                                .toString()
+                                            : offersData.percentage!.offerImage
+                                                .toString(),
+                                        name: offersData.flat != null
+                                            ? offersData.flat!.title.toString()
+                                            : offersData.percentage!.title
+                                                .toString(),
+                                        amount:
+                                            "on orders above ₹${offersData.flat != null ? offersData.flat!.minBillAmount.toString() : offersData.percentage!.minBillAmount.toString()}",
+                                        offerText: offersData.flat != null
+                                            ? "Flat ₹${offersData.flat!.discountPercentage.toString()}"
+                                            : "Flat ${offersData.percentage!.discountPercentage.toString()}%",
+                                      ),
+                                    )),
                               ),
                             );
                           })),
@@ -418,47 +445,53 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                                     child: SizedBox(
                                       width: size.width * 0.9,
                                       child: GestureDetector(
-                                        onTap: () => AppRouter().navigateTo(
-                                            context,
-                                            OffersDetailsPage(
-                                                vendorId:
-                                                    vendor.vendor!.user!.id ??
-                                                        '')),
-                                        child: NearbyRestaurantCard(
-                                          carWidth: size.width * 0.9,
-                                          imgHeight: size.height * 0.3,
-                                          isPurchased: false,
-                                          isExpired: false,
-                                          imageUrl:
-                                              vendor.vendor!.businessLogo ?? '',
-                                          name:
-                                              vendor.vendor!.businessName ?? '',
-                                          location:
-                                              "${vendor.vendor!.area}, ${vendor.vendor!.city}" ??
+                                          onTap: () => AppRouter().navigateTo(
+                                              context,
+                                              OffersDetailsPage(
+                                                  vendorId:
+                                                      vendor.vendor!.user!.id ??
+                                                          '')),
+                                          child: FadeInUp(
+                                            duration: Duration(
+                                                milliseconds:
+                                                    300 + (index * 120)),
+                                            child: NearbyRestaurantCard(
+                                              carWidth: size.width * 0.9,
+                                              imgHeight: size.height * 0.3,
+                                              isPurchased: false,
+                                              isExpired: false,
+                                              imageUrl:
+                                                  vendor.vendor!.businessLogo ??
+                                                      '',
+                                              name:
+                                                  vendor.vendor!.businessName ??
+                                                      '',
+                                              location:
+                                                  "${vendor.vendor!.area}, ${vendor.vendor!.city}" ??
+                                                      '',
+                                              distance: distance,
+                                              cuisines: vendor
+                                                      .vendor!.category!.name ??
                                                   '',
-                                          distance: distance,
-                                          cuisines:
-                                              vendor.vendor!.category!.name ??
-                                                  '',
-                                          flatData: vendor.maxOffer != null
-                                              ? vendor.maxOffer!.type ==
-                                                      'percentage'
-                                                  ? "Flat ${vendor.maxOffer!.amount}%"
-                                                  : "Flat ₹${vendor.maxOffer!.amount}"
-                                              : 'FREE',
-                                          offerText: vendor.maxOffer != null
-                                              ? vendor.maxOffer!.type ==
-                                                      'percentage'
-                                                  ? "Flat ${vendor.maxOffer!.amount}% OFF"
-                                                  : "Flat ₹${vendor.maxOffer!.amount} OFF"
-                                              : '',
-                                          offersCounts: vendor
-                                                      .activeOffersCount! >
-                                                  0
-                                              ? '${vendor.activeOffersCount}+ OFFER'
-                                              : '',
-                                        ),
-                                      ),
+                                              flatData: vendor.maxOffer != null
+                                                  ? vendor.maxOffer!.type ==
+                                                          'percentage'
+                                                      ? "Flat ${vendor.maxOffer!.amount}%"
+                                                      : "Flat ₹${vendor.maxOffer!.amount}"
+                                                  : 'FREE',
+                                              offerText: vendor.maxOffer != null
+                                                  ? vendor.maxOffer!.type ==
+                                                          'percentage'
+                                                      ? "Flat ${vendor.maxOffer!.amount}% OFF"
+                                                      : "Flat ₹${vendor.maxOffer!.amount} OFF"
+                                                  : '',
+                                              offersCounts: vendor
+                                                          .activeOffersCount! >
+                                                      0
+                                                  ? '${vendor.activeOffersCount}+ OFFER'
+                                                  : '',
+                                            ),
+                                          )),
                                     ),
                                   );
                                 },
@@ -509,21 +542,24 @@ Widget buildMediaMessage(BuildContext context, List<BusinessImage> imageList) {
                   context,
                   FullImageView(
                       imageList: imageList ?? [], initialIndex: index)),
-              child: FadeInImage(
-                height: size.height * 0.12,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                color: isLastAndMore ? Colors.black.withOpacity(0.4) : null,
-                colorBlendMode: isLastAndMore ? BlendMode.darken : null,
-                placeholder: const AssetImage(Assets.dummy),
-                image: url!.isNotEmpty
-                    ? NetworkImage(url)
-                    : const AssetImage(Assets.dummy) as ImageProvider,
-                imageErrorBuilder: (_, child, st) => Image.asset(
-                  Assets.dummy,
+              child: FadeInRight(
+                duration: Duration(milliseconds: 300 + (index * 120)),
+                child: FadeInImage(
                   height: size.height * 0.12,
                   fit: BoxFit.cover,
                   width: double.infinity,
+                  color: isLastAndMore ? Colors.black.withOpacity(0.4) : null,
+                  colorBlendMode: isLastAndMore ? BlendMode.darken : null,
+                  placeholder: const AssetImage(Assets.dummy),
+                  image: url!.isNotEmpty
+                      ? NetworkImage(url)
+                      : const AssetImage(Assets.dummy) as ImageProvider,
+                  imageErrorBuilder: (_, child, st) => Image.asset(
+                    Assets.dummy,
+                    height: size.height * 0.12,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  ),
                 ),
               ),
             ),

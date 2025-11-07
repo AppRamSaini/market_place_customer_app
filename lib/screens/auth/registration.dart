@@ -1,4 +1,3 @@
-import 'package:market_place_customer/screens/fetch_data.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class CustomerRegistrationPage extends StatefulWidget {

@@ -1,27 +1,24 @@
 class ApiEndPoints {
-  static const baseUrl = 'https://marketpleacesbackend.vercel.app/api';
+  // static const baseUrl = 'https://marketpleacesbackend.vercel.app/api';
+  static const baseUrl = 'https://mktplace.fpdemo.com/api';
   static const sendOtp = '$baseUrl/user/send-otp';
   static const otpVerify = '$baseUrl/user/login';
   static const customerRegistration = '$baseUrl/customer/register';
   static const profile = '$baseUrl/customer/get_details';
   static const dashboard = '$baseUrl/customer/dashboard';
+
   static getVendors(String? category, String? type, String? search) =>
       '$baseUrl/customer/getVendor?category=$category&name=$search&type=$type';
-  static  vendorDetails(String vendorId, String userId) => '$baseUrl/customer/getVendorbyId/$vendorId?user_id=$userId';
-  static  offersDetails(String offerId, String userId) => '$baseUrl/customer/offer/get_details/$offerId?user_id=$userId';
-  static const  makePayment = '$baseUrl/customer/add_payment';
-  static const  fetchPurchasedOffers = '$baseUrl/customer/brought-offer';
 
+  static vendorDetails(String vendorId, String userId) =>
+      '$baseUrl/customer/getVendorbyId/$vendorId?user_id=$userId';
 
-
-
-
-
-
-
-
-
-
+  static offersDetails(String offerId, String userId) =>
+      '$baseUrl/customer/offer/get_details/$offerId?user_id=$userId';
+  static const makePayment = '$baseUrl/customer/add_payment';
+  static const fetchPurchasedOffers = '$baseUrl/customer/brought-offer';
+  static const purchasedOffersDetails = '$baseUrl/customer/brought-offer';
+  static const updateBillAmount = '$baseUrl/customer/payment/update';
 
   ///=================>>
   static const updateMerchantBusiness = '$baseUrl/vendor/update';

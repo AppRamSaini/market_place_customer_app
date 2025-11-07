@@ -17,9 +17,9 @@ class CustomerDashboardState extends State<CustomerDashboard> {
   int currentIndex = 0;
   List pagesList = [
     const HomePage(),
-    PurchasedOffersHistory(),
-    ViewPaymentApprovalRequest(),
-    SettingsPage(),
+    const PurchasedOffersHistory(),
+    const ViewPaymentApprovalRequest(),
+    const SettingsPageUiPage(),
   ];
 
   @override

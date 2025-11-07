@@ -7,7 +7,7 @@ class PurchasedOffersHistoryCardWidget extends StatelessWidget {
   final String name;
   final String purchasedPrice;
   final String discount;
-  final String expireIn;
+  final DateTime expireIn;
   final String flatData;
   final String offerText;
   final String? offersCounts;

@@ -118,8 +118,6 @@ class ApiManager {
 
   /// Handle response status codes
   dynamic _handleStatusCode(Response response, {BuildContext? context}) {
-    print(response.statusCode);
-
     switch (response.statusCode) {
       case 200:
       case 201:
@@ -128,7 +126,8 @@ class ApiManager {
         return "Bad Request: ${response.data['message'] ?? 'Invalid input.'}";
       case 401:
         if (context != null) {
-          sessionExpiredDialog(context);
+          LocalStorage.clearAll(context);
+          showLoginRequiredDialog(context, onClose: () {});
         }
         return "Unauthorized: Login required";
       case 403:

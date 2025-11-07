@@ -9,6 +9,8 @@ class AppColors {
   static Color theme20 = const Color(0xFF004AAD).withOpacity(0.2);
   static Color theme5 = const Color(0xFF004AAD).withOpacity(0.05);
   static Color theme1 = const Color(0xFF0B274F);
+  static Color indigo = Colors.indigo;
+  static Color indigo50 = const Color(0xff5c6bc0);
 
   static const grey50 = Color(0xFFF5F5F5);
   static const fill = Color(0xFF2C2B2B);
@@ -38,4 +40,5 @@ class AppColors {
   static Color green20 = const Color(0xFF06A77D33).withOpacity(0.2);
   static const orange = Colors.deepOrange;
   static const orange2 = Colors.orange;
+  static const background = Color(0xfff7f9fb);
 }

@@ -23,7 +23,7 @@ class PurchasedOffersHistoryModel {
         message: json["message"],
         data: json["data"] == null
             ? []
-            : List<PurchasedOffersHistoryList>.from(json["data"]!
+            : List<PurchasedOffersHistoryList>.from(json["data"]
                 .map((x) => PurchasedOffersHistoryList.fromJson(x))),
       );
 
@@ -42,9 +42,9 @@ class PurchasedOffersHistoryList {
   Offer? offer;
   User? vendor;
   PaymentId? paymentId;
-  int? discount;
-  int? totalAmount;
-  int? finalAmount;
+  var discount;
+  var totalAmount;
+  var finalAmount;
   String? status;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -74,10 +74,10 @@ class PurchasedOffersHistoryList {
         paymentId: json["payment_id"] == null
             ? null
             : PaymentId.fromJson(json["payment_id"]),
-        discount: json["discount"],
-        totalAmount: json["total_amount"],
-        finalAmount: json["final_amount"],
-        status: json["status"]!,
+        discount: (json["discount"] ?? 0),
+        totalAmount: (json["total_amount"] ?? 0),
+        finalAmount: (json["final_amount"] ?? 0),
+        status: json["status"],
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),
@@ -93,14 +93,31 @@ class PurchasedOffersHistoryList {
         "offer": offer?.toJson(),
         "vendor": vendor?.toJson(),
         "payment_id": paymentId?.toJson(),
-        "discount": discount,
-        "total_amount": totalAmount,
-        "final_amount": finalAmount,
+        "discount": discount ?? 0.0,
+        "total_amount": totalAmount ?? 0.0,
+        "final_amount": finalAmount ?? 0.0,
         "status": status,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
       };
+}
+
+extension NumParsing on num {
+  double toDoubleSafely() => toDouble();
+}
+
+extension StringToDouble on String {
+  double toDoubleSafely() => double.tryParse(this) ?? 0.0;
+}
+
+extension NullableToDouble on Object? {
+  double toDoubleSafely() {
+    if (this == null) return 0.0;
+    if (this is num) return (this as num).toDouble();
+    if (this is String) return double.tryParse(this as String) ?? 0.0;
+    return 0.0;
+  }
 }
 
 class Offer {
@@ -134,7 +151,7 @@ class Offer {
             ? null
             : Percentage.fromJson(json["percentage"]),
         type: json["type"],
-        status: json["status"]!,
+        status: json["status"],
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),

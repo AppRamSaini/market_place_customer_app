@@ -1,5 +1,5 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/fetch_dashbaord_offers/dashboard_offers_event.dart';
-import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
 import 'package:market_place_customer/screens/dashboard/most_visited_vendors.dart';
 import 'package:market_place_customer/screens/dashboard/nearby_vendors.dart';
 import 'package:market_place_customer/screens/dashboard/popular_categories.dart';
@@ -18,17 +18,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController controller = TextEditingController();
+
   double _appBarOpacity = 0.0;
   double _flexTitleOpacity = 1.0;
+
+  bool searchValue = false;
+  String location = 'Fetching your location...';
 
   @override
   void initState() {
     super.initState();
     findLocation();
     _scrollController.addListener(() {
-      double offset = _scrollController.offset;
-      double maxOffset = size.height * 0.3;
-      double opacity = (offset / maxOffset).clamp(0.0, 1.0);
+      final offset = _scrollController.offset;
+      final maxOffset = size.height * 0.3;
+      final opacity = (offset / maxOffset).clamp(0.0, 1.0);
       setState(() {
         _appBarOpacity = opacity;
         _flexTitleOpacity = 1.0 - opacity;
@@ -36,71 +40,59 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  refreshData() {
-    context
-        .read<FetchDashboardOffersBloc>()
-        .add(DashboardOffersEvent(context: context));
+  void findLocation() {
+    final address = LocalStorage.getString(Pref.location);
+    if (address != null) {
+      setState(() => location = address);
+    }
   }
 
-  bool searchValue = false;
-  String location = 'fetching your location...';
+  Future<void> refreshData() async {
+    context.read<FetchDashboardOffersBloc>().add(
+          DashboardOffersEvent(context: context),
+        );
+  }
 
-  findLocation() => setState(() {
-        var address = LocalStorage.getString(Pref.location);
-        if (address != null) {
-          location = address;
-        }
-      });
-
-  late BuildContext dialogContext;
-
-  Widget locationWidget(double opacity) => Opacity(
-      opacity: opacity,
-      child: SizedBox(
-        width: size.width * 0.76,
-        child: ListTile(
-          dense: true,
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.location_on_outlined,
-              color: AppColors.whiteColor, size: 26),
-          title: Text("Popular Nearby Vendors",
+  Widget locationWidget(double opacity) => AnimatedOpacity(
+        duration: const Duration(milliseconds: 400),
+        opacity: opacity,
+        child: SizedBox(
+          width: size.width * 0.76,
+          child: ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.location_on_outlined,
+                color: AppColors.whiteColor, size: 26),
+            title: Text(
+              "Popular Nearby Vendors",
               style: AppStyle.medium_15(opacity != _appBarOpacity
                   ? AppColors.redColor
-                  : AppColors.whiteColor)),
-          subtitle: Text(
-            location ?? '',
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            style: AppStyle.normal_12(AppColors.whiteColor),
+                  : AppColors.whiteColor),
+            ),
+            subtitle: Text(
+              location,
+              overflow: TextOverflow.ellipsis,
+              style: AppStyle.normal_12(AppColors.whiteColor),
+            ),
           ),
         ),
-      ));
+      );
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        bool shouldExit = await exitPageDialog(context);
-        return shouldExit;
-      },
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<FetchDashboardOffersBloc, FetchDashboardOffersState>(
-            listener: (context, state) {
-              if (state is FetchDashboardOffersSuccess) {}
-            },
-          ),
-        ],
-        child: Scaffold(
-          body:
-              BlocBuilder<FetchDashboardOffersBloc, FetchDashboardOffersState>(
-                  builder: (context, state) {
+      onWillPop: () async => await exitPageDialog(context),
+      child: Scaffold(
+        body: BlocBuilder<FetchDashboardOffersBloc, FetchDashboardOffersState>(
+          builder: (context, state) {
             if (state is FetchDashboardOffersLoading) {
               return const Center(child: BurgerKingShimmer());
-            } else if (state is FetchDashboardOffersFailure) {
-              return Padding(
-                padding: const EdgeInsets.all(40),
-                child: Center(
+            }
+
+            if (state is FetchDashboardOffersFailure) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(40),
                   child: Text(
                     state.error.toString(),
                     textAlign: TextAlign.center,
@@ -108,20 +100,19 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               );
-            } else if (state is FetchDashboardOffersSuccess) {
-              final offersData = state.dashboardOffersModel.data;
-              List<NearbyvendorElement> nearbyVendorsList =
-                  offersData!.nearbyvendor!;
+            }
 
-              List<PopularVendorElement> popularVendor =
-                  offersData.popularvendor!;
-
-              List<VendorsCategory> popularCategory = offersData!.category!;
+            if (state is FetchDashboardOffersSuccess) {
+              final offersData = state.dashboardOffersModel.data!;
+              final nearbyVendorsList = offersData.nearbyvendor ?? [];
+              final popularVendor = offersData.popularvendor ?? [];
+              final popularCategory = offersData.category ?? [];
 
               return RefreshIndicator(
-                onRefresh: () async => refreshData(),
+                onRefresh: refreshData,
                 child: CustomScrollView(
                   controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
                   slivers: [
                     SliverAppBar(
                       backgroundColor: Color.lerp(AppColors.white50,
@@ -161,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       flexibleSpace: FlexibleSpaceBar(
                           collapseMode: CollapseMode.parallax,
-                          titlePadding: EdgeInsets.zero, // padding remove
+                          titlePadding: EdgeInsets.zero,
                           background: Container(
                             decoration: const BoxDecoration(
                                 borderRadius: BorderRadius.only(
@@ -183,92 +174,231 @@ class _HomePageState extends State<HomePage> {
                                       child: Padding(
                                         padding:
                                             const EdgeInsets.only(top: 4.0),
-                                        child: AnimatedHintSearchField(
-                                          onTap: () => AppRouter().navigateTo(
-                                              context,
-                                              const SearchVendorsPage()),
-                                          readOnly: true,
-                                          controller: controller,
-                                          suffix: searchValue
-                                              ? IconButton(
-                                                  icon: Icon(Icons.cancel,
-                                                      color: AppColors.white60,
-                                                      size: 25),
-                                                  onPressed: () {
-                                                    setState(() =>
-                                                        searchValue = false);
-                                                    controller.clear();
-                                                  })
-                                              : null,
-                                          fillColor: AppColors.black70,
-                                          onChanged: (value) {
-                                            if (value.length > 2) {
-                                              setState(
-                                                  () => searchValue = true);
-                                            } else {}
-                                          },
+                                        child: SlideInRight(
+                                          duration:
+                                              const Duration(milliseconds: 700),
+                                          child: AnimatedHintSearchField(
+                                            onTap: () => AppRouter().navigateTo(
+                                                context,
+                                                const SearchVendorsPage()),
+                                            readOnly: true,
+                                            controller: controller,
+                                            suffix: searchValue
+                                                ? IconButton(
+                                                    icon: Icon(Icons.cancel,
+                                                        color:
+                                                            AppColors.white60,
+                                                        size: 25),
+                                                    onPressed: () {
+                                                      setState(() =>
+                                                          searchValue = false);
+                                                      controller.clear();
+                                                    })
+                                                : null,
+                                            fillColor: AppColors.black70,
+                                            onChanged: (value) {
+                                              if (value.length > 2) {
+                                                setState(
+                                                    () => searchValue = true);
+                                              } else {}
+                                            },
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    )
                                   ],
                                 ),
                               ),
                             ),
                           )),
                     ),
-                    SliverToBoxAdapter(
-                        child: SizedBox(height: size.height * 0.015)),
-                    SliverToBoxAdapter(
-                        child: ViewAllWidget(
-                            title: 'Nearby Vendors',
-                            onPressed: () => AppRouter().navigateTo(
-                                context,
-                                ViewAllVendorsPage(
-                                    popularCategory: popularCategory,
-                                    type: "nearby")))),
-                    SliverToBoxAdapter(
-                        child: SizedBox(height: size.height * 0.01)),
-                    SliverToBoxAdapter(
-                        child: NearbyVendors(
-                            nearbyVendorsList: nearbyVendorsList)),
-                    SliverToBoxAdapter(
-                        child: SizedBox(height: size.height * 0.015)),
-                    SliverToBoxAdapter(
-                        child: ViewAllWidget(
-                            title: 'Popular Categories', onPressed: () {})),
-                    SliverToBoxAdapter(
-                        child: SizedBox(height: size.height * 0.012)),
-                    SliverToBoxAdapter(
-                        child:
-                            PopularCategories(categoryData: popularCategory)),
+
+                    // // 🔹 Modern Animated AppBar
+                    // SliverAppBar(
+                    //   expandedHeight: size.height * 0.36,
+                    //   pinned: true,
+                    //   stretch: true,
+                    //   backgroundColor: Color.lerp(AppColors.whiteColor,
+                    //       AppColors.themeColor, _appBarOpacity),
+                    //   flexibleSpace: LayoutBuilder(
+                    //     builder: (context, constraints) {
+                    //       final t = (constraints.maxHeight - kToolbarHeight) /
+                    //           (size.height * 0.36 - kToolbarHeight);
+                    //       return Stack(
+                    //         fit: StackFit.expand,
+                    //         children: [
+                    //           // Background with Gradient Overlay
+                    //           Opacity(
+                    //             opacity: 0.9,
+                    //             child: Image.asset(
+                    //               Assets.homeBanner,
+                    //               fit: BoxFit.cover,
+                    //             ),
+                    //           ),
+                    //           Container(
+                    //             decoration: BoxDecoration(
+                    //               gradient: LinearGradient(
+                    //                 begin: Alignment.topCenter,
+                    //                 end: Alignment.bottomCenter,
+                    //                 colors: [
+                    //                   Colors.black.withOpacity(0.3),
+                    //                   Colors.black.withOpacity(0.5),
+                    //                 ],
+                    //               ),
+                    //             ),
+                    //           ),
+                    //           // Frosted blur effect
+                    //           // if (_appBarOpacity > 0.6)
+                    //           //   BackdropFilter(
+                    //           //     filter:
+                    //           //         ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                    //           //     child: Container(color: Colors.black12),
+                    //           //   ),
+                    //
+                    //           SafeArea(
+                    //             child: Padding(
+                    //               padding: const EdgeInsets.symmetric(
+                    //                   horizontal: 16, vertical: 12),
+                    //               child: Column(
+                    //                 crossAxisAlignment:
+                    //                     CrossAxisAlignment.start,
+                    //                 children: [
+                    //                   FadeInDown(
+                    //                       duration:
+                    //                           const Duration(milliseconds: 600),
+                    //                       child: locationWidget(
+                    //                           _flexTitleOpacity)),
+                    //                   const SizedBox(height: 8),
+                    //                   AnimatedOpacity(
+                    //                     duration:
+                    //                         const Duration(milliseconds: 600),
+                    //                     opacity: _flexTitleOpacity,
+                    //                     child: SlideInRight(
+                    //                       duration:
+                    //                           const Duration(milliseconds: 700),
+                    //                       child: AnimatedHintSearchField(
+                    //                         onTap: () => AppRouter().navigateTo(
+                    //                             context,
+                    //                             const SearchVendorsPage()),
+                    //                         readOnly: true,
+                    //                         controller: controller,
+                    //                         suffix: searchValue
+                    //                             ? IconButton(
+                    //                                 icon: Icon(Icons.cancel,
+                    //                                     color:
+                    //                                         AppColors.white60,
+                    //                                     size: 22),
+                    //                                 onPressed: () {
+                    //                                   setState(() =>
+                    //                                       searchValue = false);
+                    //                                   controller.clear();
+                    //                                 },
+                    //                               )
+                    //                             : null,
+                    //                         fillColor: AppColors.black70,
+                    //                         onChanged: (v) {
+                    //                           if (v.length > 2) {
+                    //                             setState(
+                    //                                 () => searchValue = true);
+                    //                           }
+                    //                         },
+                    //                       ),
+                    //                     ),
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
+
+                    // 🔹 Content Sections with Staggered Animations
                     SliverToBoxAdapter(
                         child: SizedBox(height: size.height * 0.02)),
+
                     SliverToBoxAdapter(
-                        child: ViewAllWidget(
-                            title: 'Most Visited Vendors',
-                            onPressed: () => AppRouter().navigateTo(
-                                context,
-                                ViewAllVendorsPage(
-                                    popularCategory: popularCategory,
-                                    type: "popular")))),
+                        child: FadeInUp(
+                      duration: const Duration(milliseconds: 600),
+                      delay: const Duration(milliseconds: 100),
+                      child: ViewAllWidget(
+                        title: 'Nearby Vendors',
+                        onPressed: () => AppRouter().navigateTo(
+                          context,
+                          ViewAllVendorsPage(
+                              popularCategory: popularCategory, type: "nearby"),
+                        ),
+                      ),
+                    )),
+
                     SliverToBoxAdapter(
-                        child:
-                            MostVisitedVendors(popularVendor: popularVendor)),
+                        child: SizedBox(height: size.height * 0.01)),
+
+                    SliverToBoxAdapter(
+                        child: FadeInUp(
+                      duration: const Duration(milliseconds: 800),
+                      delay: const Duration(milliseconds: 200),
+                      child:
+                          NearbyVendors(nearbyVendorsList: nearbyVendorsList),
+                    )),
+
+                    SliverToBoxAdapter(
+                        child: SizedBox(height: size.height * 0.03)),
+
+                    SliverToBoxAdapter(
+                        child: FadeInUp(
+                      duration: const Duration(milliseconds: 900),
+                      delay: const Duration(milliseconds: 300),
+                      child: ViewAllWidget(
+                          title: 'Popular Categories', onPressed: () {}),
+                    )),
+
                     SliverToBoxAdapter(
                         child: SizedBox(height: size.height * 0.015)),
-                    // SliverToBoxAdapter(
-                    //     child: ViewAllWidget(
-                    //         title: 'Top Rated Vendors', onPressed: () {})),
-                    // SliverToBoxAdapter(child: SizedBox(height: size.height * 0.03)),
-                    // const SliverToBoxAdapter(child: TopRatedVendors()),
-                    // SliverToBoxAdapter(child: SizedBox(height: size.height * 0.03)),
+
+                    SliverToBoxAdapter(
+                        child: FadeInUp(
+                      duration: const Duration(milliseconds: 1000),
+                      delay: const Duration(milliseconds: 400),
+                      child: PopularCategories(categoryData: popularCategory),
+                    )),
+
+                    SliverToBoxAdapter(
+                        child: SizedBox(height: size.height * 0.03)),
+
+                    SliverToBoxAdapter(
+                        child: FadeInUp(
+                      duration: const Duration(milliseconds: 1100),
+                      delay: const Duration(milliseconds: 500),
+                      child: ViewAllWidget(
+                        title: 'Most Visited Vendors',
+                        onPressed: () => AppRouter().navigateTo(
+                          context,
+                          ViewAllVendorsPage(
+                              popularCategory: popularCategory,
+                              type: "popular"),
+                        ),
+                      ),
+                    )),
+
+                    SliverToBoxAdapter(
+                        child: FadeInUp(
+                      duration: const Duration(milliseconds: 1200),
+                      delay: const Duration(milliseconds: 600),
+                      child: MostVisitedVendors(popularVendor: popularVendor),
+                    )),
+
+                    SliverToBoxAdapter(
+                        child: SizedBox(height: size.height * 0.04)),
                   ],
                 ),
               );
-            } else {
-              return const SizedBox();
             }
-          }),
+
+            return const SizedBox();
+          },
         ),
       ),
     );

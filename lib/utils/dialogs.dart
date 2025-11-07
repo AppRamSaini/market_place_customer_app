@@ -60,7 +60,7 @@ void logOutPermissionDialog(BuildContext context, {bool forDelete = false}) =>
                         onPressed: () {
                           EasyLoading.show();
                           Navigator.pop(context);
-                          Future.delayed(Duration(seconds: 2), () {
+                          Future.delayed(const Duration(seconds: 2), () {
                             EasyLoading.dismiss();
                             LocalStorage.clearAll(context);
                           });
@@ -189,7 +189,6 @@ void sessionExpiredDialog(BuildContext context) {
     },
     transitionDuration: const Duration(milliseconds: 400),
   );
-  // Auto redirect after 3 seconds
   Timer(const Duration(seconds: 3), () {
     Navigator.of(context, rootNavigator: true).pop();
     EasyLoading.show();
@@ -288,9 +287,9 @@ void pendingPaymentDialog(BuildContext context) {
                       style: AppStyle.medium_16(AppColors.blackColor),
                       textAlign: TextAlign.center,
                     ),
-
                     const SizedBox(height: 20),
-                    Align(alignment: Alignment.centerRight,
+                    Align(
+                      alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: const Text("OK"),

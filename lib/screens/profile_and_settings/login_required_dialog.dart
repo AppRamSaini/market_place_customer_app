@@ -102,7 +102,6 @@ showLoginRequiredDialog(BuildContext context, {required VoidCallback onClose}) {
                         onPressed: () {
                           Navigator.pop(context);
                           AppRouter().navigateTo(context, const LoginScreen());
-                          // Navigator.pushNamed(context, '/login');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.themeColor,

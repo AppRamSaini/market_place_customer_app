@@ -1,5 +1,4 @@
 import 'package:market_place_customer/screens/auth/registration.dart';
-import 'package:market_place_customer/screens/fetch_data.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class OtpVerify extends StatefulWidget {

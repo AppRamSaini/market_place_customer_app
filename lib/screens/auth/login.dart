@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: EdgeInsets.all(size.width * 0.02),
                   child: Image.asset(Assets.loginImg)),
               SizedBox(height: size.height * 0.06),
-              Text("Welcome to Market Place Nearby",
+              Text("Welcome to Market Place",
                   style: AppStyle.bold_28(AppColors.themeColor)),
               const SizedBox(height: 5),
               Text(
@@ -119,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
             snackBar(context, state.error.toString(), AppColors.redColor);
           }
         },
-        child: SizedBox(),
+        child: const SizedBox(),
       ),
     );
   }

@@ -92,19 +92,23 @@ class ViewPaymentApprovalRequestState
                               overflow: TextOverflow.ellipsis),
                         ],
                       ),
-
-
                     ],
                   ),
                 ),
-
-                SizedBox(height: size.height*0.01),
-
-                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                SizedBox(height: size.height * 0.01),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    CustomButton3(onPressed: (){},txt: "Reject",bgColor: AppColors.redColor.withOpacity(0.8)),
-                    CustomButton3(onPressed: (){},txt: "Approve",bgColor: AppColors.green)
-                  ],)
+                    CustomButton3(
+                        onPressed: () {},
+                        txt: "Reject",
+                        bgColor: AppColors.redColor.withOpacity(0.8)),
+                    CustomButton3(
+                        onPressed: () {},
+                        txt: "Approve",
+                        bgColor: AppColors.green)
+                  ],
+                )
               ],
             ),
           ),
@@ -121,7 +125,7 @@ Widget trackerData(
         required Color txtColor}) =>
     Container(
       padding: EdgeInsets.symmetric(
-          horizontal: size.width * 0.02, vertical: size.height * 0.025),
+          horizontal: size.width * 0.02, vertical: size.height * 0.018),
       decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(10),
@@ -130,11 +134,12 @@ Widget trackerData(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(title.toString(), style: AppStyle.semiBold_20(txtColor!)),
+          Text(title.toString(), style: AppStyle.normal_15(txtColor!)),
+          const SizedBox(height: 5),
           Text(
             subTitle.toString(),
             textAlign: TextAlign.center,
-            style: AppStyle.normal_12(AppColors.black20),
+            style: AppStyle.medium_12(AppColors.black20),
           ),
         ],
       ),

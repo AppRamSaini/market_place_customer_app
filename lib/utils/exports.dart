@@ -60,7 +60,7 @@ export 'package:market_place_customer/screens/dashboard/customer_dashboard.dart'
 export 'package:market_place_customer/screens/dashboard/customer_home_page.dart';
 export 'package:market_place_customer/screens/dashboard/helper_widgets.dart';
 export 'package:market_place_customer/screens/dashboard/popular_vendors.dart';
-export 'package:market_place_customer/screens/fetch_data.dart';
+export 'package:market_place_customer/screens/fetch_api_data.dart';
 export 'package:market_place_customer/screens/location/location_heper.dart';
 export 'package:market_place_customer/screens/location/location_services.dart';
 export 'package:market_place_customer/screens/notification/notification.dart';

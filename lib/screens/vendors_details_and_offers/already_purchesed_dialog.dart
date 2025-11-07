@@ -338,14 +338,14 @@ Future<void> showOfferExpiredDialog(BuildContext context) async {
         opacity: animation,
         child: Stack(
           children: [
-            /// 🔹 Background blur
-            GestureDetector(
-              onTap: () => Navigator.of(context).pop(), // tap outside to close
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(color: Colors.black38),
-              ),
-            ),
+            // /// 🔹 Background blur
+            // GestureDetector(
+            //   onTap: () => Navigator.of(context).pop(), // tap outside to close
+            //   child: BackdropFilter(
+            //     filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            //     child: Container(color: Colors.black38),
+            //   ),
+            // ),
 
             /// 🔹 Dialog content
             Center(

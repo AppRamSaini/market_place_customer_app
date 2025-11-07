@@ -1,6 +1,9 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/screens/payment_section/payment_services.dart';
 import 'package:market_place_customer/screens/payment_section/payment_verifications.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
+import 'package:market_place_customer/screens/vendors_details_and_offers/expire_offers_timers.dart';
+import 'package:market_place_customer/screens/vendors_details_and_offers/offers_details_simmer.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendor_details_helper.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
@@ -26,7 +29,6 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
     _scrollController.addListener(() {
       double offset = _scrollController.offset;
       double maxOffset = size.height * 0.3;
-
       double opacity = (offset / maxOffset).clamp(0.0, 1.0);
       setState(() {
         _appBarOpacity = opacity;
@@ -35,8 +37,6 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
     });
 
     onRefreshData();
-
-    /// pending payment verifications
     listenSpecificOfferVerification(context: context, offerId: widget.offersId);
   }
 
@@ -51,55 +51,48 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        BlocListener<PaymentBloc, PaymentState>(listener: (context, state) {
-          EasyLoading.dismiss();
-          if (state is PaymentLoading) {
-            EasyLoading.show();
-          } else if (state is PaymentSuccess) {
-            final data = state.paymentEvent;
-            final paymentData = state.paymentModel.data;
-            if (paymentData != null) {
-              BuyOfferPaymentModel buyOffersModal = BuyOfferPaymentModel(
+        BlocListener<PaymentBloc, PaymentState>(
+          listener: (context, state) {
+            EasyLoading.dismiss();
+            if (state is PaymentLoading) {
+              EasyLoading.show(status: "Processing...");
+            } else if (state is PaymentSuccess) {
+              final data = state.paymentEvent;
+              final paymentData = state.paymentModel.data;
+              if (paymentData != null) {
+                BuyOfferPaymentModel buyOffersModal = BuyOfferPaymentModel(
                   amount: data.amount,
                   context: context,
                   customerName: data.customerName,
                   offersId: data.offerId ?? '',
                   vendorId: data.vendorId ?? '',
                   userId: data.userId,
-                  orderId: paymentData.id.toString());
-
-              razorpay.verifyPaymentAndBuyOffers(dataModel: buyOffersModal);
-              // razorpayServices.updatePaymentDataOnFirebase(
-              //       data.offerId, data.vendorId, data.userId, 'success');
+                  orderId: paymentData.id.toString(),
+                );
+                razorpay.verifyPaymentAndBuyOffers(dataModel: buyOffersModal);
+              }
+            } else if (state is PaymentFailure) {
+              var data = state.paymentEvent;
+              razorpayServices.updatePaymentDataOnFirebase(
+                  data.offerId, data.vendorId, data.userId, 'failed');
+              snackBar(context, state.error, AppColors.redColor);
             }
-            //
-            // onRefreshData();
-            // if (state.paymentModel.status == true) {
-            //   AppRouter().navigateTo(context, const PaymentSuccessPage());
-            // }
-          } else if (state is PaymentFailure) {
-            // pendingPaymentDialog(context);
-            var data = state.paymentEvent;
-            razorpayServices.updatePaymentDataOnFirebase(
-                data.offerId, data.vendorId, data.userId, 'failed');
-            var msg = state.error;
-            snackBar(context, msg, AppColors.redColor);
-          }
-        })
+          },
+        ),
       ],
       child: Scaffold(
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          body: BlocBuilder<ViewOffersBloc, ViewOffersState>(
-              builder: (context, state) {
+        extendBodyBehindAppBar: true,
+        backgroundColor: AppColors.background,
+        body: BlocBuilder<ViewOffersBloc, ViewOffersState>(
+          builder: (context, state) {
             if (state is ViewOffersLoading) {
-              return const BurgerKingShimmer();
+              return const ViewOffersDetailsShimmer();
             } else if (state is ViewOffersFailure) {
-              return Padding(
-                padding: const EdgeInsets.all(40),
-                child: Center(
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(40),
                   child: Text(
-                    state.error.toString(),
+                    state.error,
                     textAlign: TextAlign.center,
                     style: AppStyle.medium_14(AppColors.redColor),
                   ),
@@ -107,20 +100,28 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
               );
             } else if (state is ViewOffersSuccess) {
               final offersData = state.offersDetailModel.data;
-              final singleOffer = offersData!.record;
-              var imageUrl = singleOffer!.flat != null
+              final singleOffer = offersData?.record;
+              if (singleOffer == null) return const SizedBox();
+
+              final isFlat = singleOffer.flat != null;
+
+              final imageUrl = singleOffer.flat != null
                   ? singleOffer.flat!.offerImage.toString()
                   : singleOffer.percentage!.offerImage.toString();
 
-              List termsData = [
-                "Only one coupon can be applied per order or transaction.",
+              DateTime? expiredTime = isFlat
+                  ? singleOffer.flat?.expiryDate! ?? DateTime.now()
+                  : singleOffer.percentage!.expiryDate! ?? DateTime.now();
+
+              final termsData = [
+                "Only one coupon can be applied per transaction.",
                 singleOffer.flat != null
-                    ? "This coupon offers a flat ₹${singleOffer.flat!.maxDiscountCap} discount on eligible purchases."
-                    : "This coupon offers a flat ${singleOffer.percentage!.discountPercentage}% discount on eligible purchases.",
-                "The coupon is valid only on transactions with a minimum bill amount of ₹${singleOffer.flat != null ? singleOffer.flat!.minBillAmount : singleOffer.percentage!.minBillAmount}.",
-                "The maximum discount per transaction is ₹${singleOffer.flat != null ? singleOffer.flat!.maxDiscountCap : singleOffer.percentage!.maxDiscountCap}",
-                "Coupons are valid only within the specified period and subject to availability.",
-                "Coupons are non-transferable, non-exchangeable, and cannot be redeemed for cash or any other value.",
+                    ? "Flat ₹${singleOffer.flat!.discountPercentage} discount on eligible purchases."
+                    : "${singleOffer.percentage!.discountPercentage}% discount on eligible purchases.",
+                "Minimum bill ₹${singleOffer.flat?.minBillAmount ?? singleOffer.percentage!.minBillAmount}.",
+                "Max discount ₹${singleOffer.flat?.maxDiscountCap ?? singleOffer.percentage!.maxDiscountCap}.",
+                "Valid till expiry date or while supplies last.",
+                "Not exchangeable or redeemable for cash.",
               ];
 
               return RefreshIndicator(
@@ -129,289 +130,248 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                   controller: _scrollController,
                   slivers: [
                     SliverAppBar(
-                      expandedHeight: size.height * 0.24,
-                      floating: false,
+                      expandedHeight: size.height * 0.28,
                       pinned: true,
-                      snap: false,
                       stretch: true,
                       backgroundColor: AppColors.themeColor,
-                      leading: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: AppColors.theme10.withOpacity(0.1)),
-                          child: IconButton(
-                            onPressed: () => Navigator.pop(context),
-                            icon: Icon(Icons.arrow_back_ios_new,
-                                size: 20,
-                                color: _flexTitleOpacity == 1.0
-                                    ? AppColors.blackColor
-                                    : AppColors.whiteColor),
-                          ),
+                      elevation: 0,
+                      title: Opacity(
+                        opacity: _appBarOpacity,
+                        child: Text(
+                          singleOffer.flat?.title ??
+                              singleOffer.percentage?.title ??
+                              '',
+                          style: AppStyle.medium_18(AppColors.whiteColor),
                         ),
                       ),
-                      title: Opacity(
-                          opacity: _appBarOpacity,
-                          child: Text(
-                              singleOffer.flat != null
-                                  ? singleOffer.flat!.title.toString()
-                                  : singleOffer.percentage!.title.toString(),
-                              style: AppStyle.medium_15(AppColors.whiteColor))),
+                      leading: IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white),
+                          onPressed: () => Navigator.pop(context)),
                       flexibleSpace: FlexibleSpaceBar(
-                          collapseMode: CollapseMode.parallax,
-                          titlePadding: EdgeInsets.zero,
-                          background: FadeInImage(
-                            height: size.height * 0.25,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            placeholder: const AssetImage(Assets.dummy),
-                            image: imageUrl.isNotEmpty
-                                ? NetworkImage(imageUrl)
-                                : const AssetImage(Assets.dummy)
-                                    as ImageProvider,
-                            placeholderErrorBuilder: (_, child, st) =>
-                                Image.asset(Assets.dummy,
-                                    height: size.height * 0.17,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity),
-                            imageErrorBuilder: (_, child, st) => Image.asset(
-                                Assets.dummy,
-                                height: size.height * 0.17,
-                                fit: BoxFit.cover,
-                                width: double.infinity),
-                          )),
-                    ),
-                    SliverToBoxAdapter(
-                        child: Padding(
-                      padding: EdgeInsets.only(
-                          left: size.width * 0.03, top: size.height * 0.02),
-                      child: Text(
-                          singleOffer.flat != null
-                              ? singleOffer.flat!.title.toString()
-                              : singleOffer.percentage!.title.toString(),
-                          style: AppStyle.medium_18(AppColors.themeColor)),
-                    )),
-                    SliverToBoxAdapter(
-                      child: Container(
-                        margin: EdgeInsets.symmetric(
-                            horizontal: size.width * 0.02,
-                            vertical: size.height * 0.02),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: size.width * 0.02,
-                            vertical: size.height * 0.014),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AppColors.theme10)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        background: Stack(
+                          fit: StackFit.expand,
                           children: [
-                            Text("Offers Description",
-                                style:
-                                    AppStyle.normal_16(AppColors.blackColor)),
-                            Text(
-                                singleOffer.flat != null
-                                    ? "Get flat ₹${singleOffer.flat!.maxDiscountCap} Discount on all orders above ₹${singleOffer.flat!.minBillAmount}"
-                                    : "Get flat ${singleOffer.percentage!.discountPercentage}% Discount on all orders above ₹${singleOffer.percentage!.minBillAmount}",
-                                style: AppStyle.normal_13(AppColors.black20)),
-                            Divider(color: AppColors.theme5),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                trackerData(
-                                    title: "Min Bill Amt.",
-                                    subTitle:
-                                        "₹${singleOffer.flat != null ? singleOffer.flat!.minBillAmount : singleOffer.percentage!.minBillAmount}",
-                                    bgColor:
-                                        AppColors.themeColor.withOpacity(0.1),
-                                    txtColor: AppColors.themeColor),
-                                trackerData(
-                                    title: "Max. Discount",
-                                    subTitle:
-                                        "₹${singleOffer.flat != null ? singleOffer.flat!.maxDiscountCap : singleOffer.percentage!.maxDiscountCap}",
-                                    bgColor:
-                                        AppColors.themeColor.withOpacity(0.1),
-                                    txtColor: AppColors.themeColor),
-                                trackerData(
-                                    title: "Validity",
-                                    subTitle: singleOffer.flat != null
-                                        ? formatDateAMPM(
-                                            singleOffer.flat!.expiryDate!)
-                                        : formatDateAMPM(singleOffer
-                                            .percentage!.expiryDate!),
-                                    bgColor:
-                                        AppColors.themeColor.withOpacity(0.1),
-                                    txtColor: AppColors.themeColor),
-                              ],
+                            Hero(
+                              tag: imageUrl,
+                              child: Image.network(imageUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Image.asset(
+                                      Assets.dummy,
+                                      fit: BoxFit.cover)),
                             ),
-                            SizedBox(height: size.height * 0.02),
                             Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: size.width * 0.03,
-                                  vertical: size.height * 0.011),
                               decoration: BoxDecoration(
-                                  color: AppColors.themeColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: AppColors.themeColor
-                                          .withOpacity(0.2))),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Flexible(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text("Total Amount",
-                                            style: AppStyle.medium_16(
-                                                AppColors.blackColor),
-                                            overflow: TextOverflow.ellipsis),
-                                        Text(
-                                          singleOffer.flat != null
-                                              ? "You’ll save ₹${singleOffer.flat!.maxDiscountCap} on this purchase"
-                                              : "You’ll save ${singleOffer.percentage!.discountPercentage}% on this purchase",
-                                          style: AppStyle.normal_12(
-                                              AppColors.black20),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                      "₹ ${singleOffer.flat != null ? singleOffer.flat!.amount : singleOffer.percentage!.amount}",
-                                      style:
-                                          AppStyle.semiBold_18(AppColors.green),
-                                      overflow: TextOverflow.ellipsis),
-                                ],
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.4),
+                                    Colors.black.withOpacity(0.1),
+                                    Colors.white.withOpacity(0.1),
+                                  ],
+                                ),
                               ),
                             ),
-                            SizedBox(height: size.height * 0.02),
-                            CustomButton(
-                                onPressed: () async {
-                                  var userId =
-                                      LocalStorage.getString(Pref.userId);
-                                  var customerName =
-                                      LocalStorage.getString(Pref.userName);
-
-                                  double amount = double.parse(
-                                      singleOffer.flat != null
-                                          ? singleOffer.flat!.amount.toString()
-                                          : singleOffer.percentage!.amount
-                                              .toString());
-
-                                  String vendorId =
-                                      offersData.record!.vendor!.id.toString();
-
-                                  String offerId = singleOffer.id.toString();
-
-                                  bool isPurchased =
-                                      offersData.purchaseStatus ?? false;
-                                  bool isExpired = singleOffer.flat != null
-                                      ? (singleOffer.flat!.isExpired ?? false)
-                                      : (singleOffer.percentage?.isExpired ??
-                                          false);
-
-                                  /// check login first
-                                  bool isLoggedIn = await checkedLogin(context);
-                                  if (!isLoggedIn) return;
-
-                                  if (isExpired) {
-                                    showOfferExpiredDialog(context);
-                                    return;
-                                  }
-
-                                  if (isPurchased) {
-                                    showAlreadyPurchasedDialog(context);
-                                    return;
-                                  }
-
-                                  context.read<PaymentBloc>().add(
-                                        SubmitPaymentEvent(
-                                          customerName.toString(),
-                                          context,
-                                          amount ?? 0,
-                                          vendorId.toString(),
-                                          offerId.toString(),
-                                          userId.toString(),
-                                        ),
-                                      );
-                                },
-                                txt: "Buy Now",
-                                minWidth: size.width)
                           ],
                         ),
                       ),
                     ),
+
+                    /// Offer Title
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: size.width * 0.03),
-                        child: customExpansionTile(
-                          subTitle: "Tap to expand and read terms & conditions",
-                          context: context,
-                          txt: "Terms & Conditions",
-                          children: List.generate(
-                              termsData.length,
-                              (index) => Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 8, right: 5),
-                                          child: CircleAvatar(
-                                              radius: 3,
-                                              backgroundColor:
-                                                  AppColors.black20)),
-                                      Flexible(
-                                        child: Text(termsData[index].toString(),
-                                            style: AppStyle.normal_14(
-                                                AppColors.black20)),
-                                      ),
-                                    ],
-                                  )),
+                        padding: EdgeInsets.all(size.width * 0.034),
+                        child: FadeInDown(
+                          duration: const Duration(milliseconds: 600),
+                          child: Text(
+                            singleOffer.flat?.title ??
+                                singleOffer.percentage?.title ??
+                                '',
+                            style: AppStyle.medium_20(AppColors.themeColor),
+                          ),
                         ),
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 10)),
+
+                    /// Offer Card
                     SliverToBoxAdapter(
-                        child: SizedBox(height: size.height * 0.2)),
+                      child: FadeInUp(
+                        duration: const Duration(milliseconds: 600),
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: size.width * 0.034,
+                              vertical: size.height * 0.01),
+                          padding: EdgeInsets.all(size.width * 0.04),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(18),
+                            color: Colors.white.withOpacity(0.9),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.themeColor.withOpacity(0.1),
+                                blurRadius: 12,
+                                spreadRadius: 1,
+                                offset: const Offset(0, 4),
+                              )
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Offer Details",
+                                  style: AppStyle.semiBold_16(
+                                      AppColors.blackColor)),
+                              const SizedBox(height: 8),
+                              Text(
+                                singleOffer.flat != null
+                                    ? "Flat ₹${singleOffer.flat!.discountPercentage} off on orders above ₹${singleOffer.flat!.minBillAmount}"
+                                    : "${singleOffer.percentage!.discountPercentage}% off on orders above ₹${singleOffer.percentage!.minBillAmount}",
+                                style: AppStyle.normal_14(AppColors.black70),
+                              ),
+                              const Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  trackerData(
+                                      title: "Min. Bill",
+                                      subTitle:
+                                          "₹${singleOffer.flat?.minBillAmount ?? singleOffer.percentage!.minBillAmount}",
+                                      txtColor: AppColors.themeColor),
+                                  trackerData(
+                                      title: "Max. Discount",
+                                      subTitle:
+                                          "₹${singleOffer.flat?.maxDiscountCap ?? singleOffer.percentage!.maxDiscountCap}",
+                                      txtColor: AppColors.themeColor),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text("Expires",
+                                          style: AppStyle.normal_13(
+                                              AppColors.black50),
+                                          textAlign: TextAlign.center),
+                                      const SizedBox(height: 4),
+                                      OfferExpiryTimer(
+                                          expiryDate: expiredTime!),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    /// Buy Button
+                    SliverToBoxAdapter(
+                      child: CustomButton(
+                        onPressed: () async {
+                          var userId = LocalStorage.getString(Pref.userId);
+                          var customerName =
+                              LocalStorage.getString(Pref.userName);
+                          double amount = double.parse(
+                              singleOffer.flat?.amount?.toString() ??
+                                  singleOffer.percentage!.amount.toString());
+
+                          String vendorId =
+                              offersData!.record!.vendor!.id.toString();
+                          String offerId = singleOffer.id.toString();
+
+                          bool isPurchased = offersData.purchaseStatus ?? false;
+                          bool isExpired = singleOffer.flat != null
+                              ? (singleOffer.flat!.isExpired ?? false)
+                              : (singleOffer.percentage?.isExpired ?? false);
+
+                          bool isLoggedIn = await checkedLogin(context);
+                          if (!isLoggedIn) return;
+                          if (isExpired) {
+                            showOfferExpiredDialog(context);
+                            return;
+                          }
+                          if (isPurchased) {
+                            showAlreadyPurchasedDialog(context);
+                            return;
+                          }
+
+                          context.read<PaymentBloc>().add(
+                                SubmitPaymentEvent(
+                                  customerName.toString(),
+                                  context,
+                                  amount,
+                                  vendorId,
+                                  offerId,
+                                  userId.toString(),
+                                ),
+                              );
+                        },
+                        txt: "Buy Now",
+                      ),
+                    ),
+
+                    /// Terms Section
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: size.width * 0.05,
+                            vertical: size.height * 0.01),
+                        child: FadeInUp(
+                          duration: const Duration(milliseconds: 800),
+                          child: customExpansionTile(
+                            context: context,
+                            txt: "Terms & Conditions",
+                            subTitle: "Tap to view terms and policy",
+                            children: List.generate(
+                              termsData.length,
+                              (index) => Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.circle,
+                                        size: 6, color: Colors.grey),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        termsData[index],
+                                        style: AppStyle.normal_13(
+                                            AppColors.black70),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                        child: SizedBox(height: size.height * 0.15)),
                   ],
                 ),
               );
-            } else {
-              return const SizedBox();
             }
-          })),
+            return const SizedBox();
+          },
+        ),
+      ),
     );
   }
 }
 
-Widget trackerData(
-        {String? title,
-        String? subTitle,
-        Color? bgColor = Colors.grey,
-        required Color txtColor}) =>
-    Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: size.width * 0.02, vertical: size.height * 0.01),
-      decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.grey50)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(title.toString(),
-              style: AppStyle.normal_14(AppColors.greyColor)),
-          Text(
-            subTitle.toString(),
-            textAlign: TextAlign.center,
-            style: AppStyle.medium_13(AppColors.black20),
-          ),
-        ],
-      ),
-    );
+Widget trackerData({String? title, String? subTitle, required Color txtColor}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Text(title ?? "",
+          style: AppStyle.normal_13(AppColors.black50),
+          textAlign: TextAlign.center),
+      const SizedBox(height: 4),
+      Text(subTitle ?? "",
+          style: AppStyle.semiBold_14(txtColor), textAlign: TextAlign.center),
+    ],
+  );
+}

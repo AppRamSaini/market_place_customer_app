@@ -1,3 +1,4 @@
+import 'package:market_place_customer/screens/auth/get_started.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -29,15 +30,19 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Navigate after 2.5 seconds
     Future.delayed(const Duration(milliseconds: 2500), () async {
-      final locationService = LocationService();
-      await locationService.fetchAndSaveCurrentLocation();
+      try {
+        final locationService = LocationService();
+        await locationService.fetchAndSaveCurrentLocation();
 
-      if (token != null && role != null) {
-        AppRouter().navigateAndClearStack(context, const CustomerDashboard());
-      } else if (address != null) {
-        AppRouter().navigateAndClearStack(context, const CustomerDashboard());
-      } else {
-        AppRouter().navigateAndClearStack(context, const LoginScreen());
+        // Decide navigation
+        if (token != null) {
+          AppRouter().navigateAndClearStack(context, const CustomerDashboard());
+        } else {
+          AppRouter().navigateAndClearStack(context, const DetectLocation());
+        }
+      } catch (e) {
+        print("Error during navigation initialization: $e");
+        AppRouter().navigateAndClearStack(context, const DetectLocation());
       }
     });
   }

@@ -1,28 +1,24 @@
-// To parse this JSON data, do
-//
-//     final offersDetailModel = offersDetailModelFromJson(jsonString);
-
 import 'dart:convert';
 
-OffersDetailModel offersDetailModelFromJson(String str) =>
-    OffersDetailModel.fromJson(json.decode(str));
+PurchasedOffersDetailModel purchasedOffersDetailModelFromJson(String str) =>
+    PurchasedOffersDetailModel.fromJson(json.decode(str));
 
-String offersDetailModelToJson(OffersDetailModel data) =>
+String purchasedOffersDetailModelToJson(PurchasedOffersDetailModel data) =>
     json.encode(data.toJson());
 
-class OffersDetailModel {
+class PurchasedOffersDetailModel {
   bool? status;
   String? message;
   Data? data;
 
-  OffersDetailModel({
+  PurchasedOffersDetailModel({
     this.status,
     this.message,
     this.data,
   });
 
-  factory OffersDetailModel.fromJson(Map<String, dynamic> json) =>
-      OffersDetailModel(
+  factory PurchasedOffersDetailModel.fromJson(Map<String, dynamic> json) =>
+      PurchasedOffersDetailModel(
         status: json["status"],
         message: json["message"],
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
@@ -36,43 +32,79 @@ class OffersDetailModel {
 }
 
 class Data {
-  PurchasedOffers? record;
-  bool? purchaseStatus;
-  Stats? stats;
-  List<dynamic>? offerBuys;
+  String? id;
+  User? user;
+  Offer? offer;
+  User? vendor;
+  PaymentId? paymentId;
+  int? discount;
+  int? totalAmount;
+  int? finalAmount;
+  String? status;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  int? v;
+  bool? vendorBillStatus;
 
   Data({
-    this.record,
-    this.purchaseStatus,
-    this.stats,
-    this.offerBuys,
+    this.id,
+    this.user,
+    this.offer,
+    this.vendor,
+    this.paymentId,
+    this.discount,
+    this.totalAmount,
+    this.finalAmount,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+    this.vendorBillStatus,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        record: json["record"] == null
+        id: json["_id"],
+        user: json["user"] == null ? null : User.fromJson(json["user"]),
+        offer: json["offer"] == null ? null : Offer.fromJson(json["offer"]),
+        vendor: json["vendor"] == null ? null : User.fromJson(json["vendor"]),
+        paymentId: json["payment_id"] == null
             ? null
-            : PurchasedOffers.fromJson(json["record"]),
-        purchaseStatus: json["purchase_status"],
-        stats: json["stats"] == null ? null : Stats.fromJson(json["stats"]),
-        offerBuys: json["offerBuys"] == null
-            ? []
-            : List<dynamic>.from(json["offerBuys"]!.map((x) => x)),
+            : PaymentId.fromJson(json["payment_id"]),
+        discount: json["discount"],
+        totalAmount: json["total_amount"],
+        finalAmount: json["final_amount"],
+        status: json["status"],
+        createdAt: json["createdAt"] == null
+            ? null
+            : DateTime.parse(json["createdAt"]),
+        updatedAt: json["updatedAt"] == null
+            ? null
+            : DateTime.parse(json["updatedAt"]),
+        v: json["__v"],
+        vendorBillStatus: json["vendor_bill_status"],
       );
 
   Map<String, dynamic> toJson() => {
-        "record": record?.toJson(),
-        "purchase_status": purchaseStatus,
-        "stats": stats?.toJson(),
-        "offerBuys": offerBuys == null
-            ? []
-            : List<dynamic>.from(offerBuys!.map((x) => x)),
+        "_id": id,
+        "user": user?.toJson(),
+        "offer": offer?.toJson(),
+        "vendor": vendor?.toJson(),
+        "payment_id": paymentId?.toJson(),
+        "discount": discount,
+        "total_amount": totalAmount,
+        "final_amount": finalAmount,
+        "status": status,
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
+        "__v": v,
+        "vendor_bill_status": vendorBillStatus,
       };
 }
 
-class PurchasedOffers {
+class Offer {
   String? id;
-  Vendor? vendor;
-  Flat? flat;
+  String? vendor;
+  dynamic flat;
   Percentage? percentage;
   String? type;
   DateTime? createdAt;
@@ -80,7 +112,7 @@ class PurchasedOffers {
   int? v;
   String? status;
 
-  PurchasedOffers({
+  Offer({
     this.id,
     this.vendor,
     this.flat,
@@ -92,11 +124,10 @@ class PurchasedOffers {
     this.status,
   });
 
-  factory PurchasedOffers.fromJson(Map<String, dynamic> json) =>
-      PurchasedOffers(
+  factory Offer.fromJson(Map<String, dynamic> json) => Offer(
         id: json["_id"],
-        vendor: json["vendor"] == null ? null : Vendor.fromJson(json["vendor"]),
-        flat: json["flat"] == null ? null : Flat.fromJson(json["flat"]),
+        vendor: json["vendor"],
+        flat: json["flat"],
         percentage: json["percentage"] == null
             ? null
             : Percentage.fromJson(json["percentage"]),
@@ -113,8 +144,8 @@ class PurchasedOffers {
 
   Map<String, dynamic> toJson() => {
         "_id": id,
-        "vendor": vendor?.toJson(),
-        "flat": flat?.toJson(),
+        "vendor": vendor,
+        "flat": flat,
         "percentage": percentage?.toJson(),
         "type": type,
         "createdAt": createdAt?.toIso8601String(),
@@ -198,81 +229,62 @@ class Percentage {
       };
 }
 
-class Flat {
+class PaymentId {
   String? id;
-  String? title;
-  String? description;
-  int? discountPercentage;
-  int? maxDiscountCap;
-  int? minBillAmount;
+  String? paymentId;
   int? amount;
-  DateTime? expiryDate;
-  String? offerImage;
-  String? status;
-  bool? isExpired;
-  DateTime? createdAt;
-  DateTime? updatedAt;
+  String? currency;
+  String? paymentStatus;
+  String? paymentMethod;
+  String? user;
+  String? vendorId;
+  DateTime? paymentDate;
   int? v;
 
-  Flat({
+  PaymentId({
     this.id,
-    this.title,
-    this.description,
-    this.discountPercentage,
-    this.maxDiscountCap,
-    this.minBillAmount,
+    this.paymentId,
     this.amount,
-    this.expiryDate,
-    this.offerImage,
-    this.status,
-    this.isExpired,
-    this.createdAt,
-    this.updatedAt,
+    this.currency,
+    this.paymentStatus,
+    this.paymentMethod,
+    this.user,
+    this.vendorId,
+    this.paymentDate,
     this.v,
   });
 
-  factory Flat.fromJson(Map<String, dynamic> json) => Flat(
+  factory PaymentId.fromJson(Map<String, dynamic> json) => PaymentId(
         id: json["_id"],
-        title: json["title"],
-        description: json["description"],
-        discountPercentage: json["discountPercentage"],
-        maxDiscountCap: json["maxDiscountCap"],
-        minBillAmount: json["minBillAmount"],
+        paymentId: json["payment_id"],
         amount: json["amount"],
-        expiryDate: json["expiryDate"] == null
+        currency: json["currency"],
+        paymentStatus: json["payment_status"],
+        paymentMethod: json["payment_method"],
+        user: json["user"],
+        vendorId: json["vendor_id"],
+        paymentDate: json["payment_date"] == null
             ? null
-            : DateTime.parse(json["expiryDate"]),
-        offerImage: json["offer_image"],
-        status: json["status"],
-        isExpired: json["isExpired"],
-        createdAt: json["createdAt"] == null
-            ? null
-            : DateTime.parse(json["createdAt"]),
-        updatedAt: json["updatedAt"] == null
-            ? null
-            : DateTime.parse(json["updatedAt"]),
+            : DateTime.parse(json["payment_date"]),
         v: json["__v"],
       );
 
   Map<String, dynamic> toJson() => {
         "_id": id,
-        "title": title,
-        "description": description,
-        "discountPercentage": discountPercentage,
-        "maxDiscountCap": maxDiscountCap,
-        "minBillAmount": minBillAmount,
+        "payment_id": paymentId,
         "amount": amount,
-        "expiryDate": expiryDate?.toIso8601String(),
-        "offer_image": offerImage,
-        "status": status,
-        "isExpired": isExpired,
-        "createdAt": createdAt?.toIso8601String(),
-        "updatedAt": updatedAt?.toIso8601String(),
+        "currency": currency,
+        "payment_status": paymentStatus,
+        "payment_method": paymentMethod,
+        "user": user,
+        "vendor_id": vendorId,
+        "payment_date": paymentDate?.toIso8601String(),
         "__v": v,
       };
 }
 
-class Vendor {
+class User {
+  dynamic deletedAt;
   String? id;
   String? name;
   int? phone;
@@ -284,7 +296,8 @@ class Vendor {
   DateTime? updatedAt;
   int? v;
 
-  Vendor({
+  User({
+    this.deletedAt,
     this.id,
     this.name,
     this.phone,
@@ -297,7 +310,8 @@ class Vendor {
     this.v,
   });
 
-  factory Vendor.fromJson(Map<String, dynamic> json) => Vendor(
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        deletedAt: json["deleted_at"],
         id: json["_id"],
         name: json["name"],
         phone: json["phone"],
@@ -315,6 +329,7 @@ class Vendor {
       );
 
   Map<String, dynamic> toJson() => {
+        "deleted_at": deletedAt,
         "_id": id,
         "name": name,
         "phone": phone,
@@ -325,33 +340,5 @@ class Vendor {
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
-      };
-}
-
-class Stats {
-  int? total;
-  int? redeemed;
-  int? pending;
-  int? expired;
-
-  Stats({
-    this.total,
-    this.redeemed,
-    this.pending,
-    this.expired,
-  });
-
-  factory Stats.fromJson(Map<String, dynamic> json) => Stats(
-        total: json["total"],
-        redeemed: json["redeemed"],
-        pending: json["pending"],
-        expired: json["expired"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "total": total,
-        "redeemed": redeemed,
-        "pending": pending,
-        "expired": expired,
       };
 }

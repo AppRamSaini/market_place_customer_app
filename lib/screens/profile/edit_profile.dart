@@ -1,6 +1,4 @@
-import 'package:market_place_customer/bloc/customer_registration/fetch_profile_bloc/fetch_profile_bloc.dart';
 import 'package:market_place_customer/bloc/customer_registration/fetch_profile_bloc/fetch_profile_state.dart';
-import 'package:market_place_customer/bloc/update_profile/update_profile_bloc.dart';
 import 'package:market_place_customer/bloc/update_profile/update_profile_state.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
@@ -34,7 +32,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.initState();
     final profileState = context.read<FetchProfileDetailsBloc>().state;
     if (profileState is FetchProfileDetailsSuccess) {
-      final profile = profileState.profileModel.data;
+      final profile = profileState.profileModel.customerProfileData;
       nameController.text = profile!.name ?? "";
       emailController.text = profile.email ?? "";
       mobileController.text = profile.phone.toString() ?? "";
@@ -142,7 +140,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   customTextField(
                     readOnly: true,
                     controller: mobileController,
-                    suffix: Icon(Icons.verified_sharp,color: AppColors.green),
+                    suffix: Icon(Icons.verified_sharp, color: AppColors.green),
                     hintText: 'Enter your mobile number',
                     validator: (v) {
                       if (v == null || v.isEmpty) {
@@ -150,7 +148,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
-                  ),     SizedBox(height: size.height * 0.025),
+                  ),
+                  SizedBox(height: size.height * 0.025),
                   Text("Email Address",
                       style: AppStyle.normal_14(AppColors.blackColor)),
                   SizedBox(height: size.height * 0.01),
@@ -164,7 +163,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       return null;
                     },
                   ),
-
                   SizedBox(height: size.height * 0.025),
                   Text("Address",
                       style: AppStyle.normal_14(AppColors.blackColor)),

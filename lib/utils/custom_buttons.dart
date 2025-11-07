@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 /// CUSTOM BUTTON 1
@@ -7,17 +8,54 @@ Widget CustomButton(
         Color txtColor = AppColors.whiteColor,
         String? txt,
         double? minWidth}) =>
-    MaterialButton(
-      minWidth: minWidth,
-      height: size.height * 0.055,
-      onPressed: onPressed,
-      color: bgColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      child: Text(
-        txt.toString(),
-        style: AppStyle.medium_16(txtColor),
+    FadeInUp(
+      duration: const Duration(milliseconds: 700),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: size.width * 0.034, vertical: size.height * 0.02),
+        child: GestureDetector(
+          onTap: onPressed,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            height: size.height * 0.06,
+            width: minWidth,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.themeColor,
+                  AppColors.themeColor.withOpacity(0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.themeColor.withOpacity(0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Text(
+              txt.toString(),
+              style: AppStyle.medium_16(txtColor),
+            ),
+          ),
+        ),
       ),
     );
+
+// MaterialButton(
+//   minWidth: minWidth,
+//   height: size.height * 0.055,
+//   onPressed: onPressed,
+//   color: bgColor,
+//   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+//   child: Text(
+//     txt.toString(),
+//     style: AppStyle.medium_16(txtColor),
+//   ),
+// );
 
 /// CUSTOM BUTTON 2
 Widget CustomButton2(
@@ -61,7 +99,6 @@ Widget CustomButton3(
         style: AppStyle.normal_14(txtColor),
       ),
     );
-
 
 /// CUSTOM  BACK OR NEXT BUTTONS
 Widget backOrNextBtn({

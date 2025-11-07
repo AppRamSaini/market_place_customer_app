@@ -1,5 +1,5 @@
-import 'package:market_place_customer/bloc/payment_bloc/payment_bloc.dart';
-import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_history/purchased_offers_history_bloc.dart';
+import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_bloc.dart';
+import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_bloc.dart';
 
 import '../utils/exports.dart';
 
@@ -28,8 +28,13 @@ class AppBlocProviders extends StatelessWidget {
         BlocProvider<PurchasedOffersHistoryBloc>(
             create: (context) => PurchasedOffersHistoryBloc()),
 
-        ///====>>>>
+        BlocProvider<UpdateBillAmountBloc>(
+            create: (context) => UpdateBillAmountBloc()),
 
+        BlocProvider<PurchasedOffersBloc>(
+            create: (context) => PurchasedOffersBloc()),
+
+        ///====>>>>
         BlocProvider<FetchProfileDetailsBloc>(
             create: (context) => FetchProfileDetailsBloc()),
         BlocProvider<UpdateProfileBloc>(

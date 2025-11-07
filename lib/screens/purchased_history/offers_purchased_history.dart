@@ -1,3 +1,5 @@
+import 'package:animate_do/animate_do.dart';
+import 'package:market_place_customer/screens/purchased_history/purchased_offers_details.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 import '../../data/models/purchased_offers_history_model.dart';
@@ -36,6 +38,9 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
           if (state is PurchasedOffersHistoryLoading) {
             return const Center(child: BurgerKingShimmer());
           } else if (state is PurchasedOffersHistoryFailure) {
+            print(
+              state.error.toString(),
+            );
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(40),
@@ -78,9 +83,8 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
               children: [
                 Container(
                   decoration: const BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(color: Colors.grey, width: 0.4)),
-                  ),
+                      border: Border(
+                          bottom: BorderSide(color: Colors.grey, width: 0.4))),
                   child: TabBar(
                     controller: _tabController,
                     indicator: const UnderlineTabIndicator(
@@ -143,6 +147,10 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
               false;
           bool isPurchased = offer.status == 'redeemed';
 
+          DateTime? expiredTime = isFlat
+              ? offer.offer?.flat?.expiryDate! ?? DateTime.now()
+              : offer.offer?.percentage!.expiryDate! ?? DateTime.now();
+
           final title = isFlat
               ? offer.offer?.flat?.title ?? ""
               : offer.offer?.percentage?.title ?? "";
@@ -169,24 +177,28 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
             padding: EdgeInsets.symmetric(
                 horizontal: size.width * 0.03, vertical: size.height * 0.005),
             child: GestureDetector(
-              onTap: () {
-                showLoginRequiredDialog(context, onClose: () {});
-              },
-              child: PurchasedOffersHistoryCardWidget(
-                carWidth: size.width * 0.9,
-                imgHeight: size.height * 0.25,
-                isExpired: isExpired,
-                isPurchased: isPurchased,
-                imageUrl: imgUrl,
-                name: title,
-                purchasedPrice: amount.toString(),
-                discount: discounts.toString(),
-                expireIn: !isPurchased && !isExpired ? "12:49:000" : '',
-                flatData: flatData,
-                offerText: "On Order Above ₹$minBill",
-                offersCounts: offer.finalAmount?.toString() ?? "0",
-              ),
-            ),
+                onTap: () {
+                  AppRouter().navigateTo(context,
+                      PurchasedOfferDetailsPage(offersId: offer.id ?? ''));
+                },
+                child: FadeInRightBig(
+                  duration: Duration(milliseconds: 300 + (index * 120)),
+                  child: PurchasedOffersHistoryCardWidget(
+                    carWidth: size.width * 0.9,
+                    imgHeight: size.height * 0.25,
+                    isExpired: isExpired,
+                    isPurchased: isPurchased,
+                    imageUrl: imgUrl,
+                    name: title,
+                    purchasedPrice: amount.toString(),
+                    discount: discounts.toString(),
+                    expireIn:
+                        !isPurchased && !isExpired ? expiredTime : expiredTime,
+                    flatData: flatData,
+                    offerText: "On Order Above ₹$minBill",
+                    offersCounts: offer.finalAmount?.toString() ?? "0",
+                  ),
+                )),
           );
         },
       ),

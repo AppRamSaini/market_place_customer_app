@@ -1,12 +1,13 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/screens/dashboard/search_vendors.dart';
+import 'package:market_place_customer/screens/purchased_history/expired_timer.dart';
 
 import '../../utils/exports.dart';
 
 /// OFFERS CHIP FOR GLOBAL DATA
 Widget offersCardChipAndFavoriteWidget(String offersCounts,
-    {String? expireTime}) {
-  bool hasExpireTime = expireTime != null && expireTime.isNotEmpty;
+    {DateTime? expireTime}) {
+  bool hasExpireTime = expireTime != null;
 
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -34,24 +35,7 @@ Widget offersCardChipAndFavoriteWidget(String offersCounts,
 
       // ✅ Expiry Time Safe Condition
       if (hasExpireTime)
-        Container(
-          margin: const EdgeInsets.only(right: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: Colors.orange,
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.access_time, size: 14, color: Colors.white),
-              const SizedBox(width: 4),
-              Text(
-                "Expires in $expireTime",
-                style: AppStyle.normal_12(AppColors.whiteColor),
-              ),
-            ],
-          ),
-        ),
+        OfferExpiryTimer(expiryDate: expireTime, isHistoryPage: true),
     ],
   );
 }
