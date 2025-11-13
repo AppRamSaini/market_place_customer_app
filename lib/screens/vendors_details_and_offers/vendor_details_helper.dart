@@ -1,8 +1,5 @@
 import 'package:market_place_customer/data/models/vendor_details_model.dart';
-
 import '../../utils/exports.dart';
-
-import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
 class OffersDataCardWidget extends StatelessWidget {
@@ -90,30 +87,30 @@ class OffersDataCardWidget extends StatelessWidget {
           ),
         ),
 
-        /// Purchased Badge
-        if (isPurchased)
-          Positioned(
-            top: 10,
-            right: -25,
-            child: FadeInDown(
-              duration: const Duration(milliseconds: 700),
-              child: Transform.rotate(
-                angle: 0.5,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 6),
-                  color: Colors.green.withOpacity(0.8),
-                  child: const Text(
-                    "PURCHASED",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-          ),
+        // /// Purchased Badge
+        // if (isPurchased)
+        //   Positioned(
+        //     top: 10,
+        //     right: -25,
+        //     child: FadeInDown(
+        //       duration: const Duration(milliseconds: 700),
+        //       child: Transform.rotate(
+        //         angle: 0.5,
+        //         child: Container(
+        //           padding:
+        //               const EdgeInsets.symmetric(horizontal: 40, vertical: 6),
+        //           color: Colors.green.withOpacity(0.8),
+        //           child: const Text(
+        //             "PURCHASED",
+        //             style: TextStyle(
+        //                 color: Colors.white,
+        //                 fontSize: 12,
+        //                 fontWeight: FontWeight.bold),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
 
         /// Expired Overlay
         if (isExpired)

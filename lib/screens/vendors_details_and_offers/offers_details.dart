@@ -278,7 +278,7 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                               offersData!.record!.vendor!.id.toString();
                           String offerId = singleOffer.id.toString();
 
-                          bool isPurchased = offersData.purchaseStatus ?? false;
+                          // bool isPurchased = offersData.purchaseStatus ?? false;
                           bool isExpired = singleOffer.flat != null
                               ? (singleOffer.flat!.isExpired ?? false)
                               : (singleOffer.percentage?.isExpired ?? false);
@@ -289,10 +289,10 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                             showOfferExpiredDialog(context);
                             return;
                           }
-                          if (isPurchased) {
-                            showAlreadyPurchasedDialog(context);
-                            return;
-                          }
+                          // if (isPurchased) {
+                          //   showAlreadyPurchasedDialog(context);
+                          //   return;
+                          // }
 
                           context.read<PaymentBloc>().add(
                                 SubmitPaymentEvent(
