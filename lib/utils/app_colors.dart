@@ -30,6 +30,7 @@ class AppColors {
   static const greyColor = Color(0xFF565656);
   static Color grey30 = AppColors.greyColor.withOpacity(0.3);
   static const redColor = Color(0xFFFF3B30);
+  static Color red600 = Colors.red.shade600;
   static Color redColor50 = const Color(0xFFFF3B30).withOpacity(0.5);
   static const yellowColor = Color(0xFFFFB703);
   static const transparent = Colors.transparent;

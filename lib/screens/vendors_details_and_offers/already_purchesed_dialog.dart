@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:market_place_customer/screens/dashboard/customer_dashboard.dart';
-import 'package:market_place_customer/screens/profile_and_settings/login_required_dialog.dart';
+import 'package:market_place_customer/screens/dilogs/login_required_dialog.dart';
 import 'package:market_place_customer/utils/app_router.dart';
 
 import '../../data/storage/sharedpreferenc.dart';
@@ -338,15 +338,6 @@ Future<void> showOfferExpiredDialog(BuildContext context) async {
         opacity: animation,
         child: Stack(
           children: [
-            // /// 🔹 Background blur
-            // GestureDetector(
-            //   onTap: () => Navigator.of(context).pop(), // tap outside to close
-            //   child: BackdropFilter(
-            //     filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            //     child: Container(color: Colors.black38),
-            //   ),
-            // ),
-
             /// 🔹 Dialog content
             Center(
               child: ElasticIn(

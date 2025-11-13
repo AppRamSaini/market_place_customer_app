@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:market_place_customer/screens/auth/login.dart';
 import 'package:market_place_customer/utils/app_colors.dart';

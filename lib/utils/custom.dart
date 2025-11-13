@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
-import 'package:market_place_customer/main.dart';
 import 'package:market_place_customer/utils/app_assets.dart';
 import 'package:market_place_customer/utils/app_colors.dart';
 import 'package:market_place_customer/utils/app_styles.dart';
@@ -142,8 +140,6 @@ Widget noDataWidget() => Image.asset(Assets.noData);
 EdgeInsetsGeometry globalBottomPadding(BuildContext context) =>
     EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom);
 
-
-
 /// 24H converter
 String convertTo24Hour(String time12h) {
   DateTime tempDate = DateFormat("hh:mm aaa").parse(time12h);
@@ -160,7 +156,6 @@ String convertTo12Hour(String? time24) {
     return DateFormat("hh:mm a").format(time);
   } catch (e) {
     return time24;
-
   }
 }
 
@@ -184,9 +179,6 @@ String convertTo12Hour(String? time24) {
 //   }
 // }
 
-
-
-
 TimeOfDay timeOfDayFromString(String timeStr) {
   final format = DateFormat("hh:mm a");
   final date = format.parse(timeStr);
@@ -199,14 +191,11 @@ String formatTimeOfDay(TimeOfDay time) {
   return DateFormat("hh:mm a").format(dt);
 }
 
-
-
-
 String extractAreaCity(String address) {
   try {
     List<String> parts = address.split(',');
     if (parts.length >= 3) {
-      String area = parts[1].trim();  // "Bani Park"
+      String area = parts[1].trim(); // "Bani Park"
       String city = parts[2].split('-')[0].trim(); // "Jaipur"
       return "$area, $city";
     }
@@ -216,4 +205,7 @@ String extractAreaCity(String address) {
   }
 }
 
-
+/// date format
+String formatDate2(DateTime dateTime) {
+  return DateFormat('dd MMMM yy').format(dateTime);
+}

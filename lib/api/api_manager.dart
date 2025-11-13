@@ -48,6 +48,7 @@ class ApiManager {
         requestData = FormData.fromMap(formMap);
         headers['Content-Type'] = 'multipart/form-data';
       } else {
+        print('object');
         requestData = jsonEncode(data);
       }
 

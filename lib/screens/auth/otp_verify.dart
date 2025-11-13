@@ -64,13 +64,21 @@ class OtpVerifyState extends State<OtpVerify> {
   }
 
   final defaultPinTheme = PinTheme(
-      width: 60,
-      height: 60,
-      textStyle: AppStyle.medium_20(AppColors.themeColor),
-      decoration: BoxDecoration(
-          color: AppColors.theme10,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.white10)));
+    width: 60,
+    height: 60,
+    textStyle: AppStyle.medium_20(AppColors.themeColor),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 15,
+          offset: const Offset(0, 5),
+        ),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -162,12 +170,11 @@ class OtpVerifyState extends State<OtpVerify> {
                   style: AppStyle.normal_14(AppColors.blackColor)),
               SizedBox(height: size.height * 0.03),
               Pinput(
-                length: 6,
-                controller: _otpController,
-                defaultPinTheme: defaultPinTheme,
-                separatorBuilder: (_) => const SizedBox(width: 5),
-                onChanged: returnValidation,
-              ),
+                  length: 6,
+                  controller: _otpController,
+                  defaultPinTheme: defaultPinTheme,
+                  separatorBuilder: (_) => const SizedBox(width: 5),
+                  onChanged: returnValidation),
               const SizedBox(height: 2),
               Text(validOtpText ?? '',
                   style: AppStyle.normal_13(AppColors.redColor)),

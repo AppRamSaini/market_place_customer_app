@@ -299,7 +299,12 @@
 
 import 'package:market_place_customer/bloc/customer_registration/fetch_profile_bloc/fetch_profile_event.dart';
 import 'package:market_place_customer/bloc/customer_registration/fetch_profile_bloc/fetch_profile_state.dart';
+import 'package:market_place_customer/bloc/update_profile/update_profile_state.dart';
 import 'package:market_place_customer/data/models/profile_model.dart';
+import 'package:market_place_customer/screens/dilogs/logout_permmsion_dialog.dart';
+import 'package:market_place_customer/screens/settings/help_support_page.dart';
+import 'package:market_place_customer/screens/settings/privacy_policy.dart';
+import 'package:market_place_customer/screens/settings/terns_conditions.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
 
 import '../../utils/exports.dart';
@@ -331,86 +336,116 @@ class _SettingsPageUiPageState extends State<SettingsPageUiPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<FetchProfileDetailsBloc, FetchProfileDetailsState>(
-        builder: (context, state) {
-          if (state is FetchProfileDetailsLoading) {
-            return SingleChildScrollView(child: profileSimmerLoading());
-          } else if (state is FetchProfileDetailsFailure) {
-            return Center(
-                child: Text(state.error.toString(),
-                    style: AppStyle.medium_14(AppColors.redColor)));
-          } else if (state is FetchProfileDetailsSuccess) {
-            final profile = state.profileModel.customerProfileData;
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<UpdateProfileBloc, UpdateProfileState>(
+          listener: (context, state) {
+            if (state is UpdateProfileSuccess) _reFetchData();
+          },
+        )
+      ],
+      child: Scaffold(
+        body: BlocBuilder<FetchProfileDetailsBloc, FetchProfileDetailsState>(
+          builder: (context, state) {
+            if (state is FetchProfileDetailsLoading) {
+              return SingleChildScrollView(child: profileSimmerLoading());
+            } else if (state is FetchProfileDetailsFailure) {
+              return Center(
+                  child: Text(state.error.toString(),
+                      style: AppStyle.medium_14(AppColors.redColor)));
+            } else if (state is FetchProfileDetailsSuccess) {
+              final profile = state.profileModel.customerProfileData;
 
-            // /// Map fetched data to local model
-            // merchantRegistrationModel = MerchantRegistrationModel(
-            //   name: businessProfile.vendor?.name ?? '',
-            //   mobile: businessProfile.vendor?.phone.toString() ?? '',
-            //   email: businessProfile.vendor?.email ?? '',
-            //   businessName:
-            //   businessProfile.businessDetails?.businessName ?? '',
-            //   businessRegistrationNo:
-            //   businessProfile.businessDetails?.businessRegister ?? '',
-            //   gstNumber: businessProfile.businessDetails?.gstNumber ?? '',
-            //   state: businessProfile.businessDetails?.state ?? '',
-            //   city: businessProfile.businessDetails?.city ?? '',
-            //   address: businessProfile.businessDetails?.address ?? '',
-            //   businessLogo: businessProfile.document?.businessLogo ?? '',
-            //   businessImages:
-            //   businessProfile.businessDetails?.businessImage ?? [],
-            // );
+              // /// Map fetched data to local model
+              // merchantRegistrationModel = MerchantRegistrationModel(
+              //   name: businessProfile.vendor?.name ?? '',
+              //   mobile: businessProfile.vendor?.phone.toString() ?? '',
+              //   email: businessProfile.vendor?.email ?? '',
+              //   businessName:
+              //   businessProfile.businessDetails?.businessName ?? '',
+              //   businessRegistrationNo:
+              //   businessProfile.businessDetails?.businessRegister ?? '',
+              //   gstNumber: businessProfile.businessDetails?.gstNumber ?? '',
+              //   state: businessProfile.businessDetails?.state ?? '',
+              //   city: businessProfile.businessDetails?.city ?? '',
+              //   address: businessProfile.businessDetails?.address ?? '',
+              //   businessLogo: businessProfile.document?.businessLogo ?? '',
+              //   businessImages:
+              //   businessProfile.businessDetails?.businessImage ?? [],
+              // );
 
-            /// Settings List
-            settingTitles = [
-              {
-                "title": "Update Profile",
-                "icon": Icons.person,
-                "page": const EditProfilePage()
-              },
-              {"title": "FAQ", "icon": Icons.help_outline_outlined},
-              {"title": "Help & Support", "icon": Icons.info_outline_rounded},
-              {"title": "Privacy Policy", "icon": Icons.privacy_tip_outlined},
-              {
-                "title": "Delete Account",
-                "icon": Icons.delete_forever_sharp,
-                "page": const DeleteUserAccount()
-              },
-              {"title": "Logout", "icon": Icons.logout},
-            ];
+              /// Settings List
+              settingTitles = [
+                {
+                  "title": "Update Profile",
+                  "icon": Icons.person,
+                  "page": const EditProfilePage()
+                },
+                {"title": "FAQ", "icon": Icons.help_outline_outlined},
+                {
+                  "title": "Help & Support",
+                  "icon": Icons.info_outline_rounded,
+                  "page": const HelpSupportPage()
+                },
+                {
+                  "title": "Terms & Conditions",
+                  "icon": Icons.gavel,
+                  "page": const TermsAndConditions()
+                },
+                {
+                  "title": "Privacy Policy",
+                  "icon": Icons.privacy_tip_outlined,
+                  "page": const PrivacyPolicyScreen()
+                },
+                {
+                  "title": "Delete Account",
+                  "icon": Icons.delete_forever_sharp,
+                  "page": const DeleteUserAccount()
+                },
+                {"title": "Logout", "icon": Icons.logout},
+              ];
 
-            return RefreshIndicator(
-              onRefresh: _reFetchData,
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  _customAppHeader(profile),
-                  SliverList.builder(
-                    itemCount: settingTitles.length,
-                    itemBuilder: (context, index) {
-                      final item = settingTitles[index];
-                      return _settingsTile(
-                        title: item["title"],
-                        icon: item["icon"],
-                        onTap: () {
-                          if (index != settingTitles.length - 1) {
-                            if (item["page"] != null) {
-                              AppRouter().navigateTo(context, item["page"]);
+              return RefreshIndicator(
+                onRefresh: _reFetchData,
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    _customAppHeader(profile),
+                    SliverList.builder(
+                      itemCount: settingTitles.length,
+                      itemBuilder: (context, index) {
+                        final item = settingTitles[index];
+                        return _settingsTile(
+                          title: item["title"],
+                          icon: item["icon"],
+                          onTap: () {
+                            if (index != settingTitles.length - 1) {
+                              if (item["page"] != null) {
+                                AppRouter().navigateTo(context, item["page"]);
+                              }
+                            } else {
+                              showLogoutPermissionDialog(context,
+                                  onConfirm: () {
+                                EasyLoading.show();
+                                Navigator.pop(context);
+                                Future.delayed(const Duration(seconds: 2), () {
+                                  EasyLoading.dismiss();
+                                  LocalStorage.clearAll(context);
+                                });
+                              });
                             }
-                          } else {
-                            logOutPermissionDialog(context);
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
-            );
-          }
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              );
+            }
 
-          return const SizedBox();
-        },
+            return const SizedBox();
+          },
+        ),
       ),
     );
   }

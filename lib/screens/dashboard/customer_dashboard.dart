@@ -1,3 +1,4 @@
+import 'package:market_place_customer/screens/order_history/order_history_page.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
 import 'package:market_place_customer/utils/exports.dart';
 import 'package:upgrader/upgrader.dart';
@@ -18,7 +19,7 @@ class CustomerDashboardState extends State<CustomerDashboard> {
   List pagesList = [
     const HomePage(),
     const PurchasedOffersHistory(),
-    const ViewPaymentApprovalRequest(),
+    const OrderHistoryPage(),
     const SettingsPageUiPage(),
   ];
 

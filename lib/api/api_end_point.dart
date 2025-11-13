@@ -19,14 +19,21 @@ class ApiEndPoints {
   static const fetchPurchasedOffers = '$baseUrl/customer/brought-offer';
   static const purchasedOffersDetails = '$baseUrl/customer/brought-offer';
   static const updateBillAmount = '$baseUrl/customer/payment/update';
+  static const updateProfile = '$baseUrl/customer/update';
+  static const privacyPolicyPage =
+      'https://marketplacesfronted.vercel.app/privacy-policy';
+  static const termsPolicyPage = 'https://marketplacesfronted.vercel.app/terms';
+  static const helpSupportPage =
+      'https://marketplacesfronted.vercel.app/support';
+
+  static const orderHistory = '$baseUrl/customer/redeemed-offer?page=';
+  static const saveBill = '$baseUrl/customer/bill-add';
 
   ///=================>>
   static const updateMerchantBusiness = '$baseUrl/vendor/update';
   static const merchantCategory = '$baseUrl/vendor/categroy';
   static const merchantSubCategory = '$baseUrl/vendor/sub_categroy';
-  static const addOffers = '$baseUrl/offer/add';
   static const getUserProfile = '$baseUrl/get-user';
-  static const updateProfile = '$baseUrl/update-user';
   static const createReport = '$baseUrl/issues/report/create';
   static const issueReportHistory = '$baseUrl/issues/report/history';
   static const issueReportDetails = '$baseUrl/issues/report/detail';

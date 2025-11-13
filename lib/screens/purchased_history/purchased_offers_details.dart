@@ -4,7 +4,7 @@ import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_de
 import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_state.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_bloc.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_state.dart';
-import 'package:market_place_customer/screens/payment_section/payment_verifications.dart';
+import 'package:market_place_customer/screens/dilogs/already_used_this_offers.dart';
 import 'package:market_place_customer/screens/purchased_history/expired_timer.dart';
 import 'package:market_place_customer/screens/qr_management/generate_qr_code.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendor_details_helper.dart';
@@ -65,10 +65,7 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
       }
     });
 
-    // init data refresh & verifications (kept from your original)
     onRefreshData();
-    listenSpecificOfferVerification(context: context, offerId: widget.offersId);
-
     maxAmtController.addListener(_onAmountChange);
   }
 
@@ -117,7 +114,7 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
     if (singleOffer.flat != null) {
       // flat offer: discount is min(maxDiscountCap, val - minBillAmount) if applicable
       final cap =
-          double.tryParse(singleOffer.flat!.maxDiscountCap.toString()) ?? 0;
+          double.tryParse(singleOffer.flat!.discountPercentage.toString()) ?? 0;
       final minBill =
           double.tryParse(singleOffer.flat!.minBillAmount.toString()) ?? 0;
       if (val >= minBill) {
@@ -250,6 +247,15 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
             var msg = state.error;
             snackBar(context, msg, AppColors.redColor);
           }
+        }),
+        BlocListener<PurchasedOffersBloc, PurchasedOffersState>(
+            listener: (context, state) {
+          if (state is PurchasedOffersSuccess) {
+            final offersData = state.offersDetailModel.data;
+            if (offersData!.vendorBillStatus == true) {
+              showAlreadyUsedOfferDialog(context);
+            }
+          }
         })
       ],
       child: Scaffold(
@@ -270,11 +276,10 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
               );
             } else if (state is PurchasedOffersSuccess) {
               final offersData = state.offersDetailModel.data;
-
               final singleOffer = offersData!.offer;
 
               final imageUrl = singleOffer == null
-                  ? null
+                  ? 'null'
                   : singleOffer.flat?.offerImage?.toString() ??
                       singleOffer.percentage?.offerImage?.toString();
 
@@ -318,7 +323,7 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                             title: Opacity(
                               opacity: _appBarOpacity,
                               child: Text(
-                                singleOffer!.flat != null
+                                singleOffer.flat != null
                                     ? singleOffer.flat!.title.toString()
                                     : singleOffer.percentage!.title.toString(),
                                 style: AppStyle.normal_18(AppColors.whiteColor),
@@ -401,7 +406,7 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                                                     Text(
                                                       singleOffer.flat != null
                                                           ? "Flat ₹${singleOffer.flat!.discountPercentage} off"
-                                                          : "${singleOffer.percentage!.discountPercentage}% off",
+                                                          : "Flat ${singleOffer.percentage!.discountPercentage}% off",
                                                       style: AppStyle.normal_12(
                                                           AppColors.black50),
                                                     ),
@@ -439,7 +444,7 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                                   duration: const Duration(milliseconds: 500),
                                   child: Text(
                                     singleOffer.flat != null
-                                        ? "${singleOffer.flat!.title} • Flat ₹${singleOffer.flat!.maxDiscountCap} Off"
+                                        ? "${singleOffer.flat!.title} • Flat ₹${singleOffer.flat!.discountPercentage} Off"
                                         : "${singleOffer.percentage!.title} • ${singleOffer.percentage!.discountPercentage}% Off",
                                     style: AppStyle.medium_20(
                                         AppColors.themeColor),
@@ -484,7 +489,7 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                                             style: AppStyle.medium_16(
                                                 AppColors.blackColor)),
                                         SizedBox(height: size.height * 0.01),
-                                        customTextField(
+                                        CustomTextField(
                                           prefix: const Icon(
                                               Icons.currency_rupee,
                                               size: 18),

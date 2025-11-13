@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+
 import '../../utils/exports.dart';
-import 'package:market_place_customer/data/models/vendor_details_model.dart';
 
 class FullImageView extends StatefulWidget {
-  final List<BusinessImage> imageList;
+  final List<String> imageList;
   final int initialIndex;
 
   const FullImageView({
@@ -44,9 +44,10 @@ class _FullImageViewState extends State<FullImageView> {
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
-          child: CircleAvatar(
+          child: const CircleAvatar(
             backgroundColor: Colors.white10,
-            child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+            child:
+                Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
           ),
         ),
         title: Text(
@@ -67,10 +68,10 @@ class _FullImageViewState extends State<FullImageView> {
             builder: (context, index) {
               final image = widget.imageList[index];
               return PhotoViewGalleryPageOptions(
-                imageProvider: NetworkImage(image.url ?? ""),
+                imageProvider: NetworkImage(image ?? ""),
                 minScale: PhotoViewComputedScale.contained * 1,
                 maxScale: PhotoViewComputedScale.covered * 2.5,
-                heroAttributes: PhotoViewHeroAttributes(tag: image.url ?? index),
+                heroAttributes: PhotoViewHeroAttributes(tag: image ?? index),
               );
             },
             onPageChanged: (index) => setState(() => _currentIndex = index),
@@ -91,7 +92,8 @@ class _FullImageViewState extends State<FullImageView> {
                   height: _currentIndex == index ? 10 : 6,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _currentIndex == index ? Colors.white : Colors.white38,
+                    color:
+                        _currentIndex == index ? Colors.white : Colors.white38,
                   ),
                 );
               }),

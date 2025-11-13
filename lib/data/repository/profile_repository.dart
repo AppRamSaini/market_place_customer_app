@@ -22,7 +22,6 @@ class ProfileRepository {
   Future updateProfile(BuildContext context, var data) async {
     final result = await api.post(url: ApiEndPoints.updateProfile, data: data);
     print('---------->>>>>$result');
-
     if (result is String) {
       snackBar(context, result, AppColors.redColor);
     } else {

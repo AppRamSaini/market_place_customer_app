@@ -61,14 +61,13 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
               final paymentData = state.paymentModel.data;
               if (paymentData != null) {
                 BuyOfferPaymentModel buyOffersModal = BuyOfferPaymentModel(
-                  amount: data.amount,
-                  context: context,
-                  customerName: data.customerName,
-                  offersId: data.offerId ?? '',
-                  vendorId: data.vendorId ?? '',
-                  userId: data.userId,
-                  orderId: paymentData.id.toString(),
-                );
+                    amount: data.amount,
+                    context: context,
+                    customerName: data.customerName,
+                    offersId: data.offerId ?? '',
+                    vendorId: data.vendorId ?? '',
+                    userId: data.userId,
+                    orderId: paymentData.id.toString());
                 razorpay.verifyPaymentAndBuyOffers(dataModel: buyOffersModal);
               }
             } else if (state is PaymentFailure) {

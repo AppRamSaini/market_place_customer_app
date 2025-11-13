@@ -218,94 +218,177 @@ Future<File?> pickImageSheet(BuildContext context) async {
 
   await showModalBottomSheet(
     context: context,
+    barrierColor: Colors.black.withOpacity(0.4),
+    backgroundColor: AppColors.whiteColor,
+    isScrollControlled: true,
     shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(5))),
-    builder: (_) => Padding(
-      padding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Select Option",
-                  style: AppStyle.medium_18(AppColors.blackColor)),
-              IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.clear, color: AppColors.blackColor))
-            ],
-          ),
-          customDivider(),
-          const SizedBox(height: 10),
-          Container(
-            width: size.width,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.grey30)),
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26))),
+    builder: (_) {
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            /// Top Handle
+            Container(
+              width: 45,
+              height: 3,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            /// Title + Close
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () async {
-                    final pickedFile =
-                        await picker.pickImage(source: ImageSource.camera);
-                    if (pickedFile != null) {
-                      selectedImage = File(pickedFile.path);
-                    }
-                    Navigator.pop(context); // close sheet
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(Icons.camera_alt_outlined,
-                          color: AppColors.blackColor),
-                      const SizedBox(width: 10),
-                      Text("Take By Camera",
-                          style: AppStyle.normal_16(AppColors.blackColor)),
-                    ],
+                const Text(
+                  "Choose Image",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Divider(color: AppColors.grey30),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    final pickedFile =
-                        await picker.pickImage(source: ImageSource.gallery);
-                    if (pickedFile != null) {
-                      selectedImage = File(pickedFile.path);
-                    }
-                    Navigator.pop(context); // close sheet
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(Icons.image_outlined,
-                          color: AppColors.blackColor),
-                      const SizedBox(width: 10),
-                      Text("Select From Gallery",
-                          style: AppStyle.normal_16(AppColors.blackColor)),
-                    ],
+                InkWell(
+                  borderRadius: BorderRadius.circular(50),
+                  onTap: () => Navigator.pop(context),
+                  child: const Padding(
+                    padding: EdgeInsets.all(6),
+                    child: Icon(Icons.close, size: 22),
                   ),
-                ),
+                )
               ],
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
-            child: CustomButton3(
-              minWidth: size.width,
-              onPressed: () => Navigator.pop(context),
-              txt: "Cancel",
+
+            const SizedBox(height: 20),
+
+            /// Main options container
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.07),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 12),
+
+                  /// Camera
+                  InkWell(
+                    onTap: () async {
+                      final pickedFile = await picker.pickImage(
+                          source: ImageSource.camera, imageQuality: 70);
+                      if (pickedFile != null) {
+                        selectedImage = File(pickedFile.path);
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                      child: Row(
+                        children: [
+                          _modernIcon(
+                              Icons.camera_alt_rounded, Colors.blueAccent),
+                          const SizedBox(width: 14),
+                          const Text(
+                            "Take Photo",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Divider(
+                        indent: 16,
+                        endIndent: 16,
+                        height: 6,
+                        color: Colors.grey.shade300),
+                  ),
+
+                  /// Gallery
+                  InkWell(
+                    onTap: () async {
+                      final pickedFile = await picker.pickImage(
+                        source: ImageSource.gallery,
+                        imageQuality: 75,
+                      );
+                      if (pickedFile != null) {
+                        selectedImage = File(pickedFile.path);
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                      child: Row(
+                        children: [
+                          _modernIcon(
+                            Icons.photo_library_rounded,
+                            Colors.deepPurpleAccent,
+                          ),
+                          const SizedBox(width: 14),
+                          const Text(
+                            "Choose from Gallery",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    ),
+
+            const SizedBox(height: 12),
+
+            /// Cancel Button
+            Padding(
+              padding: globalBottomPadding(context),
+              child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: CustomButton(
+                      onPressed: () => Navigator.pop(context), txt: "Cancel")),
+            ),
+
+            const SizedBox(height: 12),
+          ],
+        ),
+      );
+    },
   );
 
   return selectedImage;
+}
+
+/// Modern circular icon box
+Widget _modernIcon(IconData icon, Color color) {
+  return Container(
+    padding: const EdgeInsets.all(10),
+    decoration:
+        BoxDecoration(color: color.withOpacity(0.12), shape: BoxShape.circle),
+    child: Icon(icon, color: color, size: 26),
+  );
 }
 
 /// img url

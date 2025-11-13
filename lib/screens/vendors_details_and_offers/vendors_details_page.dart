@@ -97,7 +97,7 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
             } else if (state is VendorDetailsSuccess) {
               final vendorsData = state.vendorsDetailsModel.data;
 
-              List<BusinessImage> businessImages =
+              List<String> businessImages =
                   vendorsData!.businessDetails!.businessImage ?? [];
               List<Offer>? offers = vendorsData.offers ?? [];
 
@@ -171,7 +171,7 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                                     placeholder: const AssetImage(Assets.dummy),
                                     image: businessImages.isNotEmpty
                                         ? NetworkImage(
-                                            businessImages[index].url ?? '')
+                                            businessImages[index] ?? '')
                                         : const AssetImage(Assets.dummy)
                                             as ImageProvider,
                                     imageErrorBuilder: (_, child, st) =>
@@ -516,7 +516,7 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
   }
 }
 
-Widget buildMediaMessage(BuildContext context, List<BusinessImage> imageList) {
+Widget buildMediaMessage(BuildContext context, List<String> imageList) {
   if ((imageList == null || imageList.isEmpty)) {
     return const SizedBox(); // Nothing to show
   }
@@ -531,7 +531,7 @@ Widget buildMediaMessage(BuildContext context, List<BusinessImage> imageList) {
         crossAxisCount: 3, crossAxisSpacing: 10, mainAxisSpacing: 0),
     itemCount: mediaCount > 6 ? 6 : mediaCount,
     itemBuilder: (_, index) {
-      final url = imageList[index].url;
+      final url = imageList[index] ?? '';
       final isLastAndMore = index == 5 && mediaCount > 6;
       return Stack(
         children: [
@@ -542,7 +542,7 @@ Widget buildMediaMessage(BuildContext context, List<BusinessImage> imageList) {
                   context,
                   FullImageView(
                       imageList: imageList ?? [], initialIndex: index)),
-              child: FadeInRight(
+              child: FadeInUp(
                 duration: Duration(milliseconds: 300 + (index * 120)),
                 child: FadeInImage(
                   height: size.height * 0.12,

@@ -46,6 +46,8 @@ class PurchasedOffersHistoryList {
   var totalAmount;
   var finalAmount;
   String? status;
+  bool? vendorBillStatus;
+  String? bill;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
@@ -60,6 +62,8 @@ class PurchasedOffersHistoryList {
     this.totalAmount,
     this.finalAmount,
     this.status,
+    this.vendorBillStatus,
+    this.bill,
     this.createdAt,
     this.updatedAt,
     this.v,
@@ -78,6 +82,8 @@ class PurchasedOffersHistoryList {
         totalAmount: (json["total_amount"] ?? 0),
         finalAmount: (json["final_amount"] ?? 0),
         status: json["status"],
+        vendorBillStatus: json["vendor_bill_status"],
+        bill: json["bill"],
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),
@@ -97,6 +103,8 @@ class PurchasedOffersHistoryList {
         "total_amount": totalAmount ?? 0.0,
         "final_amount": finalAmount ?? 0.0,
         "status": status,
+        "vendor_bill_status": vendorBillStatus,
+        "bill": bill,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,

@@ -64,15 +64,15 @@ class _LoginScreenState extends State<LoginScreen> {
               Text("Mobile Number",
                   style: AppStyle.normal_14(AppColors.black20)),
               SizedBox(height: size.height * 0.01),
-              customTextField(
+              CustomTextField(
                   keyboardType: TextInputType.number,
                   maxLength: 10,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   hintText: 'Enter your mobile number',
                   controller: mobileController,
-                  // validator: returnValidation,
+                  validator: null,
                   onChanged: returnValidation),
-              const SizedBox(height: 2),
+              SizedBox(height: size.height * 0.005),
               Text(validText ?? '',
                   style: AppStyle.normal_13(AppColors.redColor)),
               SizedBox(height: size.height * 0.03),

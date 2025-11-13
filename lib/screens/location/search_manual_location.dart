@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:market_place_customer/utils/exports.dart';
+
 import '../../data/models/dashbaord_offers_model.dart';
 
 class SearchLocationPage extends StatefulWidget {
@@ -183,6 +184,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
 
   /// Fetch popular vendors data
   List<PopularVendorElement> popularVendor = [];
+
   fetchData() {
     final vendorsState = context.read<FetchDashboardOffersBloc>().state;
     if (vendorsState is FetchDashboardOffersSuccess) {
@@ -193,6 +195,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
 
   /// fetch user's current location services
   final locationService = LocationService();
+
   void getUserLocationAndNavigate() async {
     EasyLoading.show(status: "Please wait...");
     try {
@@ -221,7 +224,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
             SizedBox(height: size.height * 0.02),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.034),
-              child: customTextField(
+              child: CustomTextField(
                 keyboardType: TextInputType.text,
                 hintText: 'Search your location',
                 controller: controller,

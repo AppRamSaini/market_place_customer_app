@@ -4,6 +4,7 @@ import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_de
 import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_state.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_event.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_state.dart';
+import 'package:market_place_customer/screens/payment_section/qr_payment_management.dart';
 import 'package:market_place_customer/screens/qr_management/update_bil_amount.dart';
 import 'package:market_place_customer/utils/exports.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -48,6 +49,23 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ///  Firebase me verifying status create/update
+      verifyPaymentForUsedOffers(offers: widget.qrContent, context: context);
+
+      ///  Real-time listener activate
+      listenSpecificOfferVerificationForUsedOffers(
+          context: context, offerId: widget.qrContent.offerId);
+
+      ///  Fetch UI updates
+      onRefreshData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> customerInfo = {
       'offer_id': widget.qrContent.offerId.toString()
@@ -64,6 +82,13 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
             } else if (state is UpdateBillAmountSuccess) {
               onRefreshData();
             }
+          },
+        ),
+        BlocListener<PurchasedOffersBloc, PurchasedOffersState>(
+          listener: (context, state) {
+            // if (state is PurchasedOffersSuccess) {
+            //   onRefreshData();
+            // }
           },
         )
       ],
@@ -94,6 +119,9 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                   : singleOffer.percentage!.minBillAmount ?? 0;
 
               amountController.text = widget.qrContent.totalAmount;
+
+              final billAmount =
+                  double.parse(offersData.finalAmount.toString());
 
               return RefreshIndicator(
                 onRefresh: onRefreshData,
@@ -198,7 +226,7 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                                                 bottom: Radius.circular(16)),
                                       ),
                                       child: Text(
-                                        "Total Amount: ₹${widget.qrContent.finalAmount.toString()}",
+                                        "Total Amount: ₹${billAmount.toStringAsFixed(2)}",
                                         textAlign: TextAlign.center,
                                         style: AppStyle.medium_16(
                                             AppColors.white10),

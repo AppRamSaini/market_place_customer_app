@@ -59,7 +59,9 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
               bool isExpired = offer.offer?.flat?.isExpired ??
                   offer.offer?.percentage?.isExpired ??
                   false;
-              return offer.status == 'active' && !isExpired;
+              return offer.status == 'active' &&
+                  !isExpired &&
+                  offer.vendorBillStatus == false;
             }).toList();
 
             final expiredOffers = offersData.where((offer) {
@@ -69,9 +71,12 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
               return isExpired;
             }).toList();
 
-            final usedOffers = offersData
-                .where((offer) => offer.status == 'redeemed')
-                .toList();
+            final usedOffers = offersData.where((offer) {
+              bool isExpired = offer.offer?.flat?.isExpired ??
+                  offer.offer?.percentage?.isExpired ??
+                  false;
+              return !isExpired && offer.vendorBillStatus == true;
+            }).toList();
 
             final tabs = [
               "Active (${activeOffers.length})",
@@ -145,8 +150,9 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
           bool isExpired = offer.offer?.flat?.isExpired ??
               offer.offer?.percentage?.isExpired ??
               false;
-          bool isPurchased = offer.status == 'redeemed';
+          bool isPurchased = offer.vendorBillStatus == true;
 
+          print('=====$isFlat');
           DateTime? expiredTime = isFlat
               ? offer.offer?.flat?.expiryDate! ?? DateTime.now()
               : offer.offer?.percentage!.expiryDate! ?? DateTime.now();
@@ -159,7 +165,7 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
               : offer.offer?.percentage?.minBillAmount ?? "";
 
           final flatData = isFlat
-              ? "Flat ₹${offer.offer?.flat?.maxDiscountCap ?? ''}"
+              ? "Flat ₹${offer.offer?.flat?.discountPercentage ?? ''}"
               : "Flat ${offer.offer?.percentage?.discountPercentage ?? ''}%";
 
           final amount = isFlat

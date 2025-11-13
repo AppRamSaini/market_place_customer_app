@@ -91,7 +91,7 @@ Future<void> updateBillAmount({
                   const SizedBox(height: 25),
 
                   // Text Field
-                  customTextField(
+                  CustomTextField(
                     controller: amountController,
                     hintText: "Enter amount",
                     keyboardType: TextInputType.number,

@@ -109,7 +109,7 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
                   Text("Your Name",
                       style: AppStyle.medium_16(AppColors.black20)),
                   SizedBox(height: size.height * 0.01),
-                  customTextField(
+                  CustomTextField(
                       keyboardType: TextInputType.text,
                       hintText: 'Your name',
                       controller: nameController,
@@ -123,7 +123,7 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
                   Text("Mobile Number",
                       style: AppStyle.medium_16(AppColors.black20)),
                   SizedBox(height: size.height * 0.01),
-                  customTextField(
+                  CustomTextField(
                       keyboardType: TextInputType.phone,
                       readOnly: true,
                       hintText: 'Mobile number',
@@ -140,7 +140,7 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
                   Text("Email Address (Optional)",
                       style: AppStyle.medium_16(AppColors.black20)),
                   SizedBox(height: size.height * 0.01),
-                  customTextField(
+                  CustomTextField(
                     keyboardType: TextInputType.text,
                     hintText: 'Enter your email',
                     controller: emailController,
