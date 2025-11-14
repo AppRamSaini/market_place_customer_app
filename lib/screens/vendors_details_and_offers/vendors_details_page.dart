@@ -329,8 +329,7 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                                 width: size.height * 0.19,
                                 child: GestureDetector(
                                     onTap: () {
-                                      bool isPurchased =
-                                          offersData.purchaseStatus ?? false;
+                                
                                       bool isExpired = offersData.flat != null
                                           ? (offersData.flat!.isExpired ??
                                               false)
@@ -341,10 +340,7 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                                         return;
                                       }
 
-                                      // if (isPurchased) {
-                                      //   showAlreadyPurchasedDialog(context);
-                                      //   return;
-                                      // }
+                                    
 
                                       AppRouter().navigateTo(
                                         context,
