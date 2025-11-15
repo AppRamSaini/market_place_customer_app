@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/screens/purchased_history/purchased_offers_details.dart';
+import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 import '../../data/models/purchased_offers_history_model.dart';
@@ -183,6 +184,11 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
                 horizontal: size.width * 0.03, vertical: size.height * 0.005),
             child: GestureDetector(
                 onTap: () {
+                  if (isExpired) {
+                    showOfferExpiredDialog(context);
+                    return;
+                  }
+
                   AppRouter().navigateTo(context,
                       PurchasedOfferDetailsPage(offersId: offer.id ?? ''));
                 },

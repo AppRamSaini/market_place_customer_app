@@ -427,7 +427,6 @@ class _SettingsPageUiPageState extends State<SettingsPageUiPage> {
                               showLogoutPermissionDialog(context,
                                   onConfirm: () {
                                 EasyLoading.show();
-                                Navigator.pop(context);
                                 Future.delayed(const Duration(seconds: 2), () {
                                   EasyLoading.dismiss();
                                   LocalStorage.clearAll(context);

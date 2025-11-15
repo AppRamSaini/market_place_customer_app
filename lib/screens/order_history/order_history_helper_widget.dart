@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:animate_do/animate_do.dart';
-import 'package:intl/intl.dart';
 import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_bloc.dart';
 import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_event.dart';
 import 'package:market_place_customer/data/models/order_history_%20model.dart';
+import 'package:market_place_customer/screens/settings/help_support_page.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendors_gallery_view.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
@@ -28,6 +28,9 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
   Widget build(BuildContext context) {
     final order = widget.orderData;
     final vendor = order.vendor!;
+    final offers = order.offer;
+
+    final bool hasFlat = offers != null && offers.flat != null;
 
     final payment = order.paymentId!;
     final savedBill = order.bill != null;
@@ -56,15 +59,14 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Vendor Avatar
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
-                          vendor.avatar ?? '',
+                          vendor.businessLogo ?? '',
                           width: 54,
                           height: 54,
                           fit: BoxFit.cover,
@@ -93,7 +95,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              order.offer!.flat != null
+                              hasFlat
                                   ? order.offer!.flat!.title ?? ''
                                   : order.offer!.percentage!.title ?? '',
                               style: const TextStyle(
@@ -105,21 +107,12 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                         ),
                       ),
                       // Order Date & Time
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                              DateFormat('dd MMM yyyy').format(
-                                  DateTime.parse(order.createdAt.toString())),
-                              style: AppStyle.normal_13(AppColors.black50)),
-                          const SizedBox(height: 3),
-                          Text(
-                            TimeOfDay.fromDateTime(
-                              DateTime.parse(order.createdAt.toString()),
-                            ).format(context),
-                            style: AppStyle.normal_13(AppColors.black50),
-                          ),
-                        ],
+                      SizedBox(
+                        width: size.width * 0.28,
+                        child: Text(
+                            formatToLocalDateTime(order.createdAt.toString()),
+                            textAlign: TextAlign.right,
+                            style: AppStyle.normal_13(AppColors.black50)),
                       ),
                     ],
                   ),
@@ -136,15 +129,19 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () async {
-                              print(
-                                order.id.toString(),
-                              );
-                              _pickedImage = await pickImageSheet(context);
-                              if (_pickedImage == null) return;
-                              context.read<SaveBillBloc>().add(AddBillEvent(
-                                  File(_pickedImage!.path),
-                                  order.id.toString(),
-                                  context));
+                              if (!savedBill) {
+                                _pickedImage = await pickImageSheet(context);
+                                if (_pickedImage == null) return;
+                                context.read<SaveBillBloc>().add(AddBillEvent(
+                                    File(_pickedImage!.path),
+                                    order.id.toString(),
+                                    context));
+                              } else {
+                                snackBar(
+                                    context,
+                                    "You have already saved this bill.",
+                                    AppColors.red600);
+                              }
                             },
                             icon: !savedBill
                                 ? const Icon(Icons.save_alt, size: 18)
@@ -181,7 +178,10 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                         ],
                       ),
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          AppRouter()
+                              .navigateTo(context, const HelpSupportPage());
+                        },
                         child: Row(
                           children: [
                             Text("Need help?",
@@ -202,20 +202,20 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                   expanded: expanded,
                   onTap: () => setState(() => expanded = !expanded),
                   title:
-                      "Paid ₹${order.finalAmount?.toStringAsFixed(0)} | Order ID: ${order.id!.substring(0, 6)}",
+                      "Paid ₹${order.finalAmount?.toStringAsFixed(0)} | Order ID: ${order.id!.substring(0, 8).toUpperCase()}",
                   children: [
                     _infoRow("Vendor Email", vendor.email ?? ''),
                     _infoRow(
                         "Offer",
-                        order.offer!.flat != null
+                        hasFlat
                             ? order.offer!.flat!.description ?? ''
                             : order.offer!.percentage!.description ?? ''),
-                    _infoRow("Discount", "₹${order.discount}"),
                     _infoRow("Total Amount", "₹${order.totalAmount}"),
+                    _infoRow("Discount", "₹${order.discount}"),
+                    _infoRow("Final Paid Amount", "₹${order.finalAmount}"),
                     _infoRow("Payment ID", payment.paymentId ?? ''),
                     _infoRow(
                         "Payment Method", payment.paymentMethod.toString()),
-                    _infoRow("Status", order.status.toString().toUpperCase()),
                   ],
                 ),
               ],
@@ -232,26 +232,14 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
       child: Row(
         children: [
           Expanded(
-            flex: 3,
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Color(0xFF6B7280),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
+              flex: 4,
+              child:
+                  Text(title, style: AppStyle.normal_15(AppColors.greyColor))),
+          const SizedBox(width: 5),
           Expanded(
             flex: 5,
-            child: Text(
-              value.isNotEmpty ? value : "-",
-              style: const TextStyle(
-                fontSize: 13.5,
-                color: Color(0xFF111827),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: Text(value.isNotEmpty ? value : "-",
+                style: AppStyle.normal_15(AppColors.greyColor)),
           ),
         ],
       ),

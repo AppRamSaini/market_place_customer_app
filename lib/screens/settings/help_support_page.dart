@@ -80,7 +80,7 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppbar(title: "Terms & Conditions", context: context),
+      appBar: customAppbar(title: "Help & Support", context: context),
       body: Stack(
         children: [
           /// WebView with fade animation

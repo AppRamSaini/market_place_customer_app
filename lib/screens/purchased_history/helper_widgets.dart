@@ -139,10 +139,10 @@ class PurchasedOffersHistoryCardWidget extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 50, vertical: 6),
                   color: Colors.green.withOpacity(0.8),
                   child: const Text(
-                    "PURCHASED",
+                    "Offers Used",
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold),
                   ),
                 ),

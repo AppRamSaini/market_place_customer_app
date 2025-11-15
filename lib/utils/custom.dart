@@ -209,3 +209,13 @@ String extractAreaCity(String address) {
 String formatDate2(DateTime dateTime) {
   return DateFormat('dd MMMM yy').format(dateTime);
 }
+
+String formatToLocalDateTime(String utcTimeString) {
+  try {
+    final utcDate = DateTime.parse(utcTimeString);
+    final localDate = utcDate.toLocal(); // convert UTC → local time
+    return DateFormat('dd MMM yyyy, hh:mm a').format(localDate);
+  } catch (e) {
+    return "Invalid Date";
+  }
+}
