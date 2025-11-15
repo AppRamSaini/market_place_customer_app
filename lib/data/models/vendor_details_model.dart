@@ -607,13 +607,13 @@ class Timing {
 }
 
 class OpeningHours {
-  Fri? mon;
-  Fri? tue;
-  Fri? wed;
-  Fri? thu;
-  Fri? fri;
-  Fri? sat;
-  Fri? sun;
+  DayHour? mon;
+  DayHour? tue;
+  DayHour? wed;
+  DayHour? thu;
+  DayHour? fri;
+  DayHour? sat;
+  DayHour? sun;
 
   OpeningHours({
     this.mon,
@@ -626,13 +626,13 @@ class OpeningHours {
   });
 
   factory OpeningHours.fromJson(Map<String, dynamic> json) => OpeningHours(
-        mon: json["Mon"] == null ? null : Fri.fromJson(json["Mon"]),
-        tue: json["Tue"] == null ? null : Fri.fromJson(json["Tue"]),
-        wed: json["Wed"] == null ? null : Fri.fromJson(json["Wed"]),
-        thu: json["Thu"] == null ? null : Fri.fromJson(json["Thu"]),
-        fri: json["Fri"] == null ? null : Fri.fromJson(json["Fri"]),
-        sat: json["Sat"] == null ? null : Fri.fromJson(json["Sat"]),
-        sun: json["Sun"] == null ? null : Fri.fromJson(json["Sun"]),
+        mon: _parse(json["Mon"]),
+        tue: _parse(json["Tue"]),
+        wed: _parse(json["Wed"]),
+        thu: _parse(json["Thu"]),
+        fri: _parse(json["Fri"]),
+        sat: _parse(json["Sat"]),
+        sun: _parse(json["Sun"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -644,23 +644,39 @@ class OpeningHours {
         "Sat": sat?.toJson(),
         "Sun": sun?.toJson(),
       };
+
+  /// SAFE PARSER (FINAL)
+  static DayHour? _parse(dynamic data) {
+    if (data == null) return null;
+
+    // If backend gives: "Instance of OpeningHour"
+    if (data.toString().contains("Instance of")) {
+      return null; // invalid → ignore safely
+    }
+
+    if (data is Map<String, dynamic>) {
+      return DayHour.fromJson(data);
+    }
+
+    return null;
+  }
 }
 
-class Fri {
+class DayHour {
   String? open;
   String? close;
   bool? active;
 
-  Fri({
+  DayHour({
     this.open,
     this.close,
     this.active,
   });
 
-  factory Fri.fromJson(Map<String, dynamic> json) => Fri(
-        open: json["open"],
-        close: json["close"],
-        active: json["active"],
+  factory DayHour.fromJson(Map<String, dynamic> json) => DayHour(
+        open: json["open"]?.toString(),
+        close: json["close"]?.toString(),
+        active: json["active"] == true,
       );
 
   Map<String, dynamic> toJson() => {
@@ -668,16 +684,4 @@ class Fri {
         "close": close,
         "active": active,
       };
-}
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }

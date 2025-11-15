@@ -27,9 +27,8 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
   @override
   Widget build(BuildContext context) {
     final order = widget.orderData;
-    final user = order.user!;
     final vendor = order.vendor!;
-    final flat = order.offer!.flat != null;
+
     final payment = order.paymentId!;
     final savedBill = order.bill != null;
     return FadeInRightBig(
@@ -94,7 +93,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              flat
+                              order.offer!.flat != null
                                   ? order.offer!.flat!.title ?? ''
                                   : order.offer!.percentage!.title ?? '',
                               style: const TextStyle(
@@ -208,7 +207,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                     _infoRow("Vendor Email", vendor.email ?? ''),
                     _infoRow(
                         "Offer",
-                        flat
+                        order.offer!.flat != null
                             ? order.offer!.flat!.description ?? ''
                             : order.offer!.percentage!.description ?? ''),
                     _infoRow("Discount", "₹${order.discount}"),

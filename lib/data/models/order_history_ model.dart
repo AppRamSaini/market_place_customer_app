@@ -91,6 +91,7 @@ class RedeemedOffer {
   DateTime? updatedAt;
   int? v;
   String? bill;
+  dynamic usedTime;
 
   RedeemedOffer({
     this.id,
@@ -107,6 +108,7 @@ class RedeemedOffer {
     this.updatedAt,
     this.v,
     this.bill,
+    this.usedTime,
   });
 
   factory RedeemedOffer.fromJson(Map<String, dynamic> json) => RedeemedOffer(
@@ -130,6 +132,7 @@ class RedeemedOffer {
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
         bill: json["bill"],
+        usedTime: json["used_time"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -147,6 +150,7 @@ class RedeemedOffer {
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
         "bill": bill,
+        "used_time": usedTime,
       };
 }
 
@@ -176,7 +180,7 @@ class Offer {
   factory Offer.fromJson(Map<String, dynamic> json) => Offer(
         id: json["_id"],
         vendor: json["vendor"],
-        flat: json["flat"] == null ? null : Flat.fromJson(json["percentage"]),
+        flat: json["flat"] == null ? null : Flat.fromJson(json["flat"]),
         percentage: json["percentage"] == null
             ? null
             : Percentage.fromJson(json["percentage"]),
@@ -194,7 +198,7 @@ class Offer {
   Map<String, dynamic> toJson() => {
         "_id": id,
         "vendor": vendor,
-        "flat": flat!.toJson(),
+        "flat": flat?.toJson(),
         "percentage": percentage?.toJson(),
         "type": type,
         "status": status,
@@ -218,7 +222,6 @@ class Percentage {
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
-  String? status;
 
   Percentage({
     this.id,
@@ -234,7 +237,6 @@ class Percentage {
     this.createdAt,
     this.updatedAt,
     this.v,
-    this.status,
   });
 
   factory Percentage.fromJson(Map<String, dynamic> json) => Percentage(
@@ -257,7 +259,6 @@ class Percentage {
             ? null
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
-        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -274,7 +275,6 @@ class Percentage {
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
-        "status": status,
       };
 }
 
@@ -292,7 +292,6 @@ class Flat {
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
-  String? status;
 
   Flat({
     this.id,
@@ -308,7 +307,6 @@ class Flat {
     this.createdAt,
     this.updatedAt,
     this.v,
-    this.status,
   });
 
   factory Flat.fromJson(Map<String, dynamic> json) => Flat(
@@ -331,7 +329,6 @@ class Flat {
             ? null
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
-        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -348,7 +345,6 @@ class Flat {
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
-        "status": status,
       };
 }
 
@@ -411,7 +407,6 @@ class PaymentId {
 }
 
 class User {
-  dynamic deletedAt;
   String? id;
   String? name;
   int? phone;
@@ -422,9 +417,9 @@ class User {
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
+  String? businessLogo;
 
   User({
-    this.deletedAt,
     this.id,
     this.name,
     this.phone,
@@ -435,10 +430,10 @@ class User {
     this.createdAt,
     this.updatedAt,
     this.v,
+    this.businessLogo,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        deletedAt: json["deleted_at"],
         id: json["_id"],
         name: json["name"],
         phone: json["phone"],
@@ -453,10 +448,10 @@ class User {
             ? null
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
+        businessLogo: json["business_logo"],
       );
 
   Map<String, dynamic> toJson() => {
-        "deleted_at": deletedAt,
         "_id": id,
         "name": name,
         "phone": phone,
@@ -467,5 +462,6 @@ class User {
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
+        "business_logo": businessLogo,
       };
 }

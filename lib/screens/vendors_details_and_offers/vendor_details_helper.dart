@@ -1,6 +1,7 @@
-import 'package:market_place_customer/data/models/vendor_details_model.dart';
-import '../../utils/exports.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:market_place_customer/data/models/vendor_details_model.dart';
+
+import '../../utils/exports.dart';
 
 class OffersDataCardWidget extends StatelessWidget {
   final String imageUrl;
@@ -177,7 +178,7 @@ String getTodayTiming(Timing timing) {
   }
 
   // 🔹 Step 2: आज का Opening Hour ऑब्जेक्ट निकालो
-  Fri? todayTiming;
+  DayHour? todayTiming;
   switch (todayKey) {
     case "Mon":
       todayTiming = timing.openingHours?.mon;

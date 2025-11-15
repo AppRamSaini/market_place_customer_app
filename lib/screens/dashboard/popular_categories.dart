@@ -1,5 +1,4 @@
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
-import 'package:market_place_customer/screens/dashboard/helper_widgets.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class PopularCategories extends StatelessWidget {
@@ -22,7 +21,9 @@ class PopularCategories extends StatelessWidget {
               child: CategoryCard(
                 carWidth: size.width * 0.25,
                 imgHeight: size.width * 0.25,
-                imageUrl: categoryData![index].name ?? '',
+                imageUrl:
+                    "https://t4.ftcdn.net/jpg/03/31/04/57/360_F_331045790_C1JRCk4HIdVkiyrsJ16vzMuuWhZnBpbE.jpg" ??
+                        '',
                 name: categoryData![index].name ?? '',
               ),
             ),
@@ -43,7 +44,8 @@ class PopularCategories extends StatelessWidget {
         itemBuilder: (_, index) => SubCategoryCard(
           carWidth: size.width * 0.4,
           imgHeight: size.height * 0.6,
-          imageUrl: '',
+          imageUrl:
+              'https://www.eatright.org/-/media/images/eatright-landing-pages/fruitslp_804x482.jpg',
           name: "The Burger Farm",
           location: "Valise Nagar",
           distance: "7.3 km",

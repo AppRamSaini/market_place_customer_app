@@ -5,6 +5,7 @@ import 'package:market_place_customer/screens/dashboard/nearby_vendors.dart';
 import 'package:market_place_customer/screens/dashboard/popular_categories.dart';
 import 'package:market_place_customer/screens/dashboard/search_vendors.dart';
 import 'package:market_place_customer/screens/dashboard/view_all_vendors_page.dart';
+import 'package:market_place_customer/screens/dilogs/exit_page_dilog.dart';
 import 'package:market_place_customer/screens/location/search_manual_location.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
@@ -80,8 +81,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => await exitPageDialog(context),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        bool? shouldExit = await showExitConfirmationSheet(context);
+        if (shouldExit != null && shouldExit == true) {
+          SystemNavigator.pop();
+        }
+      },
       child: Scaffold(
         body: BlocBuilder<FetchDashboardOffersBloc, FetchDashboardOffersState>(
           builder: (context, state) {

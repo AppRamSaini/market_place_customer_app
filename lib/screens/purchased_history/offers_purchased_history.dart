@@ -152,7 +152,6 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
               false;
           bool isPurchased = offer.vendorBillStatus == true;
 
-          print('=====$isFlat');
           DateTime? expiredTime = isFlat
               ? offer.offer?.flat?.expiryDate! ?? DateTime.now()
               : offer.offer?.percentage!.expiryDate! ?? DateTime.now();

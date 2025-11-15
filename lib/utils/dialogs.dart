@@ -199,58 +199,6 @@ void sessionExpiredDialog(BuildContext context) {
   });
 }
 
-/// exit page dialog
-Future exitPageDialog(BuildContext context) async {
-  await showModalBottomSheet(
-    context: context,
-    shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(5))),
-    builder: (_) => Padding(
-      padding: const EdgeInsets.only(left: 12, right: 12, bottom: 10),
-      child: SizedBox(
-        width: size.width,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("EXIT PAGE CONFIRMATION",
-                    style: AppStyle.medium_16(AppColors.blackColor)),
-                IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
-                      Icons.clear,
-                      color: AppColors.blackColor,
-                    ))
-              ],
-            ),
-            customDivider(),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CustomButton(
-                  bgColor: AppColors.themeColor,
-                  txtColor: AppColors.whiteColor,
-                  onPressed: () => Navigator.pop(context),
-                  txt: "CANCEL",
-                ),
-                CustomButton(
-                  bgColor: AppColors.themeColor,
-                  txtColor: AppColors.whiteColor,
-                  onPressed: () async {},
-                  txt: "EXIT",
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
 /// pending payment verifications dialog
 void pendingPaymentDialog(BuildContext context) {
   showGeneralDialog(
