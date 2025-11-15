@@ -334,6 +334,7 @@ class _SettingsPageUiPageState extends State<SettingsPageUiPage> {
       .read<FetchProfileDetailsBloc>()
       .add(FetchProfileEvent(context: context));
 
+  /// new code
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
