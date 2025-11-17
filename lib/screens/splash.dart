@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
     print('ADD==>>$address');
 
     // Navigate after 2.5 seconds
-    Future.delayed(const Duration(milliseconds: 2500), () async {
+    Future.delayed(const Duration(milliseconds: 1500), () async {
       try {
         final locationService = LocationService();
         await locationService.fetchAndSaveCurrentLocation();

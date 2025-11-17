@@ -22,7 +22,6 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   @override
   void initState() {
     super.initState();
-    _fetchData();
     _scrollController.addListener(_onScroll);
   }
 
@@ -62,8 +61,6 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           } else if (state is SaveBillFailure) {
             final errorMsg = state.error.toString();
             snackBar(context, errorMsg.toString(), AppColors.redColor);
-
-            print(errorMsg);
             EasyLoading.dismiss();
           } else if (state is SaveBillSuccess) {
             final message = state.saveBillModel.message;
@@ -77,7 +74,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       ],
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: customAppbar(title: "Order History", context: context),
+        appBar: customAppbar(
+            title: "Order History", context: context, hideLeading: true),
         body: BlocBuilder<OrderHistoryBloc, OrderHistoryState>(
           builder: (context, state) {
             if (state is OrderHistoryLoading && _page == 1) {
@@ -104,6 +102,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 onRefresh: _fetchData,
                 child: ListView.builder(
                   controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(12),
                   itemCount: orders.length + (state.isPaginating ? 1 : 0),
                   itemBuilder: (context, index) {

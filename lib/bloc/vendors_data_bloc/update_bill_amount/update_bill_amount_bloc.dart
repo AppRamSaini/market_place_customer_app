@@ -10,7 +10,7 @@ class UpdateBillAmountBloc
     on<SubmitBillAmountEvent>(updateBillAmountApi);
   }
 
-  Future<void> updateBillAmountApi(
+  Future updateBillAmountApi(
       SubmitBillAmountEvent event, Emitter<UpdateBillAmountState> emit) async {
     emit(UpdateBillAmountLoading());
     try {
@@ -19,9 +19,10 @@ class UpdateBillAmountBloc
 
       if (updatedBill != null) {
         if (updatedBill is String) {
-          snackBar(event.context, updatedBill.toString(), AppColors.redColor);
+          emit(UpdateBillAmountFailure(error: updatedBill.toString()));
         } else {
-          emit(UpdateBillAmountSuccess(billAmountModel: updatedBill));
+          emit(UpdateBillAmountSuccess(
+              billAmountModel: updatedBill, pageSource: event.pageSource));
         }
       } else {
         emit(UpdateBillAmountInvalidResult());

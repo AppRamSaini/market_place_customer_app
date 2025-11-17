@@ -1,11 +1,11 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_bloc.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_event.dart';
-import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_state.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_bloc.dart';
+import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_event.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_state.dart';
 import 'package:market_place_customer/screens/dilogs/already_used_this_offers.dart';
 import 'package:market_place_customer/screens/purchased_history/expired_timer.dart';
+import 'package:market_place_customer/screens/purchased_history/helper_widgets.dart';
 import 'package:market_place_customer/screens/qr_management/generate_qr_code.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendor_details_helper.dart';
 import 'package:market_place_customer/utils/exports.dart';
@@ -65,7 +65,7 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
       }
     });
 
-    onRefreshData();
+    _onRefreshData();
     maxAmtController.addListener(_onAmountChange);
   }
 
@@ -78,7 +78,7 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
     super.dispose();
   }
 
-  Future onRefreshData() async {
+  Future _onRefreshData() async {
     context.read<PurchasedOffersBloc>().add(PurchasedOffersDetailsEvent(
         context: context, offersId: widget.offersId));
   }
@@ -168,54 +168,15 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
     if (state is! PurchasedOffersSuccess) return;
 
     final offersData = state.offersDetailModel.data!;
-    final singleOffer = offersData.offer!;
-    final isFlat = singleOffer.flat != null;
 
-    final offerName = isFlat
-        ? singleOffer.flat!.title ?? ''
-        : singleOffer.percentage!.title ?? '';
-
-    final flatData = isFlat
-        ? "Flat ₹${singleOffer.flat!.discountPercentage ?? 0} OFF"
-        : "Flat ${singleOffer.percentage!.discountPercentage ?? 0}% OFF";
-
-    final vendorId = offersData.offer!.vendor.toString() ?? '';
     final offerId = offersData.id ?? '';
 
-    final customerId = LocalStorage.getString(Pref.userId);
-
-    final qrCodeContentModel = QrCodeContentModel(
-        title: offerName,
-        totalAmount: maxAmtController.text,
-        vendorId: vendorId,
-        flatData: flatData,
+    // Dispatch event
+    context.read<UpdateBillAmountBloc>().add(SubmitBillAmountEvent(
+        context: context,
         offerId: offerId,
-        customerId: customerId ?? '',
-        finalAmount: _payableAmount.toString());
-
-    // // Dispatch event
-    // context.read<UpdateBillAmountBloc>().add(
-    //       SubmitBillAmountEvent(
-    //         context: context,
-    //         offerId: offerId,
-    //         amount: _payableAmount.toString(),
-    //       ),
-    //     );
-
-    // ✅ Wait for BLoC update using a listener or small delay
-    await Future.delayed(const Duration(milliseconds: 300));
-    AppRouter().navigateTo(
-      context,
-      OfferQRCodeCard(qrContent: qrCodeContentModel),
-    );
-    // final paymentState = context.read<UpdateBillAmountBloc>().state;
-    // if (paymentState is UpdateBillAmountSuccess &&
-    //     paymentState.billAmountModel.status == true) {
-    //   AppRouter().navigateTo(
-    //     context,
-    //     OfferQRCodeCard(qrContent: qrCodeContentModel),
-    //   );
-    // }
+        amount: double.parse(maxAmtController.text.toString()),
+        pageSource: PageSource.fromDetailsPage));
   }
 
   @override
@@ -224,28 +185,51 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
       listeners: [
         BlocListener<UpdateBillAmountBloc, UpdateBillAmountState>(
             listener: (context, state) {
+          EasyLoading.dismiss();
           if (state is UpdateBillAmountLoading) {
+            EasyLoading.show(status: "Generating ....");
           } else if (state is UpdateBillAmountSuccess) {
-            final payment = state.billAmountModel.data;
+            final updatedBillAmount =
+                state.billAmountModel.data?.totalAmount ?? 0;
 
-            if (maxAmtController.text.isNotEmpty) {
-              // Dono values numeric type me lo
-              final totalAmount = payment?.totalAmount?.toDouble() ?? 0.0;
-              final discount = _calculatedDiscount.toDouble();
+            final offersData = state.billAmountModel.data!;
+            final singleOffer = offersData.offer!;
+            final isFlat = singleOffer.flat != null;
 
-              // Dono ko add karo
-              double value = discount + totalAmount;
+            final offerName = isFlat
+                ? singleOffer.flat!.title ?? ''
+                : singleOffer.percentage!.title ?? '';
 
-              // Check karo agar decimal .0 hai to integer me likho
-              if (value == value.toInt()) {
-                maxAmtController.text = value.toInt().toString();
-              } else {
-                maxAmtController.text = value.toString();
+            final flatData = isFlat
+                ? "Flat ₹${singleOffer.flat!.discountPercentage ?? 0} OFF"
+                : "Flat ${singleOffer.percentage!.discountPercentage ?? 0}% OFF";
+
+            final vendorId = offersData.offer!.vendor.toString() ?? '';
+            final offerId = offersData.id ?? '';
+
+            final customerId = LocalStorage.getString(Pref.userId);
+
+            final qrCodeContentModel = QrCodeContentModel(
+                title: offerName,
+                totalAmount: maxAmtController.text,
+                vendorId: vendorId,
+                flatData: flatData,
+                offerId: offerId,
+                customerId: customerId ?? '',
+                finalAmount: maxAmtController.text.toString());
+
+            /// update Bill Amount in Offer Details Page
+            if (state.pageSource == PageSource.fromQrPage) {
+              _onRefreshData();
+              if (maxAmtController.text.isNotEmpty) {
+                maxAmtController.text = updatedBillAmount.toInt().toString();
               }
+            } else {
+              AppRouter().navigateTo(
+                  context, OfferQRCodeCard(qrContent: qrCodeContentModel));
             }
           } else if (state is UpdateBillAmountFailure) {
-            var msg = state.error;
-            snackBar(context, msg, AppColors.redColor);
+            snackBar(context, state.error, AppColors.redColor);
           }
         }),
         BlocListener<PurchasedOffersBloc, PurchasedOffersState>(
@@ -290,7 +274,7 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
               return Stack(
                 children: [
                   RefreshIndicator(
-                    onRefresh: onRefreshData,
+                    onRefresh: _onRefreshData,
                     child: Form(
                       key: _formKey,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -323,9 +307,9 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                             title: Opacity(
                               opacity: _appBarOpacity,
                               child: Text(
-                                singleOffer.flat != null
+                                capitalizeFirstLetter(singleOffer.flat != null
                                     ? singleOffer.flat!.title.toString()
-                                    : singleOffer.percentage!.title.toString(),
+                                    : singleOffer.percentage!.title.toString()),
                                 style: AppStyle.normal_18(AppColors.whiteColor),
                               ),
                             ),
@@ -334,20 +318,16 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                               background: Stack(
                                 fit: StackFit.expand,
                                 children: [
-                                  Hero(
-                                    tag: 'offerHero-${widget.offersId}',
-                                    child: FadeInImage(
-                                      placeholder:
-                                          const AssetImage(Assets.dummy),
-                                      imageErrorBuilder: (_, child, st) =>
-                                          Image.asset(Assets.dummy,
-                                              fit: BoxFit.cover),
-                                      image: imageUrl!.isNotEmpty
-                                          ? NetworkImage(imageUrl)
-                                          : const AssetImage(Assets.dummy)
-                                              as ImageProvider,
-                                      fit: BoxFit.cover,
-                                    ),
+                                  FadeInImage(
+                                    placeholder: const AssetImage(Assets.dummy),
+                                    imageErrorBuilder: (_, child, st) =>
+                                        Image.asset(Assets.dummy,
+                                            fit: BoxFit.cover),
+                                    image: imageUrl!.isNotEmpty
+                                        ? NetworkImage(imageUrl)
+                                        : const AssetImage(Assets.dummy)
+                                            as ImageProvider,
+                                    fit: BoxFit.cover,
                                   ),
 
                                   // dark gradient for text contrast
@@ -376,11 +356,10 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 12, vertical: 10),
                                           decoration: BoxDecoration(
-                                            color: AppColors.whiteColor
-                                                .withOpacity(0.9),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
+                                              color: AppColors.whiteColor
+                                                  .withOpacity(0.9),
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
                                           child: Row(
                                             children: [
                                               Expanded(
@@ -389,19 +368,22 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      singleOffer.flat != null
-                                                          ? singleOffer
-                                                              .flat!.title
-                                                              .toString()
-                                                          : singleOffer
-                                                              .percentage!.title
-                                                              .toString(),
-                                                      style: AppStyle.medium_16(
-                                                          AppColors.blackColor),
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
+                                                        capitalizeFirstLetter(
+                                                            singleOffer.flat !=
+                                                                    null
+                                                                ? singleOffer
+                                                                    .flat!.title
+                                                                    .toString()
+                                                                : singleOffer
+                                                                    .percentage!
+                                                                    .title
+                                                                    .toString()),
+                                                        style: AppStyle
+                                                            .medium_16(AppColors
+                                                                .blackColor),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis),
                                                     const SizedBox(height: 4),
                                                     Text(
                                                       singleOffer.flat != null
@@ -443,9 +425,10 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                                 child: FadeInDown(
                                   duration: const Duration(milliseconds: 500),
                                   child: Text(
-                                    singleOffer.flat != null
+                                    capitalizeFirstLetter(singleOffer.flat !=
+                                            null
                                         ? "${singleOffer.flat!.title} • Flat ₹${singleOffer.flat!.discountPercentage} Off"
-                                        : "${singleOffer.percentage!.title} • ${singleOffer.percentage!.discountPercentage}% Off",
+                                        : "${singleOffer.percentage!.title} • ${singleOffer.percentage!.discountPercentage}% Off"),
                                     style: AppStyle.medium_20(
                                         AppColors.themeColor),
                                   ),
@@ -526,8 +509,6 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
                                           },
                                           onChanged: (v) => _onAmountChange(),
                                         ),
-
-                                        const SizedBox(height: 12),
 
                                         // Live calculation summary (animated)
                                         AnimatedSwitcher(

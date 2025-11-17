@@ -1,8 +1,10 @@
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
+
 import '../../utils/exports.dart';
 
 class PopularVendors extends StatelessWidget {
-  List<PopularVendorElement> popularVendor;
+  List<PopularvendorElement> popularVendor;
+
   PopularVendors({super.key, required this.popularVendor});
 
   @override
@@ -10,10 +12,8 @@ class PopularVendors extends StatelessWidget {
     return Column(
       children: [
         SizedBox(height: size.height * 0.03),
-
         ViewAllWidget(title: 'Popular Vendors', onPressed: () {}),
         SizedBox(height: size.height * 0.005),
-
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),

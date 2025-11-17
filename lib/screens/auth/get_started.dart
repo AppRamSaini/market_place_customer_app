@@ -1,10 +1,10 @@
-import 'package:market_place_customer/screens/location/location_services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:market_place_customer/screens/location/search_manual_location.dart';
 import 'package:market_place_customer/utils/exports.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class DetectLocation extends StatefulWidget {
   const DetectLocation({super.key});
+
   @override
   State<DetectLocation> createState() => _DetectLocationState();
 }
@@ -56,10 +56,10 @@ class _DetectLocationState extends State<DetectLocation> {
                     style: AppStyle.normal_16(AppColors.white80),
                   ).animate().fadeIn(duration: 800.ms, delay: 0.ms),
                   SizedBox(height: size.height * 0.02),
-                  CustomButton3(
+                  CustomButtons.rounded(
                       onPressed: getUserLocationAndNavigate,
-                      minWidth: size.width * 0.4,
-                      txt: "Detect My Location",
+                      width: size.width * 0.4,
+                      text: "Detect My Location",
                       bgColor: AppColors.yellowColor),
                   SizedBox(height: size.height * 0.01),
                   TextButton(

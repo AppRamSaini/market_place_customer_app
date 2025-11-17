@@ -1,11 +1,9 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:market_place_customer/data/models/vendor_details_model.dart';
-import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/offers_details.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendor_details_helper.dart';
-import 'package:market_place_customer/screens/vendors_details_and_offers/vendors_gallery_view.dart';
+import 'package:market_place_customer/screens/vendors_details_and_offers/vendor_helper_widgets.dart';
 import 'package:market_place_customer/utils/exports.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -158,48 +156,69 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                           background: Stack(
                             fit: StackFit.expand,
                             children: [
-                              ...List.generate(businessImages.length, (index) {
-                                bool isActive = index == _currentIndex;
-                                return AnimatedOpacity(
-                                  duration: const Duration(
-                                      milliseconds: 2000), // Fade duration
-                                  opacity: isActive ? 1.0 : 0.0,
-                                  curve: Curves.easeInOut,
-                                  child: FadeInImage(
+                              if (businessImages.isEmpty)
+                                FadeInImage(
                                     fit: BoxFit.cover,
                                     width: double.infinity,
                                     placeholder: const AssetImage(Assets.dummy),
-                                    image: businessImages.isNotEmpty
-                                        ? NetworkImage(
-                                            businessImages[index] ?? '')
-                                        : const AssetImage(Assets.dummy)
-                                            as ImageProvider,
+                                    image: NetworkImage(vendorsData
+                                            .businessDetails!.businessLogo
+                                            .toString() ??
+                                        ''),
                                     imageErrorBuilder: (_, child, st) =>
                                         Image.asset(Assets.dummy,
-                                            fit: BoxFit.cover),
-                                  ),
-                                );
-                              }),
+                                            fit: BoxFit.cover))
+                              else
+                                ...List.generate(businessImages.length,
+                                    (index) {
+                                  bool isActive = index == _currentIndex;
+                                  return AnimatedOpacity(
+                                    duration:
+                                        const Duration(milliseconds: 2000),
+                                    // Fade duration
+                                    opacity: isActive ? 1.0 : 0.0,
+                                    curve: Curves.easeInOut,
+                                    child: FadeInImage(
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      placeholder:
+                                          const AssetImage(Assets.dummy),
+                                      image: businessImages.isNotEmpty
+                                          ? NetworkImage(
+                                              businessImages[index] ?? '')
+                                          : const AssetImage(Assets.dummy)
+                                              as ImageProvider,
+                                      imageErrorBuilder: (_, child, st) =>
+                                          Image.asset(Assets.dummy,
+                                              fit: BoxFit.cover),
+                                    ),
+                                  );
+                                }),
 
                               // CarouselSlider for controlling the page index
-                              CarouselSlider.builder(
-                                itemCount: businessImages.length,
-                                itemBuilder: (context, index, realIndex) {
-                                  return const SizedBox.shrink();
-                                },
-                                carouselController: _carouselController,
-                                options: CarouselOptions(
-                                  height: double.infinity,
-                                  viewportFraction: 1.0,
-                                  autoPlay: true,
-                                  autoPlayInterval: const Duration(seconds: 5),
-                                  onPageChanged: (index, reason) {
-                                    setState(() {
-                                      _currentIndex = index;
-                                    });
+                              if (businessImages.isEmpty)
+                                const SizedBox()
+                              else
+                                CarouselSlider.builder(
+                                  itemCount: businessImages.length,
+                                  itemBuilder: (context, index, realIndex) {
+                                    return const SizedBox.shrink();
                                   },
+                                  carouselController: _carouselController,
+                                  options: CarouselOptions(
+                                    height: double.infinity,
+                                    viewportFraction: 1.0,
+                                    autoPlay: true,
+                                    autoPlayInterval:
+                                        const Duration(seconds: 5),
+                                    onPageChanged: (index, reason) {
+                                      setState(() {
+                                        _currentIndex = index;
+                                      });
+                                    },
+                                  ),
                                 ),
-                              ),
+
                               Positioned(
                                 bottom: 0,
                                 left: 0,
@@ -213,20 +232,23 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      AnimatedSmoothIndicator(
-                                        activeIndex: _currentIndex,
-                                        count: 7,
-                                        duration:
-                                            const Duration(milliseconds: 1800),
-                                        effect: const ScrollingDotsEffect(
-                                          activeDotColor: Colors.white,
-                                          dotColor: Colors.white54,
-                                          dotHeight: 3,
-                                          dotWidth: 12,
-                                          spacing: 4,
-                                          radius: 4,
+                                      if (businessImages.isEmpty)
+                                        const SizedBox()
+                                      else
+                                        AnimatedSmoothIndicator(
+                                          activeIndex: _currentIndex,
+                                          count: 7,
+                                          duration: const Duration(
+                                              milliseconds: 1800),
+                                          effect: const ScrollingDotsEffect(
+                                            activeDotColor: Colors.white,
+                                            dotColor: Colors.white54,
+                                            dotHeight: 3,
+                                            dotWidth: 12,
+                                            spacing: 4,
+                                            radius: 4,
+                                          ),
                                         ),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -329,7 +351,6 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                                 width: size.height * 0.19,
                                 child: GestureDetector(
                                     onTap: () {
-                                
                                       bool isExpired = offersData.flat != null
                                           ? (offersData.flat!.isExpired ??
                                               false)
@@ -339,8 +360,6 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                                         showOfferExpiredDialog(context);
                                         return;
                                       }
-
-                                    
 
                                       AppRouter().navigateTo(
                                         context,
@@ -510,71 +529,4 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
       ),
     );
   }
-}
-
-Widget buildMediaMessage(BuildContext context, List<String> imageList) {
-  if ((imageList == null || imageList.isEmpty)) {
-    return const SizedBox(); // Nothing to show
-  }
-
-  final mediaCount = imageList.length;
-
-  return GridView.builder(
-    shrinkWrap: true,
-    padding: EdgeInsets.zero,
-    physics: const BouncingScrollPhysics(),
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, crossAxisSpacing: 10, mainAxisSpacing: 0),
-    itemCount: mediaCount > 6 ? 6 : mediaCount,
-    itemBuilder: (_, index) {
-      final url = imageList[index] ?? '';
-      final isLastAndMore = index == 5 && mediaCount > 6;
-      return Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: GestureDetector(
-              onTap: () => AppRouter().navigateTo(
-                  context,
-                  FullImageView(
-                      imageList: imageList ?? [], initialIndex: index)),
-              child: FadeInUp(
-                duration: Duration(milliseconds: 300 + (index * 120)),
-                child: FadeInImage(
-                  height: size.height * 0.12,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  color: isLastAndMore ? Colors.black.withOpacity(0.4) : null,
-                  colorBlendMode: isLastAndMore ? BlendMode.darken : null,
-                  placeholder: const AssetImage(Assets.dummy),
-                  image: url!.isNotEmpty
-                      ? NetworkImage(url)
-                      : const AssetImage(Assets.dummy) as ImageProvider,
-                  imageErrorBuilder: (_, child, st) => Image.asset(
-                    Assets.dummy,
-                    height: size.height * 0.12,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          if (isLastAndMore)
-            Positioned.fill(
-              child: Center(
-                child: Text(
-                  '+${mediaCount - 3}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-        ],
-      );
-    },
-  );
 }

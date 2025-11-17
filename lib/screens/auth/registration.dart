@@ -63,7 +63,6 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
 
             /// fetch the api data
             fetchApiData(context);
-
             AppRouter()
                 .navigateAndClearStack(context, const CustomerDashboard());
           } else {
@@ -78,8 +77,8 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
       child: Scaffold(
         appBar: customAppbar(context: context, title: "Registration"),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: backOrNextBtn(
-            text2: "Submit",
+        floatingActionButton: CustomButtons.backNext(
+            nextText: "Submit",
             context: context,
             onBack: () {
               FocusScope.of(context).unfocus();
@@ -103,12 +102,13 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
           child: SingleChildScrollView(
             child: Form(
               key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Your Name",
                       style: AppStyle.medium_16(AppColors.black20)),
-                  SizedBox(height: size.height * 0.01),
+                  SizedBox(height: size.height * 0.005),
                   CustomTextField(
                       keyboardType: TextInputType.text,
                       hintText: 'Your name',
@@ -119,10 +119,9 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
                         }
                         return null;
                       }),
-                  SizedBox(height: size.height * 0.02),
                   Text("Mobile Number",
                       style: AppStyle.medium_16(AppColors.black20)),
-                  SizedBox(height: size.height * 0.01),
+                  SizedBox(height: size.height * 0.005),
                   CustomTextField(
                       keyboardType: TextInputType.phone,
                       readOnly: true,
@@ -136,7 +135,6 @@ class CustomerRegistrationPageState extends State<CustomerRegistrationPage> {
                         }
                         return null;
                       }),
-                  SizedBox(height: size.height * 0.02),
                   Text("Email Address (Optional)",
                       style: AppStyle.medium_16(AppColors.black20)),
                   SizedBox(height: size.height * 0.01),

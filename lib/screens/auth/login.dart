@@ -78,8 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: size.height * 0.03),
               Padding(
                 padding: globalBottomPadding(context),
-                child: CustomButton(
-                  minWidth: size.width,
+                child: CustomButtons.primary(
+                  width: size.width,
                   onPressed: () {
                     validText ??= 'Please enter number';
                     setState(() {});
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           mobileController.text.toString(), context));
                     }
                   },
-                  txt: "Send OTP",
+                  text: "Send OTP",
                 ),
               ),
             ],

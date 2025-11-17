@@ -1,11 +1,11 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:market_place_customer/data/repository/auth_repository.dart';
-import 'package:market_place_customer/utils/custom.dart';
-import 'fetch_profile_event.dart';
-import 'fetch_profile_state.dart';
+import 'package:market_place_customer/utils/exports.dart';
 
-class FetchProfileDetailsBloc extends Bloc<FetchProfileDetailsEvent, FetchProfileDetailsState> {
+import 'fetch_profile_event.dart';
+
+class FetchProfileDetailsBloc
+    extends Bloc<FetchProfileDetailsEvent, FetchProfileDetailsState> {
   final repo = AuthRepository();
+
   FetchProfileDetailsBloc() : super(FetchProfileDetailsInitial()) {
     on<FetchProfileEvent>((event, emit) async {
       emit(FetchProfileDetailsLoading());

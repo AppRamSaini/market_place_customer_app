@@ -146,62 +146,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   }
 }
 
-// /// SEARCH TEXT FIELD
-// Widget searchTextFields(
-//         {String? hintText,
-//         bool readOnly = false,
-//         bool showPrefix = false,
-//         TextEditingController? controller,
-//         Widget? suffix,
-//         int? maxLength,
-//         Widget? prefix,
-//         Color? fillColor,
-//         void Function(String)? onChanged,
-//         TextInputType? keyboardType,
-//         String? Function(String?)? validator,
-//         void Function()? onTap}) =>
-//     TextFormField(
-//       keyboardType: keyboardType,
-//       readOnly: readOnly,
-//       onTap: onTap,
-//       controller: controller,
-//       style: AppStyle.medium_16(AppColors.whiteColor),
-//       validator: validator,
-//       maxLength: maxLength,
-//       onChanged: onChanged,
-//       textInputAction: TextInputAction.done,
-//       cursorColor: AppColors.whiteColor,
-//       decoration: InputDecoration(
-//           isDense: true,
-//           counter: const SizedBox(),
-//           filled: true,
-//           prefixIcon: Padding(
-//               padding: const EdgeInsets.all(16),
-//               child: Image.asset(Assets.searchIcon,
-//                   height: 10, width: 10, color: AppColors.whiteColor)),
-//           fillColor: fillColor,
-//           hintText: hintText,
-//           hintStyle: AppStyle.normal_16(AppColors.whiteColor),
-//           suffixIcon: suffix,
-//           border: OutlineInputBorder(
-//               borderRadius: BorderRadius.circular(30),
-//               borderSide: BorderSide(color: AppColors.theme10, width: 0.5)),
-//           enabledBorder: OutlineInputBorder(
-//               borderRadius: BorderRadius.circular(30),
-//               borderSide: BorderSide(color: AppColors.theme10, width: 0.5)),
-//           disabledBorder: OutlineInputBorder(
-//               borderRadius: BorderRadius.circular(30),
-//               borderSide: BorderSide(color: AppColors.theme10, width: 0.5)),
-//           errorBorder: OutlineInputBorder(
-//               borderRadius: BorderRadius.circular(30),
-//               borderSide: BorderSide(color: AppColors.theme10, width: 0.5)),
-//           focusedBorder: OutlineInputBorder(
-//               borderRadius: BorderRadius.circular(30),
-//               borderSide: BorderSide(color: AppColors.theme10, width: 0.5)),
-//           focusedErrorBorder: OutlineInputBorder(
-//               borderRadius: BorderRadius.circular(30),
-//               borderSide: BorderSide(color: AppColors.theme10, width: 0.5))),
-//     );
+///  search bar hints  texts
 
 List<String>? hints = [
   "Search restaurants",
@@ -299,6 +244,7 @@ class _AnimatedHintSearchFieldState extends State<AnimatedHintSearchField> {
   }
 }
 
+///  Animated search bar
 class AnimatedHintSearchField1 extends StatefulWidget {
   final TextEditingController? controller;
   final Widget? suffix;

@@ -2,7 +2,7 @@ import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class PopularCategories extends StatelessWidget {
-  final List<VendorsCategory>? categoryData;
+  final List<CategoryElement>? categoryData;
 
   const PopularCategories({super.key, required this.categoryData});
 

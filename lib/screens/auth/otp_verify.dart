@@ -1,4 +1,3 @@
-import 'package:market_place_customer/screens/auth/registration.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class OtpVerify extends StatefulWidget {
@@ -90,8 +89,6 @@ class OtpVerifyState extends State<OtpVerify> {
             if (state is OtpVerifyLoading) {
               EasyLoading.show();
             } else if (state is OtpVerifySuccess) {
-              final message = state.userOtpModel.message.toString();
-              snackBar(context, message, AppColors.green);
               final role = state.userOtpModel.data!.role.toString();
               if (state.userOtpModel.data!.token != null) {
                 final token = state.userOtpModel.data!.token.toString();
@@ -179,8 +176,8 @@ class OtpVerifyState extends State<OtpVerify> {
               Text(validOtpText ?? '',
                   style: AppStyle.normal_13(AppColors.redColor)),
               SizedBox(height: size.height * 0.025),
-              CustomButton(
-                minWidth: size.width,
+              CustomButtons.primary(
+                width: size.width,
                 onPressed: () async {
                   validOtpText ??= 'Please enter OTP';
                   setState(() {});
@@ -193,7 +190,7 @@ class OtpVerifyState extends State<OtpVerify> {
                         context: context));
                   }
                 },
-                txt: "Verify OTP",
+                text: "Verify OTP",
               ),
               SizedBox(height: size.height * 0.01),
               Align(

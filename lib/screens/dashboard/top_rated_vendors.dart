@@ -6,7 +6,7 @@ class TopRatedVendors extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: images.length,
+      itemCount: [].length,
       scrollDirection: Axis.vertical,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (_, index) => Padding(
@@ -19,7 +19,7 @@ class TopRatedVendors extends StatelessWidget {
           imgHeight: size.height * 0.3,
           isPurchased: false,
           isExpired: false,
-          imageUrl: images[index]['url'] ?? '',
+          imageUrl: [][index]['url'] ?? '',
           name: "The Burger Farm",
           location: "Shayam Nagar Sodala, Jaipur",
           distance: "7.3 km",

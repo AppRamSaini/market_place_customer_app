@@ -1,7 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_state.dart';
-import 'package:market_place_customer/data/repository/offers_repository.dart';
-import 'package:market_place_customer/utils/custom.dart';
+import 'package:market_place_customer/utils/exports.dart';
 
 import 'purchased_offers_event.dart';
 

@@ -41,7 +41,6 @@ class AppBlocProviders extends StatelessWidget {
             create: (context) => FetchProfileDetailsBloc()),
         BlocProvider<UpdateProfileBloc>(
             create: (context) => UpdateProfileBloc()),
-        BlocProvider<SupportBloc>(create: (context) => SupportBloc()),
       ],
       child: child,
     );

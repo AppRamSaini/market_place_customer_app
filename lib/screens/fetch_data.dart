@@ -1,4 +1,6 @@
 import 'package:market_place_customer/bloc/customer_registration/fetch_profile_bloc/fetch_profile_event.dart';
+import 'package:market_place_customer/bloc/order_history_bloc/order_history/order_history_bloc.dart';
+import 'package:market_place_customer/bloc/order_history_bloc/order_history/order_history_event.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/fetch_dashbaord_offers/dashboard_offers_event.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
@@ -15,6 +17,10 @@ fetchApiData(BuildContext context) {
     context
         .read<FetchProfileDetailsBloc>()
         .add(FetchProfileEvent(context: context));
+
+    /// fetched purchased orders
+    context.read<OrderHistoryBloc>().add(
+        GetOrderHistoryEvent(context: context, page: 1, isLoadMore: false));
   }
 }
 
@@ -40,5 +46,9 @@ fetchApiDataInSplash(BuildContext context) {
     context
         .read<FetchProfileDetailsBloc>()
         .add(FetchProfileEvent(context: context));
+
+    /// fetched purchased orders
+    context.read<OrderHistoryBloc>().add(
+        GetOrderHistoryEvent(context: context, page: 1, isLoadMore: false));
   }
 }

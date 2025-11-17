@@ -1,6 +1,4 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/screens/purchased_history/purchased_offers_details.dart';
-import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 import '../../data/models/purchased_offers_history_model.dart';
@@ -32,7 +30,7 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppbar(title: "My Offers", showLeading: true),
+      appBar: customAppbar(title: "My Offers", hideLeading: true),
       body:
           BlocBuilder<PurchasedOffersHistoryBloc, PurchasedOffersHistoryState>(
         builder: (context, state) {

@@ -4,10 +4,10 @@ AppBar customAppbar(
         {BuildContext? context,
         String? title,
         List<Widget>? actions,
-        bool showLeading = false}) =>
+        bool hideLeading = false}) =>
     AppBar(
       elevation: 0,
-      leading: !showLeading
+      leading: !hideLeading
           ? IconButton(
               icon: const Icon(Icons.arrow_back_ios_new,
                   size: 20, color: AppColors.themeColor),
@@ -32,20 +32,3 @@ SliverAppBar customSliverAppbar(
         automaticallyImplyLeading: false,
         title: title,
         flexibleSpace: flexibleSpace);
-
-String? validateEmail(String? value) {
-  if (value == null || value.trim().isEmpty) {
-    return "Please provide the email address";
-  }
-
-  // Simple email regex
-  String pattern =
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-  RegExp regex = RegExp(pattern);
-
-  if (!regex.hasMatch(value.trim())) {
-    return "Please enter a valid email address";
-  }
-
-  return null; // valid
-}

@@ -1,7 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_place_customer/data/repository/offers_repository.dart';
-import 'package:market_place_customer/utils/app_colors.dart';
-import 'package:market_place_customer/utils/custom.dart';
 
 import 'fetch_all_vendors_event.dart';
 import 'fetch_all_vendors_state.dart';
@@ -17,7 +15,6 @@ class FetchVendorsBloc extends Bloc<GetVendorsEvent, FetchVendorsState> {
         final offers = await repo.fetchVendorsApi(event.context, event);
 
         if (offers is String) {
-
           print("RES===>$offers");
 
           // snackBar(event.context, offers.toString(), AppColors.redColor);

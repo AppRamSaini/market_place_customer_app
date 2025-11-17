@@ -1,9 +1,8 @@
-import 'package:animate_do/animate_do.dart';
+import 'package:market_place_customer/screens/dilogs/already_purchesed_dialog.dart';
 import 'package:market_place_customer/screens/payment_section/payment_services.dart';
 import 'package:market_place_customer/screens/payment_section/payment_verifications.dart';
-import 'package:market_place_customer/screens/vendors_details_and_offers/already_purchesed_dialog.dart';
+import 'package:market_place_customer/screens/simmer_effects/offers_details_simmer.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/expire_offers_timers.dart';
-import 'package:market_place_customer/screens/vendors_details_and_offers/offers_details_simmer.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendor_details_helper.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
@@ -265,7 +264,7 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
 
                     /// Buy Button
                     SliverToBoxAdapter(
-                      child: CustomButton(
+                      child: CustomButtons.primary(
                         onPressed: () async {
                           var userId = LocalStorage.getString(Pref.userId);
                           var customerName =
@@ -305,7 +304,7 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                                 ),
                               );
                         },
-                        txt: "Buy Now",
+                        text: "Buy Now",
                       ),
                     ),
 

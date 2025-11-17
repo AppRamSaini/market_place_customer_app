@@ -29,17 +29,17 @@ class PaymentRepository {
   }
 
   /// update bill amount
-  Future updateBillAmount(
+  Future<UpdateBillAmountModel> updateBillAmount(
       {required BuildContext context,
-      required String amount,
+      required double amount,
       String? offerId}) async {
     final api = ApiManager();
-    var data = {"total_amount": amount};
+    var data = {"total_amount": amount.toString()};
     final result = await api.post(
         url: "${ApiEndPoints.updateBillAmount}/$offerId", data: data);
     print('PAYMENT==>>>>$result');
     if (result is String) {
-      return result;
+      return throw Exception(result.toString());
     } else {
       return UpdateBillAmountModel.fromJson(result);
     }

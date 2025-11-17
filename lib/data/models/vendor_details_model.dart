@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final vendorsDetailsModel = vendorsDetailsModelFromJson(jsonString);
+
 import 'dart:convert';
 
 VendorsDetailsModel vendorsDetailsModelFromJson(String str) =>
@@ -35,10 +39,10 @@ class Data {
   String? id;
   BusinessDetails? businessDetails;
   Timing? timing;
-  UserClass? vendor;
+  Sales? vendor;
   List<Offer>? offers;
   List<Similar>? similar;
-  dynamic sales;
+  Sales? sales;
   String? status;
   String? verifyStatus;
   DateTime? createdAt;
@@ -66,8 +70,7 @@ class Data {
             ? null
             : BusinessDetails.fromJson(json["business_details"]),
         timing: json["timing"] == null ? null : Timing.fromJson(json["timing"]),
-        vendor:
-            json["vendor"] == null ? null : UserClass.fromJson(json["vendor"]),
+        vendor: json["vendor"] == null ? null : Sales.fromJson(json["vendor"]),
         offers: json["offers"] == null
             ? []
             : List<Offer>.from(json["offers"]!.map((x) => Offer.fromJson(x))),
@@ -75,7 +78,7 @@ class Data {
             ? []
             : List<Similar>.from(
                 json["similar"]!.map((x) => Similar.fromJson(x))),
-        sales: json["sales"],
+        sales: json["sales"] == null ? null : Sales.fromJson(json["sales"]),
         status: json["status"],
         verifyStatus: json["Verify_status"],
         createdAt: json["createdAt"] == null
@@ -100,7 +103,7 @@ class Data {
         "similar": similar == null
             ? []
             : List<dynamic>.from(similar!.map((x) => x.toJson())),
-        "sales": sales,
+        "sales": sales?.toJson(),
         "status": status,
         "Verify_status": verifyStatus,
         "createdAt": createdAt?.toIso8601String(),
@@ -111,6 +114,7 @@ class Data {
 
 class BusinessDetails {
   String? businessName;
+  String? businessLogo;
   Category? category;
   Subcategory? subcategory;
   String? businessRegister;
@@ -127,6 +131,7 @@ class BusinessDetails {
 
   BusinessDetails({
     this.businessName,
+    this.businessLogo,
     this.category,
     this.subcategory,
     this.businessRegister,
@@ -145,6 +150,7 @@ class BusinessDetails {
   factory BusinessDetails.fromJson(Map<String, dynamic> json) =>
       BusinessDetails(
         businessName: json["business_name"],
+        businessLogo: json["business_logo"],
         category: json["category"] == null
             ? null
             : Category.fromJson(json["category"]),
@@ -168,6 +174,7 @@ class BusinessDetails {
 
   Map<String, dynamic> toJson() => {
         "business_name": businessName,
+        "business_logo": businessLogo,
         "category": category?.toJson(),
         "subcategory": subcategory?.toJson(),
         "business_register": businessRegister,
@@ -187,12 +194,14 @@ class BusinessDetails {
 }
 
 class Category {
+  dynamic deletedAt;
   String? id;
   String? name;
   int? categoryId;
   String? image;
 
   Category({
+    this.deletedAt,
     this.id,
     this.name,
     this.categoryId,
@@ -200,6 +209,7 @@ class Category {
   });
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
+        deletedAt: json["deleted_at"],
         id: json["_id"],
         name: json["name"],
         categoryId: json["id"],
@@ -207,6 +217,7 @@ class Category {
       );
 
   Map<String, dynamic> toJson() => {
+        "deleted_at": deletedAt,
         "_id": id,
         "name": name,
         "id": categoryId,
@@ -216,29 +227,33 @@ class Category {
 
 class Subcategory {
   String? id;
-  int? subcategoryId;
   String? name;
-  int? categoryId;
+  String? categoryId;
+  dynamic deletedAt;
+  int? v;
 
   Subcategory({
     this.id,
-    this.subcategoryId,
     this.name,
     this.categoryId,
+    this.deletedAt,
+    this.v,
   });
 
   factory Subcategory.fromJson(Map<String, dynamic> json) => Subcategory(
         id: json["_id"],
-        subcategoryId: json["subcategory_id"],
         name: json["name"],
         categoryId: json["category_id"],
+        deletedAt: json["deleted_at"],
+        v: json["__v"],
       );
 
   Map<String, dynamic> toJson() => {
         "_id": id,
-        "subcategory_id": subcategoryId,
         "name": name,
         "category_id": categoryId,
+        "deleted_at": deletedAt,
+        "__v": v,
       };
 }
 
@@ -248,10 +263,10 @@ class Offer {
   Flat? flat;
   Flat? percentage;
   String? type;
+  String? status;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
-  String? status;
   bool? purchaseStatus;
 
   Offer({
@@ -260,10 +275,10 @@ class Offer {
     this.flat,
     this.percentage,
     this.type,
+    this.status,
     this.createdAt,
     this.updatedAt,
     this.v,
-    this.status,
     this.purchaseStatus,
   });
 
@@ -275,6 +290,7 @@ class Offer {
             ? null
             : Flat.fromJson(json["percentage"]),
         type: json["type"],
+        status: json["status"],
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),
@@ -282,7 +298,6 @@ class Offer {
             ? null
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
-        status: json["status"],
         purchaseStatus: json["purchase_status"],
       );
 
@@ -292,10 +307,10 @@ class Offer {
         "flat": flat?.toJson(),
         "percentage": percentage?.toJson(),
         "type": type,
+        "status": status,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
-        "status": status,
         "purchase_status": purchaseStatus,
       };
 }
@@ -309,7 +324,6 @@ class Flat {
   int? minBillAmount;
   DateTime? expiryDate;
   String? offerImage;
-  String? status;
   int? amount;
   bool? isExpired;
   DateTime? createdAt;
@@ -325,7 +339,6 @@ class Flat {
     this.minBillAmount,
     this.expiryDate,
     this.offerImage,
-    this.status,
     this.amount,
     this.isExpired,
     this.createdAt,
@@ -344,7 +357,6 @@ class Flat {
             ? null
             : DateTime.parse(json["expiryDate"]),
         offerImage: json["offer_image"],
-        status: json["status"],
         amount: json["amount"],
         isExpired: json["isExpired"],
         createdAt: json["createdAt"] == null
@@ -365,7 +377,6 @@ class Flat {
         "minBillAmount": minBillAmount,
         "expiryDate": expiryDate?.toIso8601String(),
         "offer_image": offerImage,
-        "status": status,
         "amount": amount,
         "isExpired": isExpired,
         "createdAt": createdAt?.toIso8601String(),
@@ -402,8 +413,72 @@ class Percentages {
       };
 }
 
+class Sales {
+  dynamic deletedAt;
+  String? id;
+  String? name;
+  int? phone;
+  String? email;
+  String? avatar;
+  String? status;
+  String? role;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  int? v;
+  String? password;
+
+  Sales({
+    this.deletedAt,
+    this.id,
+    this.name,
+    this.phone,
+    this.email,
+    this.avatar,
+    this.status,
+    this.role,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+    this.password,
+  });
+
+  factory Sales.fromJson(Map<String, dynamic> json) => Sales(
+        deletedAt: json["deleted_at"],
+        id: json["_id"],
+        name: json["name"],
+        phone: json["phone"],
+        email: json["email"],
+        avatar: json["avatar"],
+        status: json["status"],
+        role: json["role"],
+        createdAt: json["createdAt"] == null
+            ? null
+            : DateTime.parse(json["createdAt"]),
+        updatedAt: json["updatedAt"] == null
+            ? null
+            : DateTime.parse(json["updatedAt"]),
+        v: json["__v"],
+        password: json["password"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "deleted_at": deletedAt,
+        "_id": id,
+        "name": name,
+        "phone": phone,
+        "email": email,
+        "avatar": avatar,
+        "status": status,
+        "role": role,
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
+        "__v": v,
+        "password": password,
+      };
+}
+
 class Similar {
-  SimilarVendor? vendor;
+  Vendor? vendor;
   MaxOffer? maxOffer;
   int? activeOffersCount;
   double? distance;
@@ -416,9 +491,7 @@ class Similar {
   });
 
   factory Similar.fromJson(Map<String, dynamic> json) => Similar(
-        vendor: json["vendor"] == null
-            ? null
-            : SimilarVendor.fromJson(json["vendor"]),
+        vendor: json["vendor"] == null ? null : Vendor.fromJson(json["vendor"]),
         maxOffer: json["maxOffer"] == null
             ? null
             : MaxOffer.fromJson(json["maxOffer"]),
@@ -454,7 +527,7 @@ class MaxOffer {
       };
 }
 
-class SimilarVendor {
+class Vendor {
   String? id;
   String? state;
   String? businessName;
@@ -467,9 +540,9 @@ class SimilarVendor {
   double? long;
   List<String>? businessImage;
   String? businessLogo;
-  UserClass? user;
+  Sales? user;
 
-  SimilarVendor({
+  Vendor({
     this.id,
     this.state,
     this.businessName,
@@ -485,7 +558,7 @@ class SimilarVendor {
     this.user,
   });
 
-  factory SimilarVendor.fromJson(Map<String, dynamic> json) => SimilarVendor(
+  factory Vendor.fromJson(Map<String, dynamic> json) => Vendor(
         id: json["_id"],
         state: json["state"],
         businessName: json["business_name"],
@@ -504,7 +577,7 @@ class SimilarVendor {
             ? []
             : List<String>.from(json["business_image"]!.map((x) => x)),
         businessLogo: json["business_logo"],
-        user: json["user"] == null ? null : UserClass.fromJson(json["user"]),
+        user: json["user"] == null ? null : Sales.fromJson(json["user"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -526,65 +599,9 @@ class SimilarVendor {
       };
 }
 
-class UserClass {
-  String? id;
-  String? name;
-  int? phone;
-  String? email;
-  String? avatar;
-  String? status;
-  String? role;
-  DateTime? createdAt;
-  DateTime? updatedAt;
-  int? v;
-
-  UserClass({
-    this.id,
-    this.name,
-    this.phone,
-    this.email,
-    this.avatar,
-    this.status,
-    this.role,
-    this.createdAt,
-    this.updatedAt,
-    this.v,
-  });
-
-  factory UserClass.fromJson(Map<String, dynamic> json) => UserClass(
-        id: json["_id"],
-        name: json["name"],
-        phone: json["phone"],
-        email: json["email"],
-        avatar: json["avatar"],
-        status: json["status"],
-        role: json["role"],
-        createdAt: json["createdAt"] == null
-            ? null
-            : DateTime.parse(json["createdAt"]),
-        updatedAt: json["updatedAt"] == null
-            ? null
-            : DateTime.parse(json["updatedAt"]),
-        v: json["__v"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "name": name,
-        "phone": phone,
-        "email": email,
-        "avatar": avatar,
-        "status": status,
-        "role": role,
-        "createdAt": createdAt?.toIso8601String(),
-        "updatedAt": updatedAt?.toIso8601String(),
-        "__v": v,
-      };
-}
-
 class Timing {
   OpeningHours? openingHours;
-  DateTime? weeklyOffDay;
+  dynamic weeklyOffDay;
 
   Timing({
     this.openingHours,
@@ -595,14 +612,12 @@ class Timing {
         openingHours: json["opening_hours"] == null
             ? null
             : OpeningHours.fromJson(json["opening_hours"]),
-        weeklyOffDay: json["weekly_off_day"] == null
-            ? null
-            : DateTime.parse(json["weekly_off_day"]),
+        weeklyOffDay: json["weekly_off_day"],
       );
 
   Map<String, dynamic> toJson() => {
         "opening_hours": openingHours?.toJson(),
-        "weekly_off_day": weeklyOffDay?.toIso8601String(),
+        "weekly_off_day": weeklyOffDay,
       };
 }
 
@@ -626,13 +641,13 @@ class OpeningHours {
   });
 
   factory OpeningHours.fromJson(Map<String, dynamic> json) => OpeningHours(
-        mon: _parse(json["Mon"]),
-        tue: _parse(json["Tue"]),
-        wed: _parse(json["Wed"]),
-        thu: _parse(json["Thu"]),
-        fri: _parse(json["Fri"]),
-        sat: _parse(json["Sat"]),
-        sun: _parse(json["Sun"]),
+        mon: json["Mon"] == null ? null : DayHour.fromJson(json["Mon"]),
+        tue: json["Tue"] == null ? null : DayHour.fromJson(json["Tue"]),
+        wed: json["Wed"] == null ? null : DayHour.fromJson(json["Wed"]),
+        thu: json["Thu"] == null ? null : DayHour.fromJson(json["Thu"]),
+        fri: json["Fri"] == null ? null : DayHour.fromJson(json["Fri"]),
+        sat: json["Sat"] == null ? null : DayHour.fromJson(json["Sat"]),
+        sun: json["Sun"] == null ? null : DayHour.fromJson(json["Sun"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -644,22 +659,6 @@ class OpeningHours {
         "Sat": sat?.toJson(),
         "Sun": sun?.toJson(),
       };
-
-  /// SAFE PARSER (FINAL)
-  static DayHour? _parse(dynamic data) {
-    if (data == null) return null;
-
-    // If backend gives: "Instance of OpeningHour"
-    if (data.toString().contains("Instance of")) {
-      return null; // invalid → ignore safely
-    }
-
-    if (data is Map<String, dynamic>) {
-      return DayHour.fromJson(data);
-    }
-
-    return null;
-  }
 }
 
 class DayHour {
@@ -674,9 +673,9 @@ class DayHour {
   });
 
   factory DayHour.fromJson(Map<String, dynamic> json) => DayHour(
-        open: json["open"]?.toString(),
-        close: json["close"]?.toString(),
-        active: json["active"] == true,
+        open: json["open"],
+        close: json["close"],
+        active: json["active"],
       );
 
   Map<String, dynamic> toJson() => {

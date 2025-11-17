@@ -1,10 +1,11 @@
-import 'package:market_place_customer/bloc/vendors_data_bloc/fetch_all_vendors/fetch_all_vendors_event.dart';
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
+
 import '../../utils/exports.dart';
 
 class CategoriesList extends StatefulWidget {
-  final List<VendorsCategory>? popularCategory;
+  final List<CategoryElement>? popularCategory;
   final String? type;
+
   const CategoriesList({super.key, this.popularCategory, this.type});
 
   @override
@@ -26,9 +27,8 @@ class _CategoriesListState extends State<CategoriesList> {
               setState(() => selectedIndex = index);
               context.read<FetchVendorsBloc>().add(GetVendorsEvent(
                   context: context,
-                  category:
-                      widget.popularCategory![index].name.toString(), type: widget.type));
-
+                  category: widget.popularCategory![index].name.toString(),
+                  type: widget.type));
             },
             child: Container(
               margin: EdgeInsets.only(

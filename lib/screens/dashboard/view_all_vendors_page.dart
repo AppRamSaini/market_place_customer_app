@@ -4,7 +4,7 @@ import '../../utils/exports.dart';
 
 class ViewAllVendorsPage extends StatefulWidget {
   final String? type;
-  final List<VendorsCategory>? popularCategory;
+  final List<CategoryElement>? popularCategory;
 
   const ViewAllVendorsPage({super.key, this.type, this.popularCategory});
 

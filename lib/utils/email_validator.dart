@@ -1,12 +1,12 @@
 String? validateEmail(String? value) {
   if (value == null || value.trim().isEmpty) {
-    return "Please enter email";
+    return "Please provide the email address";
   }
 
-  // Basic but reliable email pattern
-  const pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-
-  final regex = RegExp(pattern);
+  // Simple email regex
+  String pattern =
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+  RegExp regex = RegExp(pattern);
 
   if (!regex.hasMatch(value.trim())) {
     return "Please enter a valid email address";

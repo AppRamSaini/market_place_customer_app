@@ -4,7 +4,7 @@ import 'package:market_place_customer/screens/vendors_details_and_offers/vendors
 import 'package:market_place_customer/utils/exports.dart';
 
 class MostVisitedVendors extends StatefulWidget {
-  final List<PopularVendorElement>? popularVendor;
+  final List<PopularvendorElement>? popularVendor;
 
   const MostVisitedVendors({super.key, required this.popularVendor});
 

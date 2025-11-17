@@ -1,7 +1,5 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_bloc.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_event.dart';
-import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_state.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_event.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_state.dart';
 import 'package:market_place_customer/screens/payment_section/qr_payment_management.dart';
@@ -84,13 +82,6 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
             }
           },
         ),
-        BlocListener<PurchasedOffersBloc, PurchasedOffersState>(
-          listener: (context, state) {
-            // if (state is PurchasedOffersSuccess) {
-            //   onRefreshData();
-            // }
-          },
-        )
       ],
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -118,10 +109,14 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                   ? singleOffer.flat!.minBillAmount ?? 0
                   : singleOffer.percentage!.minBillAmount ?? 0;
 
-              amountController.text = widget.qrContent.totalAmount;
+              final finalBill =
+                  double.parse(offersData.finalAmount.toString()) ?? 0.0;
+              final discounted =
+                  double.parse(offersData.discount.toString()) ?? 0.0;
 
-              final billAmount =
-                  double.parse(offersData.finalAmount.toString());
+              final totalAmount =
+                  double.parse(offersData.totalAmount.toString()) ?? 0.0;
+              amountController.text = totalAmount.toString();
 
               return RefreshIndicator(
                 onRefresh: onRefreshData,
@@ -159,7 +154,8 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                                     delay: const Duration(milliseconds: 200),
                                     duration: const Duration(milliseconds: 800),
                                     child: Text(
-                                      widget.qrContent.title,
+                                      capitalizeFirstLetter(
+                                          widget.qrContent.title),
                                       textAlign: TextAlign.center,
                                       style: AppStyle.bold_22(
                                           AppColors.themeColor),
@@ -226,7 +222,7 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                                                 bottom: Radius.circular(16)),
                                       ),
                                       child: Text(
-                                        "Total Amount: ₹${billAmount.toStringAsFixed(2)}",
+                                        "Total Amount: ₹${finalBill.toStringAsFixed(2).toString()}",
                                         textAlign: TextAlign.center,
                                         style: AppStyle.medium_16(
                                             AppColors.white10),
@@ -237,45 +233,43 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                               )),
                         ),
                       ),
-
                       const SizedBox(height: 60),
-                      // 🎬 Animated buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           FadeInLeft(
                             delay: const Duration(milliseconds: 1000),
                             duration: const Duration(milliseconds: 600),
-                            child: CustomButton3(
-                              minWidth: size.width * 0.42,
+                            child: CustomButtons.rounded(
+                              width: size.width * 0.42,
                               height: size.height * 0.048,
                               onPressed: () => Navigator.pop(context),
-                              txt: "Back",
+                              text: "Back",
                               bgColor: AppColors.greyColor,
                             ),
                           ),
                           FadeInRight(
                             delay: const Duration(milliseconds: 1100),
                             duration: const Duration(milliseconds: 600),
-                            child: CustomButton3(
-                              minWidth: size.width * 0.42,
+                            child: CustomButtons.rounded(
+                              width: size.width * 0.42,
                               height: size.height * 0.048,
                               onPressed: () => updateBillAmount(
                                 context: context,
                                 amountController: amountController,
                                 minBillAmount: minimumBillAmt,
                                 onPressed: () {
-                                  print(amountController.text);
                                   context.read<UpdateBillAmountBloc>().add(
                                         SubmitBillAmountEvent(
                                             context: context,
                                             offerId: widget.qrContent.offerId,
-                                            amount: amountController.text
-                                                .toString()),
+                                            pageSource: PageSource.fromQrPage,
+                                            amount: double.parse(
+                                                amountController.text)),
                                       );
                                 },
                               ),
-                              txt: "Update Bill Amount",
+                              text: "Update Bill Amount",
                               bgColor: AppColors.themeColor,
                             ),
                           ),

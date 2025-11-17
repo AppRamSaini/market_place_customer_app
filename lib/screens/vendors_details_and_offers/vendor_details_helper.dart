@@ -1,4 +1,3 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/data/models/vendor_details_model.dart';
 
 import '../../utils/exports.dart';
@@ -157,15 +156,13 @@ class OffersDataCardWidget extends StatelessWidget {
 
 String getTodayTiming(Timing timing) {
   final now = DateTime.now();
-
-  // आज का दिन निकालो (Mon, Tue, Wed ...)
   final days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  final todayKey = days[now.weekday % 7]; // Sunday को handle करने के लिए
+  final todayKey = days[now.weekday % 7];
 
-  // 🔹 Step 1: Check Weekly Off Day
+  // --- Weekly Off Fix ----
   bool isWeeklyOff = false;
-  if (timing.weeklyOffDay != null) {
-    final offDate = timing.weeklyOffDay!;
+  if (timing.weeklyOffDay != null && timing.weeklyOffDay!.isNotEmpty) {
+    final offDate = DateTime.parse(timing.weeklyOffDay!); // <-- FIX
     if (offDate.year == now.year &&
         offDate.month == now.month &&
         offDate.day == now.day) {
@@ -173,11 +170,8 @@ String getTodayTiming(Timing timing) {
     }
   }
 
-  if (isWeeklyOff) {
-    return "Today Closed";
-  }
+  if (isWeeklyOff) return "Today Closed";
 
-  // 🔹 Step 2: आज का Opening Hour ऑब्जेक्ट निकालो
   DayHour? todayTiming;
   switch (todayKey) {
     case "Mon":
@@ -203,7 +197,6 @@ String getTodayTiming(Timing timing) {
       break;
   }
 
-  // 🔹 Step 3: अगर आज बंद है या डेटा नहीं है
   if (todayTiming == null ||
       todayTiming.active == false ||
       todayTiming.open == null ||
@@ -211,7 +204,6 @@ String getTodayTiming(Timing timing) {
     return "Today Closed";
   }
 
-  // 🔹 Step 4: Time को readable format में convert करो (e.g. 09:00 → 09:00 AM)
   String formatTime(String time) {
     final parts = time.split(":");
     int hour = int.parse(parts[0]);

@@ -1,11 +1,8 @@
 import 'dart:ui';
 
-import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_bloc.dart';
 import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_event.dart';
 import 'package:market_place_customer/data/models/order_history_%20model.dart';
-import 'package:market_place_customer/screens/settings/help_support_page.dart';
-import 'package:market_place_customer/screens/vendors_details_and_offers/vendors_gallery_view.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class OrderHistoryCard extends StatefulWidget {
@@ -32,9 +29,11 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
 
     final bool hasFlat = offers != null && offers.flat != null;
 
+    final dateTime = order.usedTime ?? order.createdAt.toString();
+
     final payment = order.paymentId!;
     final savedBill = order.bill != null;
-    return FadeInRightBig(
+    return FadeInUp(
       duration: Duration(milliseconds: 300 + (widget.index * 100)),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
@@ -109,8 +108,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                       // Order Date & Time
                       SizedBox(
                         width: size.width * 0.28,
-                        child: Text(
-                            formatToLocalDateTime(order.createdAt.toString()),
+                        child: Text(formatToLocalDateTime(dateTime),
                             textAlign: TextAlign.right,
                             style: AppStyle.normal_13(AppColors.black50)),
                       ),

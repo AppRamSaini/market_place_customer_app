@@ -183,7 +183,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
   }
 
   /// Fetch popular vendors data
-  List<PopularVendorElement> popularVendor = [];
+  List<PopularvendorElement> popularVendor = [];
 
   fetchData() {
     final vendorsState = context.read<FetchDashboardOffersBloc>().state;

@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:market_place_customer/data/models/dashbaord_offers_model.dart';
-import 'package:market_place_customer/screens/location/search_manual_location.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendors_details_page.dart';
+
 import '../../utils/exports.dart';
 
 class NearbyVendors extends StatefulWidget {
-  final List<NearbyvendorElement> nearbyVendorsList;
+  final List<Nearbyvendor> nearbyVendorsList;
+
   const NearbyVendors({super.key, required this.nearbyVendorsList});
 
   @override

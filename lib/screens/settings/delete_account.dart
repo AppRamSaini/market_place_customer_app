@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart'; // for animations
+import 'package:market_place_customer/screens/dilogs/delete_account.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class DeleteUserAccount extends StatefulWidget {
@@ -154,7 +155,13 @@ class _DeleteUserAccountState extends State<DeleteUserAccount>
                 child: GestureDetector(
                   onTap: () {
                     if (selectedValue != null) {
-                      logOutPermissionDialog(context, forDelete: true);
+                      showDeleteAccountDialog(context, onConfirm: () {
+                        EasyLoading.show();
+                        Future.delayed(const Duration(seconds: 2), () {
+                          EasyLoading.dismiss();
+                          LocalStorage.clearAll(context);
+                        });
+                      });
                     } else {
                       snackBar(context, 'Please select a reason',
                           AppColors.redColor);

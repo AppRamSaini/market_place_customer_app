@@ -1,6 +1,3 @@
-import 'package:market_place_customer/bloc/customer_registration/fetch_profile_bloc/fetch_profile_state.dart';
-import 'package:market_place_customer/bloc/update_profile/update_bloc_event.dart';
-import 'package:market_place_customer/bloc/update_profile/update_profile_state.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -170,9 +167,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       return null;
                     }),
                 const SizedBox(height: 25),
-                CustomButton(
-                  minWidth: size.width,
-                  txt: "Submit",
+                CustomButtons.primary(
+                  width: size.width,
+                  text: "Submit",
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       File? imageUrl = _pickedImage != null

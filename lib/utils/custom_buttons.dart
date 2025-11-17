@@ -1,136 +1,143 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
-/// CUSTOM BUTTON 1
-Widget CustomButton(
-        {required void Function()? onPressed,
-        Color bgColor = AppColors.themeColor,
-        Color txtColor = AppColors.whiteColor,
-        String? txt,
-        double? minWidth}) =>
-    FadeInUp(
-      duration: const Duration(milliseconds: 700),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: size.width * 0.034, vertical: size.height * 0.02),
-        child: GestureDetector(
-          onTap: onPressed,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 400),
-            height: size.height * 0.06,
-            width: minWidth,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.themeColor,
-                  AppColors.themeColor.withOpacity(0.8),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.themeColor.withOpacity(0.4),
-                  blurRadius: 12,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Text(
-              txt.toString(),
-              style: AppStyle.medium_16(txtColor),
-            ),
+class CustomButtons {
+  // ------------------------------
+  // BUTTON 1 (Gradient + Animated)
+  // ------------------------------
+  static Widget primary(
+      {required String text,
+      required VoidCallback? onPressed,
+      double? width,
+      double height = 50,
+      bool animate = true,
+      Color textColor = AppColors.whiteColor}) {
+    final button = GestureDetector(
+      onTap: onPressed,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        height: height,
+        width: width,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.themeColor,
+              AppColors.themeColor.withOpacity(0.8),
+            ],
           ),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.themeColor.withOpacity(0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Text(
+          text,
+          style: AppStyle.medium_16(textColor),
         ),
       ),
     );
 
-// MaterialButton(
-//   minWidth: minWidth,
-//   height: size.height * 0.055,
-//   onPressed: onPressed,
-//   color: bgColor,
-//   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-//   child: Text(
-//     txt.toString(),
-//     style: AppStyle.medium_16(txtColor),
-//   ),
-// );
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: size.width * 0.034, vertical: size.height * 0.02),
+      child: animate
+          ? FadeInUp(duration: const Duration(milliseconds: 700), child: button)
+          : button,
+    );
+  }
 
-/// CUSTOM BUTTON 2
-Widget CustomButton2(
-        {required void Function()? onPressed,
-        Color bgColor = AppColors.themeColor,
-        Color txtColor = AppColors.whiteColor,
-        String? txt,
-        double? minWidth,
-        double? height}) =>
-    MaterialButton(
-      padding: EdgeInsets.symmetric(horizontal: 5),
-      minWidth: minWidth,
+  // ------------------------------
+  // BUTTON 2 (Simple Material)
+  // ------------------------------
+  static Widget small({
+    required String text,
+    required VoidCallback? onPressed,
+    double? width,
+    double? height,
+    Color bgColor = AppColors.themeColor,
+    Color textColor = AppColors.whiteColor,
+  }) {
+    return MaterialButton(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      minWidth: width,
       height: height,
       onPressed: onPressed,
       color: bgColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Text(
-        txt.toString(),
-        style: AppStyle.normal_10(txtColor),
+        text,
+        style: AppStyle.normal_10(textColor),
       ),
     );
+  }
 
-/// CUSTOM BUTTON 3
-Widget CustomButton3(
-        {required void Function()? onPressed,
-        Color bgColor = AppColors.themeColor,
-        Color txtColor = AppColors.whiteColor,
-        String? txt,
-        double? minWidth,
-        double? height}) =>
-    MaterialButton(
-      elevation: 0,
+  // ------------------------------
+  // BUTTON 3 (Rounded Material)
+  // ------------------------------
+  static Widget rounded({
+    required String text,
+    required VoidCallback? onPressed,
+    double? width,
+    double? height,
+    Color bgColor = AppColors.themeColor,
+    Color textColor = AppColors.whiteColor,
+  }) {
+    return MaterialButton(
       padding: const EdgeInsets.symmetric(horizontal: 3),
-      minWidth: minWidth,
+      minWidth: width,
       height: height,
+      elevation: 0,
       onPressed: onPressed,
       color: bgColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       child: Text(
-        txt.toString(),
-        style: AppStyle.normal_14(txtColor),
+        text,
+        style: AppStyle.normal_14(textColor),
       ),
     );
+  }
 
-/// CUSTOM  BACK OR NEXT BUTTONS
-Widget backOrNextBtn({
-  required BuildContext context,
-  bool hideOnBack = false,
-  double? minWidth,
-  required void Function()? onBack,
-  required void Function()? onNext,
-  String? text2 = 'Next',
-  String? text1 = 'Back',
-}) =>
-    Padding(
+  // -----------------------------------
+  // BACK – NEXT BUTTON COMBO
+  // -----------------------------------
+  static Widget backNext({
+    required BuildContext context,
+    required VoidCallback onBack,
+    required VoidCallback onNext,
+    String backText = 'Back',
+    String nextText = 'Next',
+    double? width,
+    bool hideBack = false,
+  }) {
+    return Padding(
       padding: globalBottomPadding(context),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            hideOnBack
-                ? SizedBox()
-                : CustomButton3(
+            hideBack
+                ? const SizedBox()
+                : rounded(
+                    text: backText,
                     onPressed: onBack,
-                    txt: text1,
                     height: size.height * 0.05,
-                    minWidth: size.width * 0.4,
-                    bgColor: AppColors.black20.withOpacity(0.5)),
-            CustomButton3(
-                onPressed: onNext,
-                txt: text2,
-                height: size.height * 0.05,
-                minWidth: minWidth ?? size.width * 0.4),
+                    width: size.width * 0.4,
+                    bgColor: AppColors.black20.withOpacity(0.5),
+                  ),
+            rounded(
+              text: nextText,
+              onPressed: onNext,
+              height: size.height * 0.05,
+              width: width ?? size.width * 0.4,
+            ),
           ],
         ),
       ),
     );
+  }
+}

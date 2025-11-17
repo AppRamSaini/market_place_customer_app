@@ -1,8 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:market_place_customer/bloc/vendors_data_bloc/view_offers_details/view_offers_state.dart';
-import 'package:market_place_customer/data/repository/offers_repository.dart';
-import 'package:market_place_customer/utils/custom.dart';
-import 'view_offers_event.dart';
+import 'package:market_place_customer/utils/exports.dart';
 
 class ViewOffersBloc extends Bloc<ViewOffersEvent, ViewOffersState> {
   final repo = OffersRepository();

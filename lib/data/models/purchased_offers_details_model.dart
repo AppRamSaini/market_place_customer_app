@@ -37,9 +37,9 @@ class Data {
   Offer? offer;
   User? vendor;
   PaymentId? paymentId;
-  int? discount;
-  int? totalAmount;
-  int? finalAmount;
+  var discount;
+  var totalAmount;
+  var finalAmount;
   String? status;
   DateTime? createdAt;
   DateTime? updatedAt;
