@@ -1,20 +1,17 @@
-import 'package:dio/dio.dart';
-import 'package:market_place_customer/data/models/user_profile_model.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class ProfileRepository {
   final api = ApiManager();
 
   /// get user profile
-  Future<UserProfileModel?> getUserProfile(BuildContext context) async {
-    final result = await api.get(url: ApiEndPoints.getUserProfile);
-    print('----profile------>>>>>$result');
-
+  /// fetch profile data
+  Future fetchProfile(BuildContext context) async {
+    final result = await api.get(url: ApiEndPoints.profile, context: context);
+    print("RES ==> $result");
     if (result is String) {
-      snackBar(context, result, AppColors.redColor);
-      return null;
+      return result;
     } else {
-      return UserProfileModel.fromJson(result);
+      return ProfileModel.fromJson(result);
     }
   }
 

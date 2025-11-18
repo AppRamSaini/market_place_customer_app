@@ -35,3 +35,18 @@ String capitalizeFirstLetter(String text) {
   if (text.isEmpty) return '';
   return text[0].toUpperCase() + text.substring(1);
 }
+
+/// error message
+Widget errorMessage(String error, {double? topSize}) => Center(
+      child: Padding(
+        padding: EdgeInsets.only(
+            left: size.width * 0.1,
+            right: size.width * 0.1,
+            top: topSize ?? 0.0),
+        child: Text(
+          error.toString(),
+          textAlign: TextAlign.center,
+          style: AppStyle.medium_14(AppColors.redColor),
+        ),
+      ),
+    );

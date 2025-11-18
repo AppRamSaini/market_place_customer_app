@@ -7,6 +7,15 @@ class GetVendorsEvent extends FetchVendorsEvent {
   final String? type;
   final String? search;
   final String? category;
-  GetVendorsEvent(
-      {required this.context, this.type, this.search, this.category});
+  final int page;
+  final bool isLoadMore;
+
+  GetVendorsEvent({
+    required this.context,
+    this.type,
+    this.search,
+    this.category,
+    required this.page,
+    this.isLoadMore = false,
+  });
 }

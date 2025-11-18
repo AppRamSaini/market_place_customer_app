@@ -1,10 +1,11 @@
+import 'package:market_place_customer/data/repository/profile_repository.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 import 'fetch_profile_event.dart';
 
 class FetchProfileDetailsBloc
     extends Bloc<FetchProfileDetailsEvent, FetchProfileDetailsState> {
-  final repo = AuthRepository();
+  final repo = ProfileRepository();
 
   FetchProfileDetailsBloc() : super(FetchProfileDetailsInitial()) {
     on<FetchProfileEvent>((event, emit) async {

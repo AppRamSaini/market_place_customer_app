@@ -5,8 +5,16 @@ import '../../utils/exports.dart';
 class CategoriesList extends StatefulWidget {
   final List<CategoryElement>? popularCategory;
   final String? type;
+  final int page;
 
-  const CategoriesList({super.key, this.popularCategory, this.type});
+  Function(String category)? onTap;
+
+  CategoriesList(
+      {super.key,
+      this.popularCategory,
+      this.type,
+      required this.page,
+      required this.onTap});
 
   @override
   State<CategoriesList> createState() => _CategoriesListState();
@@ -25,10 +33,16 @@ class _CategoriesListState extends State<CategoriesList> {
           (index) => GestureDetector(
             onTap: () {
               setState(() => selectedIndex = index);
+              final categoryName = widget.popularCategory?[index].name;
+              if (widget.onTap != null && categoryName != null) {
+                widget.onTap!(categoryName);
+              }
+
               context.read<FetchVendorsBloc>().add(GetVendorsEvent(
                   context: context,
                   category: widget.popularCategory![index].name.toString(),
-                  type: widget.type));
+                  type: widget.type,
+                  page: widget.page));
             },
             child: Container(
               margin: EdgeInsets.only(

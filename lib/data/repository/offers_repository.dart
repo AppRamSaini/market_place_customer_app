@@ -23,16 +23,19 @@ class OffersRepository {
   }
 
   /// fetch vendors list data
-  Future fetchVendorsApi(BuildContext context, GetVendorsEvent event) async {
+  Future<FetchAllVendorsModel> fetchVendorsApi(
+    BuildContext context,
+    GetVendorsEvent event,
+  ) async {
     final result = await api.get(
-        url: ApiEndPoints.getVendors(
-            event.category ?? '', event.type ?? '', event.search ?? ''),
+        url: ApiEndPoints.getVendors(event.category ?? '', event.type ?? '',
+            event.search ?? '', event.page),
         context: context);
     print('===>>$result');
     if (result is String) {
-      return result;
+      return throw Exception(result.toString());
     } else {
-      return FetchVendorsModel.fromJson(result);
+      return FetchAllVendorsModel.fromJson(result);
     }
   }
 

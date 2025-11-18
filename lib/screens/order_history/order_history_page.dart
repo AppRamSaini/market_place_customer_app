@@ -30,6 +30,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         context: context, page: _page, isLoadMore: isLoadMore));
   }
 
+  int totalPages = 1;
+
   void _onScroll() {
     final bloc = context.read<OrderHistoryBloc>();
     final state = bloc.state;
@@ -38,6 +40,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       if (state is OrderHistorySuccess &&
           !state.hasReachedMax &&
           !state.isPaginating) {
+        totalPages = state.model.data!.totalPages ?? 1;
+        if (_page >= totalPages) return;
+
         _page++;
         _fetchData(isLoadMore: true);
       }

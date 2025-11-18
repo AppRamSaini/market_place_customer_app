@@ -1,4 +1,5 @@
-import 'package:market_place_customer/bloc/vendors_data_bloc/fetch_all_vendors/fetch_all_vendors_event.dart';
+import 'package:market_place_customer/screens/vendors_details_and_offers/vendors_details_page.dart';
+
 import '../../utils/exports.dart';
 
 class SearchVendorsPage extends StatefulWidget {
@@ -12,105 +13,158 @@ class _SearchVendorsPageState extends State<SearchVendorsPage> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController controller = TextEditingController();
   double _flexTitleOpacity = 1.0;
+  Map<String, Map<String, String>> locationCache = {};
+
+  int _page = 1;
+  bool _isFetchingMore = false;
 
   @override
   void initState() {
     super.initState();
-    fetchVendors();
-    _scrollController.addListener(() {
-      double offset = _scrollController.offset;
-      double maxOffset = size.height * 0.3;
-      double opacity = (offset / maxOffset).clamp(0.0, 1.0);
-      setState(() {
-        _flexTitleOpacity = 1.0 - opacity;
-      });
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchData({bool isLoadMore = false}) async {
+    context.read<FetchVendorsBloc>().add(
+        GetVendorsEvent(context: context, page: _page, isLoadMore: isLoadMore));
+  }
+
+  void _onScroll() {
+    double offset = _scrollController.offset;
+    double maxOffset = size.height * 0.3;
+    double opacity = (offset / maxOffset).clamp(0.0, 1.0);
+
+    setState(() {
+      _flexTitleOpacity = 1.0 - opacity;
     });
+
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
+      _loadMore();
+    }
+  }
+
+  int totalPages = 1;
+
+  void _loadMore() async {
+    final bloc = context.read<FetchVendorsBloc>();
+    final state = bloc.state;
+
+    if (state is FetchVendorsSuccess) {
+      totalPages = state.model.data!.totalPages ?? 1;
+      if (_page >= totalPages) return;
+
+      if (state.hasReachedMax) return;
+      if (state.isPaginating) return;
+      if (_isFetchingMore) return;
+
+      _isFetchingMore = true;
+      _page++;
+
+      await _fetchData(isLoadMore: true);
+
+      _isFetchingMore = false;
+    }
   }
 
   bool searchValue = false;
 
-  Future fetchVendors() async {
-    context.read<FetchVendorsBloc>().add(GetVendorsEvent(context: context));
-    controller.clear();
+  /// calculate distance
+  Future<Map<String, String>> getVendorAddressAndDistance(
+      String lat, String lng) async {
+    final key = '$lat,$lng';
+
+    if (locationCache.containsKey(key)) {
+      return locationCache[key]!;
+    }
+    final data =
+        await getAddressAndDistance(double.parse(lat), double.parse(lng));
+    locationCache[key] = data;
+    return data;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: CustomScrollView(
-      controller: _scrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
-        SliverAppBar(
-          backgroundColor: AppColors.whiteColor,
-          floating: true,
-          pinned: true,
-          snap: true,
-          stretch: true,
-          leadingWidth: size.width * 0.12,
-          leading: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: AppColors.theme10.withOpacity(0.1)),
-              child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back_ios_new,
-                    size: 22,
-                    color: _flexTitleOpacity == 1.0
-                        ? AppColors.blackColor
-                        : AppColors.blackColor),
+      body: RefreshIndicator(
+        onRefresh: _fetchData,
+        child: CustomScrollView(
+          controller: _scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              backgroundColor: AppColors.whiteColor,
+              floating: true,
+              pinned: true,
+              snap: true,
+              stretch: true,
+              leadingWidth: size.width * 0.12,
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: AppColors.theme10.withOpacity(0.1)),
+                  child: IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.arrow_back_ios_new,
+                        size: 22,
+                        color: _flexTitleOpacity == 1.0
+                            ? AppColors.blackColor
+                            : AppColors.blackColor),
+                  ),
+                ),
+              ),
+              title: AnimatedHintSearchField1(
+                controller: controller,
+                suffix: searchValue
+                    ? IconButton(
+                        icon: Icon(Icons.cancel,
+                            color: AppColors.black20, size: 25),
+                        onPressed: () {
+                          _page = 1;
+                          _fetchData();
+                          setState(() => searchValue = false);
+                          controller.clear();
+                        })
+                    : null,
+                fillColor: AppColors.theme10.withOpacity(0.1),
+                onChanged: (value) {
+                  context.read<FetchVendorsBloc>().add(GetVendorsEvent(
+                      context: context, search: value, page: _page));
+                  setState(() => searchValue = value.length > 2);
+                },
               ),
             ),
-          ),
-          title: AnimatedHintSearchField1(
-            controller: controller,
-            suffix: searchValue
-                ? IconButton(
-                    icon:
-                        Icon(Icons.cancel, color: AppColors.black20, size: 25),
-                    onPressed: () {
-                      setState(() => searchValue = false);
-                      controller.clear();
-                    })
-                : null,
-            fillColor: AppColors.theme10.withOpacity(0.1),
-            onChanged: (value) {
-              context
-                  .read<FetchVendorsBloc>()
-                  .add(GetVendorsEvent(context: context, search: value));
-              setState(() => searchValue = value.length > 2);
-            },
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: RefreshIndicator(
-            onRefresh: fetchVendors,
-            child: BlocBuilder<FetchVendorsBloc, FetchVendorsState>(
+            BlocBuilder<FetchVendorsBloc, FetchVendorsState>(
               builder: (context, state) {
                 if (state is FetchVendorsLoading) {
-                  return const BurgerKingShimmer();
+                  return const SliverToBoxAdapter(child: BurgerKingShimmer());
                 } else if (state is FetchVendorsFailure) {
-                  return Center(
-                      child: Text(state.error,
-                          style: AppStyle.medium_14(AppColors.redColor)));
+                  return SliverToBoxAdapter(
+                      child: errorMessage(state.error,
+                          topSize: size.height * 0.45));
                 } else if (state is FetchVendorsSuccess) {
-                  final vendorsList = state.model.data ?? [];
+                  final vendorsList = state.model.data!.data ?? [];
 
-                  return ListView.builder(
-                    itemCount: vendorsList.length,
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemBuilder: (_, index) {
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
                       final vendor = vendorsList[index];
+                      final lat = vendor.vendor!.lat!;
+                      final lng = vendor.vendor!.long!;
+                      final key = '$lat,$lng';
 
                       return FutureBuilder<Map<String, String>>(
-                        future: getAddressAndDistance(
-                            vendor.vendor!.lat!, vendor.vendor!.long!),
+                        future: getVendorAddressAndDistance(
+                            lat.toString(), lng.toString()),
                         builder: (context, snapshot) {
-                          String location = 'Loading...';
+                          String location = 'Fetching...';
                           String distance = '';
 
                           if (snapshot.connectionState ==
@@ -118,6 +172,10 @@ class _SearchVendorsPageState extends State<SearchVendorsPage> {
                               snapshot.hasData) {
                             location = snapshot.data!['address']!;
                             distance = snapshot.data!['distance']!;
+                          } else if (locationCache.containsKey(key)) {
+                            // Use cached data even while building
+                            location = locationCache[key]!['address']!;
+                            distance = locationCache[key]!['distance']!;
                           }
 
                           return Padding(
@@ -129,6 +187,11 @@ class _SearchVendorsPageState extends State<SearchVendorsPage> {
                                     ? size.height * 0.1
                                     : 0.0),
                             child: searchVendorWidget(
+                              onTap: () => AppRouter().navigateTo(
+                                  context,
+                                  OffersDetailsPage(
+                                      vendorId:
+                                          vendor.vendor!.user!.id.toString())),
                               imgUrl: vendor.vendor!.businessLogo ?? '',
                               businessName: vendor.vendor!.businessName ?? '',
                               location: location,
@@ -143,27 +206,27 @@ class _SearchVendorsPageState extends State<SearchVendorsPage> {
                           );
                         },
                       );
-                    },
+                    }, childCount: vendorsList.length),
                   );
                 }
-                return const SizedBox();
+                return const SliverToBoxAdapter(child: SizedBox());
               },
             ),
-          ),
+          ],
         ),
-      ],
-    ));
+      ),
+    );
   }
 }
 
-Widget searchVendorWidget({
-  String? imgUrl,
-  String? businessName,
-  String? category,
-  String? location,
-  String? distance,
-  String? offers,
-}) {
+Widget searchVendorWidget(
+    {String? imgUrl,
+    String? businessName,
+    String? category,
+    String? location,
+    String? distance,
+    String? offers,
+    Function()? onTap}) {
   return Container(
     margin: const EdgeInsets.only(top: 8),
     padding: const EdgeInsets.all(8),
@@ -225,12 +288,10 @@ Widget searchVendorWidget({
               ),
 
               /// Location + Distance
-              Text(
-                "${location ?? ''} • ${distance ?? ''}",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppStyle.medium_12(AppColors.black70),
-              ),
+              Text("${location ?? ''} • ${distance ?? ''}",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppStyle.medium_12(AppColors.black70)),
 
               /// offers
               Row(
@@ -239,10 +300,8 @@ Widget searchVendorWidget({
                   Image.asset(Assets.offersIcon,
                       color: Colors.green, height: 18),
                   const SizedBox(width: 5),
-                  Text(
-                    "Flat 30% Off",
-                    style: AppStyle.medium_14(AppColors.green),
-                  ),
+                  Text(offers.toString(),
+                      style: AppStyle.medium_14(AppColors.green)),
                 ],
               ),
             ],
@@ -251,11 +310,14 @@ Widget searchVendorWidget({
         const SizedBox(width: 8),
 
         /// Right: Offer Section
-        CircleAvatar(
-            radius: 20,
-            backgroundColor: AppColors.theme10,
-            child: const Icon(Icons.arrow_forward_ios,
-                size: 17, color: AppColors.themeColor))
+        GestureDetector(
+          onTap: onTap,
+          child: CircleAvatar(
+              radius: 20,
+              backgroundColor: AppColors.theme10,
+              child: const Icon(Icons.arrow_forward_ios,
+                  size: 17, color: AppColors.themeColor)),
+        )
       ],
     ),
   );

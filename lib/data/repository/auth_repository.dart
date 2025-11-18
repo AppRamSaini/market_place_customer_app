@@ -1,10 +1,10 @@
-
-import 'package:market_place_customer/data/models/profile_model.dart';
+import 'package:market_place_customer/data/models/update_mobile_model.dart';
 import 'package:market_place_customer/data/models/user_otp_modal.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class AuthRepository {
   final api = ApiManager();
+
   Future<UserModel?> loginUser(
       {required BuildContext context, required String mobileNumber}) async {
     var data = {'phone': mobileNumber};
@@ -49,11 +49,10 @@ class AuthRepository {
     var data = {
       "name": customer.customer.name,
       "phone": customer.customer.mobile,
-      "email": customer.customer.email,
+      "email": customer.customer.email
     };
 
     print('data--------->>>>>>$data');
-
     final result =
         await api.post(url: ApiEndPoints.customerRegistration, data: data);
     print('--rr------->>>>>>$result');
@@ -64,40 +63,20 @@ class AuthRepository {
     }
   }
 
-  /// update customer profile
-  Future updateCustomerProfile(
+  /// otp verify
+  Future<UpdateMobileNumberModel?> updateMobile(
       {required BuildContext context,
-      required CustomerRegistrationModel customer}) async {
-    var data = {
-      "name": customer.name,
-      "email": customer.email,
-      "phone": customer.mobile,
-      "image": customer.img
-    };
-    print('JSON===>>>$data');
+      required String mobile,
+      required String otp}) async {
+    var data = {"phone": mobile.toString(), "otp": otp.toString()};
+
     final result = await api.post(
-        url: ApiEndPoints.updateMerchantBusiness, data: data, context: context);
+        url: ApiEndPoints.updateMobile, data: data, useToken: true);
+    print('------>>>>$result');
     if (result is String) {
-      snackBar(context, result, AppColors.redColor);
-      return null;
+      return throw Exception(result.toString());
     } else {
-      return CustomerSignupModel.fromJson(result);
-    }
-  }
-
-
-
-
-  /// fetch profile data
-  Future fetchProfile(BuildContext context) async {
-    final result =
-        await api.get(url: ApiEndPoints.profile, context: context);
-
-    print("RES ==> $result");
-    if (result is String) {
-      return result;
-    } else {
-      return ProfileModel.fromJson(result);
+      return UpdateMobileNumberModel.fromJson(result);
     }
   }
 }
