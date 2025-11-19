@@ -248,6 +248,8 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
                     return;
                   }
 
+                  /// mmm
+
                   AppRouter().navigateTo(context,
                       PurchasedOfferDetailsPage(offersId: offer.id ?? ''));
                 },
