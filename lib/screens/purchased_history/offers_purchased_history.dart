@@ -1,7 +1,8 @@
+import 'package:market_place_customer/data/models/purchased_offers_history_model.dart';
+import 'package:market_place_customer/screens/dilogs/already_used_this_offers.dart';
 import 'package:market_place_customer/screens/purchased_history/purchased_offers_details.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
-import '../../data/models/purchased_offers_history_model.dart';
 import 'helper_widgets.dart';
 
 class PurchasedOffersHistory extends StatefulWidget {
@@ -15,16 +16,58 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  final ScrollController _scrollController = ScrollController();
+
+  int _page = 1;
+  bool _isFetchingMore = false;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _tabController = TabController(length: 3, vsync: this);
   }
 
-  Future fetchOffersHistory() async {
-    context
-        .read<PurchasedOffersHistoryBloc>()
-        .add(GetPurchasedOffersHistoryEvent(context: context));
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchData({bool isLoadMore = false}) async {
+    context.read<PurchasedOffersHistoryBloc>().add(
+        GetPurchasedOffersHistoryEvent(
+            context: context, page: _page, isLoadMore: isLoadMore));
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
+      _loadMore();
+    }
+  }
+
+  int totalPages = 1;
+
+  void _loadMore() async {
+    final bloc = context.read<FetchVendorsBloc>();
+    final state = bloc.state;
+
+    if (state is FetchVendorsSuccess) {
+      totalPages = state.model.data!.totalPages ?? 1;
+      if (_page >= totalPages) return;
+
+      if (state.hasReachedMax) return;
+      if (state.isPaginating) return;
+      if (_isFetchingMore) return;
+
+      _isFetchingMore = true;
+      _page++;
+
+      await _fetchData(isLoadMore: true);
+
+      _isFetchingMore = false;
+    }
   }
 
   @override
@@ -37,9 +80,6 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
           if (state is PurchasedOffersHistoryLoading) {
             return const Center(child: BurgerKingShimmer());
           } else if (state is PurchasedOffersHistoryFailure) {
-            print(
-              state.error.toString(),
-            );
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(40),
@@ -51,7 +91,9 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
               ),
             );
           } else if (state is PurchasedOffersHistorySuccess) {
-            final offersData = state.model.data ?? [];
+            final offersData = state.model.data!.purchasedCustomers ?? [];
+
+            final paginate = state.isPaginating;
 
             // 🔹 Separate by Status
             final activeOffers = offersData.where((offer) {
@@ -109,9 +151,9 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      _buildOfferList(activeOffers, size, "Active"),
-                      _buildOfferList(expiredOffers, size, "Expired"),
-                      _buildOfferList(usedOffers, size, "Used"),
+                      _buildOfferList(activeOffers, size, paginate, "Active"),
+                      _buildOfferList(expiredOffers, size, paginate, "Expired"),
+                      _buildOfferList(usedOffers, size, paginate, "Used"),
                     ],
                   ),
                 ),
@@ -127,7 +169,7 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
 
   /// 🔹 Common Offer List Builder
   Widget _buildOfferList(
-      List<PurchasedOffersHistoryList> offers, Size size, String label) {
+      List<PurchasedCustomer> offers, Size size, var paginate, String label) {
     if (offers.isEmpty) {
       return Center(
         child: Text(
@@ -138,12 +180,26 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
     }
 
     return RefreshIndicator(
-      onRefresh: fetchOffersHistory,
+      onRefresh: () async {
+        _fetchData(isLoadMore: false);
+      },
       child: ListView.builder(
-        itemCount: offers.length,
+        controller: _scrollController,
         padding: EdgeInsets.only(top: size.height * 0.01),
         physics: const AlwaysScrollableScrollPhysics(),
-        itemBuilder: (_, index) {
+        itemCount: offers.length + (paginate ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == offers.length) {
+            return const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(
+                child: CircularProgressIndicator.adaptive(
+                  backgroundColor: AppColors.themeColor,
+                ),
+              ),
+            );
+          }
+
           final offer = offers[index];
           final isFlat = offer.offer?.flat != null;
           bool isExpired = offer.offer?.flat?.isExpired ??
@@ -184,6 +240,11 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
                 onTap: () {
                   if (isExpired) {
                     showOfferExpiredDialog(context);
+                    return;
+                  }
+
+                  if (isPurchased) {
+                    showAlreadyUsedOfferDialog(context);
                     return;
                   }
 

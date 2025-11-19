@@ -41,7 +41,6 @@ class _SplashScreenState extends State<SplashScreen> {
           AppRouter().navigateAndClearStack(context, const DetectLocation());
         }
       } catch (e) {
-        print("Error during navigation initialization: $e");
         AppRouter().navigateAndClearStack(context, const DetectLocation());
       }
     });
@@ -49,7 +48,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // Added for size reference
     return Scaffold(
       body: Image.asset(
         Assets.logoGIF,

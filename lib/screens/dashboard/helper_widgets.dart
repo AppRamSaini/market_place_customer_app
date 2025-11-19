@@ -1,4 +1,3 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:market_place_customer/screens/dashboard/search_vendors.dart';
 import 'package:market_place_customer/screens/purchased_history/expired_timer.dart';
 
@@ -267,178 +266,6 @@ Widget offerChipAndFavoriteWidget(String offersCounts) => Row(
       ],
     );
 
-/// CATEGORY CARD FOR CATEGORY SECTION
-
-class CategoryCard extends StatelessWidget {
-  final String imageUrl;
-  final String name;
-
-  double carWidth;
-  double imgHeight;
-
-  CategoryCard(
-      {super.key,
-      required this.imageUrl,
-      required this.name,
-      required this.imgHeight,
-      required this.carWidth});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Image.network(
-            imageUrl,
-            height: imgHeight,
-            width: carWidth,
-            fit: BoxFit.cover,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Shimmer.fromColors(
-                baseColor: Colors.grey.shade400,
-                highlightColor: Colors.grey.shade200,
-                period: const Duration(seconds: 1),
-                child: Container(
-                  width: carWidth,
-                  height: imgHeight,
-                  color: Colors.white,
-                ),
-              );
-            },
-            errorBuilder: (context, error, stackTrace) {
-              return Shimmer.fromColors(
-                baseColor: Colors.grey.shade400,
-                highlightColor: Colors.grey.shade200,
-                period: const Duration(seconds: 1),
-                child: Container(
-                  width: carWidth,
-                  height: imgHeight,
-                  color: Colors.white,
-                ),
-              );
-            },
-          ),
-        ),
-        SizedBox(height: size.height * 0.005),
-        Text(name,
-            style: AppStyle.normal_13(AppColors.blackColor),
-            overflow: TextOverflow.ellipsis),
-      ],
-    );
-  }
-}
-
-/// SUB CATEGORY CARD FOR CATEGORY SECTION
-
-class SubCategoryCard extends StatelessWidget {
-  final String imageUrl;
-  final String name;
-  final String location;
-  final String distance;
-  final String cuisines;
-  final String offersCount;
-  final String offerText;
-  double carWidth;
-  double imgHeight;
-
-  SubCategoryCard(
-      {super.key,
-      required this.imageUrl,
-      required this.name,
-      required this.location,
-      required this.distance,
-      required this.cuisines,
-      required this.offersCount,
-      required this.offerText,
-      required this.imgHeight,
-      required this.carWidth});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(10), bottom: Radius.circular(10)),
-          child: FadeInImage(
-            fit: BoxFit.cover,
-            height: imgHeight,
-            width: double.infinity,
-            placeholder: const AssetImage(Assets.dummy),
-            image: imageUrl.isNotEmpty
-                ? NetworkImage(imageUrl)
-                : const AssetImage(Assets.dummy) as ImageProvider,
-            imageErrorBuilder: (_, child, st) => Image.asset(Assets.dummy,
-                height: imgHeight, fit: BoxFit.cover, width: double.infinity),
-          ),
-        ),
-        Container(
-          width: size.width,
-          height: imgHeight,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.center,
-                  colors: [AppColors.transparent, AppColors.black70])),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: size.height * 0.02),
-                child: offerChipAndFavoriteWidget(offersCount),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(name,
-                            style: AppStyle.medium_14(AppColors.whiteColor),
-                            overflow: TextOverflow.ellipsis),
-                        Text("${location ?? ''} • ${distance ?? ''}",
-                            style: AppStyle.medium_13(AppColors.white10)),
-                        Text(cuisines,
-                            style: AppStyle.medium_13(AppColors.parrot)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                        color: AppColors.themeColor,
-                        borderRadius:
-                            BorderRadius.vertical(bottom: Radius.circular(10))),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.local_offer,
-                            size: 18, color: AppColors.whiteColor),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(offerText,
-                              style: AppStyle.medium_13(AppColors.whiteColor)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-}
-
 /// SEARCH CIRCLE BTN
 
 searchBtn(BuildContext context, double opacity1) => IconButton(
@@ -512,7 +339,7 @@ class RestaurantCard extends StatelessWidget {
       width: carWidth,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.2),
@@ -529,7 +356,7 @@ class RestaurantCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
+                    const BorderRadius.vertical(top: Radius.circular(10)),
                 child: FadeInImage(
                   height: imgHeight,
                   fit: BoxFit.cover,
@@ -576,7 +403,7 @@ class RestaurantCard extends StatelessWidget {
             decoration: const BoxDecoration(
                 color: AppColors.themeColor,
                 borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(16))),
+                    BorderRadius.vertical(bottom: Radius.circular(10))),
             child: Row(
               children: [
                 const Icon(Icons.local_offer,

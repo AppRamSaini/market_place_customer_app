@@ -1,4 +1,3 @@
-import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_bloc.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_event.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_event.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_state.dart';
@@ -6,8 +5,6 @@ import 'package:market_place_customer/screens/payment_section/qr_payment_managem
 import 'package:market_place_customer/screens/qr_management/update_bil_amount.dart';
 import 'package:market_place_customer/utils/exports.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-
-import '../../bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_bloc.dart';
 
 class QrCodeContentModel {
   final String title;
@@ -110,12 +107,10 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                   : singleOffer.percentage!.minBillAmount ?? 0;
 
               final finalBill =
-                  double.parse(offersData.finalAmount.toString()) ?? 0.0;
-              final discounted =
-                  double.parse(offersData.discount.toString()) ?? 0.0;
+                  double.parse(offersData.finalAmount.toString() ?? '') ?? 0.0;
 
               final totalAmount =
-                  double.parse(offersData.totalAmount.toString()) ?? 0.0;
+                  double.parse(offersData.totalAmount.toString() ?? '') ?? 0.0;
               amountController.text = totalAmount.toString();
 
               return RefreshIndicator(
@@ -149,21 +144,17 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   const SizedBox(height: 40),
-                                  // 🎬 Smooth staggered entry animations
                                   FadeInDown(
-                                    delay: const Duration(milliseconds: 200),
-                                    duration: const Duration(milliseconds: 800),
-                                    child: Text(
-                                      capitalizeFirstLetter(
-                                          widget.qrContent.title),
-                                      textAlign: TextAlign.center,
-                                      style: AppStyle.bold_22(
-                                          AppColors.themeColor),
-                                    ),
-                                  ),
-
+                                      delay: const Duration(milliseconds: 200),
+                                      duration:
+                                          const Duration(milliseconds: 800),
+                                      child: Text(
+                                          capitalizeFirstLetter(
+                                              widget.qrContent.title),
+                                          textAlign: TextAlign.center,
+                                          style: AppStyle.bold_22(
+                                              AppColors.themeColor))),
                                   const SizedBox(height: 6),
-
                                   FadeInRight(
                                     delay: const Duration(milliseconds: 400),
                                     duration: const Duration(milliseconds: 800),
@@ -174,9 +165,7 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                                           .copyWith(letterSpacing: 2),
                                     ),
                                   ),
-
                                   const SizedBox(height: 20),
-
                                   FadeInUp(
                                     delay: const Duration(milliseconds: 600),
                                     duration: const Duration(milliseconds: 900),
@@ -205,9 +194,7 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                                       ),
                                     ),
                                   ),
-
                                   const SizedBox(height: 25),
-
                                   FadeInUp(
                                     delay: const Duration(milliseconds: 800),
                                     duration: const Duration(milliseconds: 700),
@@ -281,9 +268,7 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                 ),
               );
             }
-            return const SizedBox(
-              child: Text('data'),
-            );
+            return const SizedBox();
           },
         ),
       ),

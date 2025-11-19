@@ -70,8 +70,9 @@ class ApiManager {
 
       return _handleStatusCode(response, context: context);
     } on DioException catch (e) {
-      print("DioException: $e");
       return _handleDioError(e);
+    } on SocketException {
+      return "Internet connection error!. Please try again";
     } catch (e) {
       print("Unknown error: $e");
       return "Something went wrong. Please try again.";
@@ -108,10 +109,10 @@ class ApiManager {
       );
       return _handleStatusCode(response, context: context);
     } on DioException catch (e) {
-      print("DioException: $e");
       return _handleDioError(e);
+    } on SocketException {
+      return "Internet connection error!. Please try again";
     } catch (e) {
-      print("Unknown error: $e");
       return "Something went wrong. Please try again.";
     }
   }

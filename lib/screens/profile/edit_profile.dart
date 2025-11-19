@@ -35,6 +35,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return null;
   }
 
+  bool showUpdateBtn = false;
   String inputValue = '';
 
   @override
@@ -54,7 +55,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   File? _pickedImage;
-  bool showUpdateBtn = false;
 
   Future _fetchProfile() async {
     context
@@ -255,7 +255,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 child: Text("UPDATE",
                                     style: AppStyle.medium_16(
                                         AppColors.themeColor))))
-                        : null,
+                        : const Icon(Icons.check_circle,
+                            color: AppColors.green),
                     onChanged: (v) {
                       final newValue = v.trim();
                       if (newValue == inputValue) {

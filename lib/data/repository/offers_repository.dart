@@ -68,8 +68,9 @@ class OffersRepository {
   }
 
   /// fetch purchased offers list
-  Future fetchPurchasedOffersApi() async {
-    final result = await api.get(url: ApiEndPoints.fetchPurchasedOffers);
+  Future fetchPurchasedOffersApi(GetPurchasedOffersHistoryEvent event) async {
+    final result =
+        await api.get(url: "${ApiEndPoints.fetchPurchasedOffers}${event.page}");
     if (result is String) {
       return result;
     } else {

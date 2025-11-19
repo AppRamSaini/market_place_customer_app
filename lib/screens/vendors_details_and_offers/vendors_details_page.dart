@@ -401,11 +401,19 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                             );
                           })),
                         ),
-                        SizedBox(height: size.height * 0.03),
-                        Padding(
-                            padding: EdgeInsets.only(left: size.width * 0.03),
-                            child: Text("Gallery",
-                                style: AppStyle.medium_18(AppColors.black20))),
+                        businessImages.isEmpty
+                            ? const SizedBox()
+                            : Column(
+                                children: [
+                                  SizedBox(height: size.height * 0.03),
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          left: size.width * 0.03),
+                                      child: Text("Gallery",
+                                          style: AppStyle.medium_18(
+                                              AppColors.black20))),
+                                ],
+                              ),
                         SizedBox(height: size.height * 0.01),
                       ],
                     )),

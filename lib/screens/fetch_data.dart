@@ -10,7 +10,7 @@ fetchApiData(BuildContext context) {
     /// fetch customer purchased offer history
     context
         .read<PurchasedOffersHistoryBloc>()
-        .add(GetPurchasedOffersHistoryEvent(context: context));
+        .add(GetPurchasedOffersHistoryEvent(context: context, page: 1));
 
     /// fetch customer profile
     context
@@ -48,7 +48,7 @@ fetchApiDataInSplash(BuildContext context) {
     /// fetch customer purchased offer history
     context
         .read<PurchasedOffersHistoryBloc>()
-        .add(GetPurchasedOffersHistoryEvent(context: context));
+        .add(GetPurchasedOffersHistoryEvent(context: context, page: 1));
 
     /// fetch customer profile
     context

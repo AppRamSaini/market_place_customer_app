@@ -125,10 +125,8 @@ class _ViewAllVendorsPageState extends State<ViewAllVendorsPage> {
                 children: [
                   Text(
                     "Popular Vendors",
-                    style: AppStyle.medium_18(
-                      Color.lerp(AppColors.whiteColor, AppColors.blackColor,
-                          _flexTitleOpacity)!,
-                    ),
+                    style: AppStyle.medium_18(Color.lerp(AppColors.whiteColor,
+                        AppColors.blackColor, _flexTitleOpacity)!),
                   ),
                   searchBtn(context, _flexTitleOpacity)
                 ],

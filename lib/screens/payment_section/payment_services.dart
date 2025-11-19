@@ -81,9 +81,8 @@ class RazorpayPaymentServices {
     updatePaymentDataOnFirebase(dataModel.offersId.toString(),
         dataModel.vendorId.toString(), dataModel.userId.toString(), 'success');
 
-    dataModel.context
-        .read<PurchasedOffersHistoryBloc>()
-        .add(GetPurchasedOffersHistoryEvent(context: dataModel.context));
+    dataModel.context.read<PurchasedOffersHistoryBloc>().add(
+        GetPurchasedOffersHistoryEvent(context: dataModel.context, page: 1));
 
     AppRouter().navigateTo(dataModel.context, const PaymentSuccessPage());
 

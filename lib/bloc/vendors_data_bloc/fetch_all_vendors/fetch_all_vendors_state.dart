@@ -8,26 +8,22 @@ class FetchVendorsLoading extends FetchVendorsState {}
 
 class FetchVendorsSuccess extends FetchVendorsState {
   final FetchAllVendorsModel model;
-
   final bool hasReachedMax;
   final bool isPaginating;
 
-  FetchVendorsSuccess({
-    required this.model,
-    this.hasReachedMax = false,
-    this.isPaginating = false,
-  });
+  FetchVendorsSuccess(
+      {required this.model,
+      this.hasReachedMax = false,
+      this.isPaginating = false});
 
-  FetchVendorsSuccess copyWith({
-    FetchAllVendorsModel? vendorsModel,
-    bool? hasReachedMax,
-    bool? isPaginating,
-  }) {
+  FetchVendorsSuccess copyWith(
+      {FetchAllVendorsModel? vendorsModel,
+      bool? hasReachedMax,
+      bool? isPaginating}) {
     return FetchVendorsSuccess(
-      model: vendorsModel ?? model,
-      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
-      isPaginating: isPaginating ?? this.isPaginating,
-    );
+        model: vendorsModel ?? model,
+        hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+        isPaginating: isPaginating ?? this.isPaginating);
   }
 }
 

@@ -16,7 +16,7 @@ class ApiEndPoints {
   static offersDetails(String offerId, String userId) =>
       '$baseUrl/customer/offer/get_details/$offerId?user_id=$userId';
   static const makePayment = '$baseUrl/customer/add_payment';
-  static const fetchPurchasedOffers = '$baseUrl/customer/brought-offer';
+  static const fetchPurchasedOffers = '$baseUrl/customer/brought-offer?page=';
   static const purchasedOffersDetails = '$baseUrl/customer/brought-offer';
   static const updateBillAmount = '$baseUrl/customer/payment/update';
   static const updateProfile = '$baseUrl/customer/update';
@@ -30,6 +30,4 @@ class ApiEndPoints {
   static const saveBill = '$baseUrl/customer/bill-add';
 
   static const updateMobile = '$baseUrl/customer/phone-update';
-
-
 }

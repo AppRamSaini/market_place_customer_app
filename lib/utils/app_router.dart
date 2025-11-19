@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class AppRouter {
   /// Normal Push
-   navigateTo(BuildContext context, Widget secondScreen) {
+  void navigateTo(BuildContext context, Widget secondScreen) {
     Navigator.push(
       context,
       _buildCustomRoute(secondScreen),
     );
   }
 
-  ///  Push Replacement
+  /// Push Replacement
   void replaceWith(BuildContext context, Widget secondScreen) {
     Navigator.pushReplacement(
       context,
@@ -22,37 +22,43 @@ class AppRouter {
     Navigator.pushAndRemoveUntil(
       context,
       _buildCustomRoute(secondScreen),
-          (route) => false,
+      (route) => false,
     );
   }
 
-  /// Common Custom Route Builder
+  /// Custom Page Route (iOS-style dual slide animation)
   PageRouteBuilder _buildCustomRoute(Widget screen) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => screen,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        late Animation<Offset> customAnimation;
+        /// ---- NEW PAGE ANIMATION (Right → Left) ----
+        final newPageSlide = Tween<Offset>(
+          begin: const Offset(1.0, 0.0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        ));
 
-        // Forward = push, Reverse = pop
-        if (animation.status == AnimationStatus.forward) {
-          customAnimation = Tween<Offset>(
-            begin: const Offset(1.0, 0.0), // Right to left
-            end: Offset.zero,
-          ).animate(animation);
-        } else {
-          customAnimation = Tween<Offset>(
-            begin: const Offset(0.0, 1.0), // Bottom to top on back
-            end: Offset.zero,
-          ).animate(animation);
-        }
+        /// ---- OLD PAGE SUBTLE MOVE (Right → Left) ----
+        final oldPageSlide = Tween<Offset>(
+          begin: Offset.zero,
+          end: const Offset(-0.2, 0.0), // smooth parallax effect
+        ).animate(CurvedAnimation(
+          parent: secondaryAnimation,
+          curve: Curves.easeOutCubic,
+        ));
 
         return SlideTransition(
-          position: customAnimation,
-          child: child,
+          position: oldPageSlide, // OLD screen moves slightly
+          child: SlideTransition(
+            position: newPageSlide, // NEW screen slides fully
+            child: child,
+          ),
         );
       },
-      transitionDuration: const Duration(milliseconds: 200),
-      reverseTransitionDuration: const Duration(milliseconds: 230),
+      transitionDuration: const Duration(milliseconds: 280),
+      reverseTransitionDuration: const Duration(milliseconds: 260),
     );
   }
 }

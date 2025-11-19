@@ -33,17 +33,21 @@ class FetchAllVendorsModel {
 
 class Data {
   List<VendorDataList>? data;
-  int? total;
-  var page;
-  int? limit;
+  int? totalRecords;
+  int? currentPage;
+  int? perPage;
   int? totalPages;
+  int? nextPage;
+  int? previousPage;
 
   Data({
     this.data,
-    this.total,
-    this.page,
-    this.limit,
+    this.totalRecords,
+    this.currentPage,
+    this.perPage,
     this.totalPages,
+    this.nextPage,
+    this.previousPage,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -51,20 +55,24 @@ class Data {
             ? []
             : List<VendorDataList>.from(
                 json["data"]!.map((x) => VendorDataList.fromJson(x))),
-        total: json["total"],
-        page: json["page"],
-        limit: json["limit"],
-        totalPages: json["totalPages"],
+        totalRecords: json["total_records"],
+        currentPage: json["current_page"],
+        perPage: json["per_page"],
+        nextPage: json["nextPage"],
+        previousPage: json["previousPage"],
+        totalPages: json["total_pages"],
       );
 
   Map<String, dynamic> toJson() => {
         "data": data == null
             ? []
             : List<dynamic>.from(data!.map((x) => x.toJson())),
-        "total": total,
-        "page": page,
-        "limit": limit,
-        "totalPages": totalPages,
+        "total_records": totalRecords,
+        "current_page": currentPage,
+        "per_page": perPage,
+        "total_pages": totalRecords,
+        "nextPage": nextPage,
+        "previousPage": previousPage
       };
 }
 

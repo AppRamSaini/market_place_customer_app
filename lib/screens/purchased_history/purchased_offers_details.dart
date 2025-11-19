@@ -1,9 +1,6 @@
-import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_bloc.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/purchased_offers_details/purchased_offers_event.dart';
-import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_bloc.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_event.dart';
 import 'package:market_place_customer/bloc/vendors_data_bloc/update_bill_amount/update_bill_amount_state.dart';
-import 'package:market_place_customer/screens/dilogs/already_used_this_offers.dart';
 import 'package:market_place_customer/screens/purchased_history/expired_timer.dart';
 import 'package:market_place_customer/screens/purchased_history/helper_widgets.dart';
 import 'package:market_place_customer/screens/qr_management/generate_qr_code.dart';
@@ -232,15 +229,15 @@ class _PurchasedOfferDetailsPageState extends State<PurchasedOfferDetailsPage>
             snackBar(context, state.error, AppColors.redColor);
           }
         }),
-        BlocListener<PurchasedOffersBloc, PurchasedOffersState>(
-            listener: (context, state) {
-          if (state is PurchasedOffersSuccess) {
-            final offersData = state.offersDetailModel.data;
-            if (offersData!.vendorBillStatus == true) {
-              showAlreadyUsedOfferDialog(context);
-            }
-          }
-        })
+        // BlocListener<PurchasedOffersBloc, PurchasedOffersState>(
+        //     listener: (context, state) {
+        //   if (state is PurchasedOffersSuccess) {
+        //     final offersData = state.offersDetailModel.data;
+        //     if (offersData!.vendorBillStatus == true) {
+        //
+        //     }
+        //   }
+        // })
       ],
       child: Scaffold(
         body: BlocBuilder<PurchasedOffersBloc, PurchasedOffersState>(

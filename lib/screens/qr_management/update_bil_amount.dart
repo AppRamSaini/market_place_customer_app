@@ -6,10 +6,6 @@ Future<void> updateBillAmount({
   required int minBillAmount,
   void Function()? onPressed,
 }) async {
-  double _calculatedDiscount = 0.0;
-  double _payableAmount = 0.0;
-  bool _isValidAmount = false;
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   if (amountController.text.isNotEmpty) {
     double value = double.tryParse(amountController.text) ?? 0.0;
@@ -87,10 +83,9 @@ Future<void> updateBillAmount({
 
                   // Sub info
                   Text(
-                    "Enter the updated bill amount below to modify the payable total.",
-                    textAlign: TextAlign.center,
-                    style: AppStyle.normal_14(AppColors.black50),
-                  ),
+                      "Enter the updated bill amount below to modify the payable total.",
+                      textAlign: TextAlign.center,
+                      style: AppStyle.normal_14(AppColors.black50)),
 
                   const SizedBox(height: 25),
 
@@ -101,8 +96,6 @@ Future<void> updateBillAmount({
                     keyboardType: TextInputType.number,
                     maxLength: 10,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    suffix: Text("₹${_calculatedDiscount.toStringAsFixed(0)}",
-                        style: AppStyle.medium_14(AppColors.green)),
                     prefix: const Icon(Icons.currency_rupee_rounded,
                         color: AppColors.themeColor),
                     validator: (value) {
