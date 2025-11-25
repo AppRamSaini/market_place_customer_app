@@ -107,6 +107,7 @@ class _PopularCategoriesState extends State<PopularCategories> {
               builder: (context, snap) {
                 final distance = snap.hasData ? snap.data!['distance']! : '';
 
+                print(vendor.vendor!.businessLogo!);
                 return SubCategoryCard(
                   onTap: () => AppRouter().navigateTo(
                       context,
@@ -114,7 +115,10 @@ class _PopularCategoriesState extends State<PopularCategories> {
                           vendorId: vendor.vendor!.user!.id.toString())),
                   carWidth: size.width * 0.4,
                   imgHeight: size.width * 0.25,
-                  imageUrl: vendor.vendor!.businessLogo ?? '',
+                  imageUrl: (vendor.vendor!.businessLogo != null &&
+                          vendor.vendor!.businessLogo!.trim().isNotEmpty)
+                      ? vendor.vendor!.businessLogo!
+                      : '',
                   name: vendor.vendor!.businessName ?? 'N/A',
                   location: vendor.vendor!.area ?? 'N/A',
                   distance: distance,

@@ -34,7 +34,7 @@ export 'package:market_place_customer/bloc/customer_registration/signup_customer
 export 'package:market_place_customer/bloc/customer_registration/signup_customer/create_customer_event.dart';
 export 'package:market_place_customer/bloc/customer_registration/signup_customer/create_customer_state.dart';
 export 'package:market_place_customer/bloc/order_history_bloc/order_history/order_history_bloc.dart';
-export 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_bloc.dart';
+export 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_bill_bloc.dart';
 export 'package:market_place_customer/bloc/payment_bloc/payment_bloc.dart';
 export 'package:market_place_customer/bloc/payment_bloc/payment_event.dart';
 export 'package:market_place_customer/bloc/payment_bloc/payment_state.dart';

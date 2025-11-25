@@ -418,6 +418,7 @@ class User {
   DateTime? updatedAt;
   int? v;
   String? businessLogo;
+  String? businessName;
 
   User({
     this.id,
@@ -431,6 +432,7 @@ class User {
     this.updatedAt,
     this.v,
     this.businessLogo,
+    this.businessName,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -449,6 +451,7 @@ class User {
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
         businessLogo: json["business_logo"],
+        businessName: json["business_name"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -463,5 +466,6 @@ class User {
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
         "business_logo": businessLogo,
+        "business_name": businessName,
       };
 }

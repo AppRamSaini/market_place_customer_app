@@ -107,10 +107,11 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
                   : singleOffer.percentage!.minBillAmount ?? 0;
 
               final finalBill =
-                  double.parse(offersData.finalAmount.toString() ?? '') ?? 0.0;
+                  double.tryParse("${offersData.finalAmount}") ?? 0.0;
 
               final totalAmount =
-                  double.parse(offersData.totalAmount.toString() ?? '') ?? 0.0;
+                  double.tryParse("${offersData.totalAmount}") ?? 0.0;
+
               amountController.text = totalAmount.toString();
 
               return RefreshIndicator(

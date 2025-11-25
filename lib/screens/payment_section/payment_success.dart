@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+
 import 'package:confetti/confetti.dart';
+import 'package:flutter/material.dart';
 import 'package:market_place_customer/screens/dashboard/customer_dashboard.dart';
 import 'package:market_place_customer/utils/app_router.dart';
-
 
 class PaymentSuccessPage extends StatefulWidget {
   const PaymentSuccessPage({super.key});
@@ -20,11 +20,12 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
     super.initState();
 
     _confettiController =
-        ConfettiController(duration: const Duration(seconds: 5));
+        ConfettiController(duration: const Duration(seconds: 2));
     _confettiController.play();
 
-    Timer(const Duration(seconds: 5), () {
-      AppRouter().navigateAndClearStack(context,  const CustomerDashboard(selectedTabIndex: 1));
+    Timer(const Duration(seconds: 2), () {
+      AppRouter().navigateAndClearStack(
+          context, const CustomerDashboard(selectedTabIndex: 1));
     });
   }
 
@@ -97,7 +98,6 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 ),
               ),
               const SizedBox(height: 20),
-
               const Text(
                 "Payment Successful!",
                 style: TextStyle(
@@ -108,7 +108,6 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 ),
               ),
               const SizedBox(height: 10),
-
               const Text(
                 "Thank you for your payment.\nYour transaction was completed successfully.",
                 textAlign: TextAlign.center,
@@ -119,7 +118,6 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 ),
               ),
               const SizedBox(height: 40),
-
               const CircularProgressIndicator(
                 color: Colors.white,
               ),

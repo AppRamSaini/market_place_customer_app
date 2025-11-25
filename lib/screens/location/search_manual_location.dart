@@ -184,12 +184,14 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
 
   /// Fetch popular vendors data
   List<PopularvendorElement> popularVendor = [];
+  List<CategoryElement> popularCategory = [];
 
   fetchData() {
     final vendorsState = context.read<FetchDashboardOffersBloc>().state;
     if (vendorsState is FetchDashboardOffersSuccess) {
       var vendorData = vendorsState.dashboardOffersModel.data;
       popularVendor = vendorData!.popularvendor!;
+      popularCategory = vendorData.category!;
     }
   }
 
@@ -276,8 +278,8 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                               TextStyle(fontSize: 12, color: Colors.grey[700]));
                     },
                   ),
-                  trailing: const Icon(Icons.favorite_border,
-                      size: 20, color: Colors.grey),
+                  // trailing: const Icon(Icons.favorite_border,
+                  //     size: 20, color: Colors.grey),
                   onTap: () => getPlaceDetail(prediction['place_id']),
                 );
               },
@@ -310,7 +312,8 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
               ),
             ),
 
-            PopularVendors(popularVendor: popularVendor),
+            PopularVendors(
+                popularVendor: popularVendor, popularCategory: popularCategory),
             SizedBox(height: size.height * 0.05),
           ],
         ),

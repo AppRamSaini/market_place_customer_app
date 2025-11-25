@@ -85,14 +85,15 @@ SliverAppBar customAppHeader(CustomerProfileData? profileData) {
                   backgroundColor: Colors.white,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
-                    child: Image.network(
-                      profileData!.avatar ?? '',
-                      height: 50,
-                      width: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, _, __) =>
-                          const Icon(Icons.storefront, size: 40),
-                    ),
+                    child: Image.network(profileData!.avatar ?? '',
+                        height: 70,
+                        width: 70,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, _, __) => Image.asset(
+                            Assets.dummy,
+                            height: 70,
+                            width: 70,
+                            fit: BoxFit.cover)),
                   ),
                 ),
                 const SizedBox(width: 14),

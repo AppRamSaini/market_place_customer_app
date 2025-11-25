@@ -214,7 +214,125 @@ String getTodayTiming(Timing timing) {
     return "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $suffix";
   }
 
-  return "Open Time : ${formatTime(todayTiming.open!)}  |  Close Time : ${formatTime(todayTiming.close!)}";
+  return "Open : ${formatTime(todayTiming.open!)}  |  Close : ${formatTime(todayTiming.close!)}";
+}
+
+String formatTime(String time) {
+  final parts = time.split(":");
+  int hour = int.parse(parts[0]);
+  int minute = int.parse(parts[1]);
+  String suffix = hour >= 12 ? "PM" : "AM";
+  hour = hour > 12 ? hour - 12 : hour;
+  if (hour == 0) hour = 12;
+  return "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $suffix";
+}
+
+String getDayTiming(DayHour? d) {
+  if (d == null || d.active == false || d.open == null || d.close == null) {
+    return "Closed";
+  }
+  return "Open ${formatTime(d.open!)} | Close ${formatTime(d.close!)}";
+}
+
+Map<String, String> getAllWeekTimings(Timing timing) {
+  return {
+    "Monday": getDayTiming(timing.openingHours?.mon),
+    "Tuesday": getDayTiming(timing.openingHours?.tue),
+    "Wednesday": getDayTiming(timing.openingHours?.wed),
+    "Thursday": getDayTiming(timing.openingHours?.thu),
+    "Friday": getDayTiming(timing.openingHours?.fri),
+    "Saturday": getDayTiming(timing.openingHours?.sat),
+    "Sunday": getDayTiming(timing.openingHours?.sun),
+  };
+}
+
+String getTodayTitleText(Timing timing) {
+  final now = DateTime.now();
+  final weekdayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
+  final todayKey = weekdayNames[now.weekday % 7];
+
+  // Weekly Off
+  if (timing.weeklyOffDay != null && timing.weeklyOffDay!.isNotEmpty) {
+    final offDate = DateTime.parse(timing.weeklyOffDay!);
+    if (offDate.year == now.year &&
+        offDate.month == now.month &&
+        offDate.day == now.day) {
+      return "Today : Closed";
+    }
+  }
+
+  DayHour? todayTiming;
+  switch (todayKey) {
+    case "Monday":
+      todayTiming = timing.openingHours?.mon;
+      break;
+    case "Tuesday":
+      todayTiming = timing.openingHours?.tue;
+      break;
+    case "Wednesday":
+      todayTiming = timing.openingHours?.wed;
+      break;
+    case "Thursday":
+      todayTiming = timing.openingHours?.thu;
+      break;
+    case "Friday":
+      todayTiming = timing.openingHours?.fri;
+      break;
+    case "Saturday":
+      todayTiming = timing.openingHours?.sat;
+      break;
+    case "Sunday":
+      todayTiming = timing.openingHours?.sun;
+      break;
+  }
+
+  if (todayTiming == null ||
+      todayTiming.active == false ||
+      todayTiming.open == null ||
+      todayTiming.close == null) {
+    return "Today : Closed";
+  }
+
+  return "Today : Open ${formatTime(todayTiming.open!)} | Close ${formatTime(todayTiming.close!)}";
+}
+
+String? getExtraHolidayText(Timing timing) {
+  if (timing.weeklyOffDay == null || timing.weeklyOffDay!.isEmpty) return null;
+  final date = DateTime.parse(timing.weeklyOffDay!);
+  final formatted = "${date.day} ${_monthName(date.month)} ${date.year}";
+  return "Extra Holiday : ${_weekdayName(date.weekday)}   $formatted";
+}
+
+String _weekdayName(int day) {
+  const names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  return names[day % 7];
+}
+
+String _monthName(int m) {
+  const months = [
+    "",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+  return months[m];
 }
 
 /// Custom Expansion Tile

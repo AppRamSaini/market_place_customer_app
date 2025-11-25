@@ -39,11 +39,12 @@ class Data {
   int? totalAmount;
   int? finalAmount;
   String? status;
+  bool? vendorBillStatus;
+  DateTime? usedTime;
+  String? bill;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
-  bool? vendorBillStatus;
-  String? bill;
 
   Data({
     this.id,
@@ -55,11 +56,12 @@ class Data {
     this.totalAmount,
     this.finalAmount,
     this.status,
+    this.vendorBillStatus,
+    this.usedTime,
+    this.bill,
     this.createdAt,
     this.updatedAt,
     this.v,
-    this.vendorBillStatus,
-    this.bill,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -72,6 +74,11 @@ class Data {
         totalAmount: json["total_amount"],
         finalAmount: json["final_amount"],
         status: json["status"],
+        vendorBillStatus: json["vendor_bill_status"],
+        usedTime: json["used_time"] == null
+            ? null
+            : DateTime.parse(json["used_time"]),
+        bill: json["bill"],
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),
@@ -79,8 +86,6 @@ class Data {
             ? null
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
-        vendorBillStatus: json["vendor_bill_status"],
-        bill: json["bill"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -93,24 +98,25 @@ class Data {
         "total_amount": totalAmount,
         "final_amount": finalAmount,
         "status": status,
+        "vendor_bill_status": vendorBillStatus,
+        "used_time": usedTime?.toIso8601String(),
+        "bill": bill,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
-        "vendor_bill_status": vendorBillStatus,
-        "bill": bill,
       };
 }
 
 class Offer {
   String? id;
   String? vendor;
-  Flat? flat;
+  Percentage? flat;
   Percentage? percentage;
   String? type;
+  String? status;
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
-  String? status;
 
   Offer({
     this.id,
@@ -118,20 +124,21 @@ class Offer {
     this.flat,
     this.percentage,
     this.type,
+    this.status,
     this.createdAt,
     this.updatedAt,
     this.v,
-    this.status,
   });
 
   factory Offer.fromJson(Map<String, dynamic> json) => Offer(
         id: json["_id"],
         vendor: json["vendor"],
-        flat: json["flat"] == null ? null : Flat.fromJson(json["flat"]),
+        flat: json["flat"] == null ? null : Percentage.fromJson(json["flat"]),
         percentage: json["percentage"] == null
             ? null
             : Percentage.fromJson(json["percentage"]),
         type: json["type"],
+        status: json["status"],
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),
@@ -139,7 +146,6 @@ class Offer {
             ? null
             : DateTime.parse(json["updatedAt"]),
         v: json["__v"],
-        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -148,10 +154,10 @@ class Offer {
         "flat": flat!.toJson(),
         "percentage": percentage?.toJson(),
         "type": type,
+        "status": status,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "__v": v,
-        "status": status,
       };
 }
 
@@ -165,7 +171,6 @@ class Percentage {
   int? amount;
   DateTime? expiryDate;
   String? offerImage;
-  String? status;
   bool? isExpired;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -181,7 +186,6 @@ class Percentage {
     this.amount,
     this.expiryDate,
     this.offerImage,
-    this.status,
     this.isExpired,
     this.createdAt,
     this.updatedAt,
@@ -200,7 +204,6 @@ class Percentage {
             ? null
             : DateTime.parse(json["expiryDate"]),
         offerImage: json["offer_image"],
-        status: json["status"],
         isExpired: json["isExpired"],
         createdAt: json["createdAt"] == null
             ? null
@@ -221,81 +224,6 @@ class Percentage {
         "amount": amount,
         "expiryDate": expiryDate?.toIso8601String(),
         "offer_image": offerImage,
-        "status": status,
-        "isExpired": isExpired,
-        "createdAt": createdAt?.toIso8601String(),
-        "updatedAt": updatedAt?.toIso8601String(),
-        "__v": v,
-      };
-}
-
-class Flat {
-  String? id;
-  String? title;
-  String? description;
-  int? discountPercentage;
-  int? maxDiscountCap;
-  int? minBillAmount;
-  int? amount;
-  DateTime? expiryDate;
-  String? offerImage;
-  String? status;
-  bool? isExpired;
-  DateTime? createdAt;
-  DateTime? updatedAt;
-  int? v;
-
-  Flat({
-    this.id,
-    this.title,
-    this.description,
-    this.discountPercentage,
-    this.maxDiscountCap,
-    this.minBillAmount,
-    this.amount,
-    this.expiryDate,
-    this.offerImage,
-    this.status,
-    this.isExpired,
-    this.createdAt,
-    this.updatedAt,
-    this.v,
-  });
-
-  factory Flat.fromJson(Map<String, dynamic> json) => Flat(
-        id: json["_id"],
-        title: json["title"],
-        description: json["description"],
-        discountPercentage: json["discountPercentage"],
-        maxDiscountCap: json["maxDiscountCap"],
-        minBillAmount: json["minBillAmount"],
-        amount: json["amount"],
-        expiryDate: json["expiryDate"] == null
-            ? null
-            : DateTime.parse(json["expiryDate"]),
-        offerImage: json["offer_image"],
-        status: json["status"],
-        isExpired: json["isExpired"],
-        createdAt: json["createdAt"] == null
-            ? null
-            : DateTime.parse(json["createdAt"]),
-        updatedAt: json["updatedAt"] == null
-            ? null
-            : DateTime.parse(json["updatedAt"]),
-        v: json["__v"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "title": title,
-        "description": description,
-        "discountPercentage": discountPercentage,
-        "maxDiscountCap": maxDiscountCap,
-        "minBillAmount": minBillAmount,
-        "amount": amount,
-        "expiryDate": expiryDate?.toIso8601String(),
-        "offer_image": offerImage,
-        "status": status,
         "isExpired": isExpired,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),

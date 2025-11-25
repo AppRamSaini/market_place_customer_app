@@ -1,4 +1,3 @@
-import 'package:market_place_customer/screens/dilogs/already_purchesed_dialog.dart';
 import 'package:market_place_customer/screens/payment_section/payment_services.dart';
 import 'package:market_place_customer/screens/payment_section/payment_verifications.dart';
 import 'package:market_place_customer/screens/simmer_effects/offers_details_simmer.dart';
@@ -182,11 +181,19 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                         padding: EdgeInsets.all(size.width * 0.034),
                         child: FadeInDown(
                           duration: const Duration(milliseconds: 600),
-                          child: Text(
-                            singleOffer.flat?.title ??
-                                singleOffer.percentage?.title ??
-                                '',
-                            style: AppStyle.medium_20(AppColors.themeColor),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                singleOffer.flat?.title ??
+                                    singleOffer.percentage?.title ??
+                                    '',
+                                style: AppStyle.medium_20(AppColors.themeColor),
+                              ),
+                              Text(
+                                  "Offer Amount ₹${singleOffer.flat != null ? singleOffer.flat!.amount.toString() : singleOffer.percentage!.amount.toString()}",
+                                  style: AppStyle.medium_14(AppColors.black50)),
+                            ],
                           ),
                         ),
                       ),
@@ -221,11 +228,10 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                                       AppColors.blackColor)),
                               const SizedBox(height: 8),
                               Text(
-                                singleOffer.flat != null
-                                    ? "Flat ₹${singleOffer.flat!.discountPercentage} off on orders above ₹${singleOffer.flat!.minBillAmount}"
-                                    : "${singleOffer.percentage!.discountPercentage}% off on orders above ₹${singleOffer.percentage!.minBillAmount}",
-                                style: AppStyle.normal_14(AppColors.black70),
-                              ),
+                                  singleOffer.flat != null
+                                      ? "Flat ₹${singleOffer.flat!.discountPercentage} off on orders above ₹${singleOffer.flat!.minBillAmount}"
+                                      : "${singleOffer.percentage!.discountPercentage}% off on orders above ₹${singleOffer.percentage!.minBillAmount}",
+                                  style: AppStyle.normal_14(AppColors.black70)),
                               const Divider(),
                               Row(
                                 mainAxisAlignment:

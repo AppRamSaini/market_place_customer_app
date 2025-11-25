@@ -1,5 +1,5 @@
-import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_event.dart';
-import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_state.dart';
+import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_bill_event.dart';
+import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_bill_state.dart';
 import 'package:market_place_customer/data/repository/order_history_repo.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
@@ -16,13 +16,14 @@ class SaveBillBloc extends Bloc<SaveBillEvent, SaveBillState> {
     };
     emit(SaveBillLoading());
     try {
-      final addGallery =
-          await repo.saveBill(event.context, event.offerId, data);
+      final addBill = await repo.saveBill(event.context, event.offerId, data);
 
-      if (addGallery is String) {
-        emit(SaveBillFailure(error: addGallery.toString()));
+      print('====>>>>$addBill');
+
+      if (addBill is String) {
+        emit(SaveBillFailure(error: addBill.toString()));
       } else {
-        emit(SaveBillSuccess(saveBillModel: addGallery));
+        emit(SaveBillSuccess(saveBillModel: addBill));
       }
     } catch (e) {
       emit(SaveBillFailure(error: e.toString()));

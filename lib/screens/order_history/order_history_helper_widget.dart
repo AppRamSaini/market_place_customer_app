@@ -1,7 +1,6 @@
 import 'dart:ui';
 
-import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_bloc.dart';
-import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_event.dart';
+import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_bill_event.dart';
 import 'package:market_place_customer/data/models/order_history_%20model.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
@@ -30,6 +29,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
     final bool hasFlat = offers != null && offers.flat != null;
 
     final dateTime = order.usedTime ?? order.createdAt.toString();
+    final purchasedPaymentDate = order.paymentId!.paymentDate;
 
     final payment = order.paymentId!;
     final savedBill = order.bill != null;
@@ -60,18 +60,19 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(100),
                         child: Image.network(
                           vendor.businessLogo ?? '',
-                          width: 54,
-                          height: 54,
+                          width: 50,
+                          height: 50,
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
-                            width: 54,
-                            height: 54,
+                            width: 50,
+                            height: 50,
                             color: Colors.grey.shade200,
                             child: const Icon(Icons.person,
                                 color: Colors.grey, size: 26),
@@ -79,20 +80,18 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // Vendor Name and Offer
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              vendor.name ?? "Unknown Vendor",
+                              vendor.businessName ?? "Unknown Vendor",
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16.5,
                                 color: Color(0xFF111827),
                               ),
                             ),
-                            const SizedBox(height: 2),
                             Text(
                               hasFlat
                                   ? order.offer!.flat!.title ?? ''
@@ -105,12 +104,11 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                           ],
                         ),
                       ),
-                      // Order Date & Time
                       SizedBox(
                         width: size.width * 0.28,
-                        child: Text(formatToLocalDateTime(dateTime),
+                        child: Text("₹${order.finalAmount!.toStringAsFixed(0)}",
                             textAlign: TextAlign.right,
-                            style: AppStyle.normal_13(AppColors.black50)),
+                            style: AppStyle.medium_18(AppColors.green)),
                       ),
                     ],
                   ),
@@ -149,7 +147,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                               backgroundColor: const Color(0xffEEF4FF),
                               foregroundColor: AppColors.indigo,
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
+                                  borderRadius: BorderRadius.circular(8)),
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 15, vertical: 0),
                               textStyle: const TextStyle(fontSize: 14),
@@ -171,7 +169,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                                       child: const Icon(
                                           Icons.photo_library_outlined,
                                           color: AppColors.whiteColor,
-                                          size: 22)))
+                                          size: 25)))
                               : const SizedBox()
                         ],
                       ),
@@ -193,27 +191,74 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                     ],
                   ),
                 ),
-
                 // 🔹 EXPANDABLE SECTION
                 customAnimatedExpansionTile(
                   context: context,
                   expanded: expanded,
                   onTap: () => setState(() => expanded = !expanded),
-                  title:
-                      "Paid ₹${order.finalAmount?.toStringAsFixed(0)} | Order ID: ${order.id!.substring(0, 8).toUpperCase()}",
+                  title: "Used On ${formatToLocalDateTime(dateTime)}",
                   children: [
-                    _infoRow("Vendor Email", vendor.email ?? ''),
-                    _infoRow(
-                        "Offer",
-                        hasFlat
-                            ? order.offer!.flat!.description ?? ''
-                            : order.offer!.percentage!.description ?? ''),
-                    _infoRow("Total Amount", "₹${order.totalAmount}"),
-                    _infoRow("Discount", "₹${order.discount}"),
-                    _infoRow("Final Paid Amount", "₹${order.finalAmount}"),
-                    _infoRow("Payment ID", payment.paymentId ?? ''),
-                    _infoRow(
-                        "Payment Method", payment.paymentMethod.toString()),
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: AppColors.whiteColor,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          _infoRow("Total Amount", "₹${order.totalAmount}"),
+                          _infoRow("Discount", "₹${order.discount}"),
+                          _infoRow(
+                              "Final Paid Amount", "₹${order.finalAmount}"),
+                          _infoRow(
+                              "Offer",
+                              hasFlat
+                                  ? order.offer!.flat!.description ?? ''
+                                  : order.offer!.percentage!.description ?? ''),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: AppColors.whiteColor,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Text("Purchased offer details",
+                                  style:
+                                      AppStyle.medium_16(AppColors.greyColor))),
+                          Divider(color: AppColors.greyColor.withOpacity(0.2)),
+                          _infoRow("Offer Amount", "₹${payment.amount}"),
+                          _infoRow("Payment ID", payment.paymentId ?? ''),
+                          _infoRow("Payment Method",
+                              payment.paymentMethod.toString()),
+                          _infoRow(
+                              "Payment Date",
+                              formatToLocalDateTime(
+                                  purchasedPaymentDate.toString())),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -232,12 +277,12 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
           Expanded(
               flex: 4,
               child:
-                  Text(title, style: AppStyle.normal_15(AppColors.greyColor))),
+                  Text(title, style: AppStyle.normal_14(AppColors.greyColor))),
           const SizedBox(width: 5),
           Expanded(
             flex: 5,
             child: Text(value.isNotEmpty ? value : "-",
-                style: AppStyle.normal_15(AppColors.greyColor)),
+                style: AppStyle.normal_14(AppColors.greyColor)),
           ),
         ],
       ),
@@ -277,7 +322,7 @@ Widget customAnimatedExpansionTile({
               children: [
                 Expanded(
                     child: Text(title,
-                        style: AppStyle.medium_14(AppColors.themeColor))),
+                        style: AppStyle.normal_14(AppColors.themeColor))),
                 AnimatedRotation(
                   duration: const Duration(milliseconds: 250),
                   turns: expanded ? 0.5 : 0.0,

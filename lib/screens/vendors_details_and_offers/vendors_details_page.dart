@@ -1,5 +1,4 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:market_place_customer/data/models/vendor_details_model.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/offers_details.dart';
 import 'package:market_place_customer/screens/vendors_details_and_offers/vendor_details_helper.dart';
@@ -102,6 +101,8 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
               List<Similar>? similarVendors = vendorsData.similar ?? [];
 
               final timingText = getTodayTiming(vendorsData.timing!);
+              final allTimings = getAllWeekTimings(vendorsData.timing!);
+              final holiday = getExtraHolidayText(vendorsData.timing!);
 
               final vendor = vendorsData.businessDetails;
               final lat = vendor!.lat ?? "0.0";
@@ -262,31 +263,60 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                         child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: size.height * 0.01,
-                              horizontal: size.width * 0.03),
-                          child: Animate(
-                              effects: [
-                                FadeEffect(
-                                    duration: 500.ms, curve: Curves.easeIn),
-                                const MoveEffect(
-                                    begin: Offset(0, 20), curve: Curves.easeOut)
-                              ],
-                              child: Row(
+                        Theme(
+                          data: Theme.of(context)
+                              .copyWith(dividerColor: Colors.transparent),
+                          child: ExpansionTile(
+                              expandedCrossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              dense: true,
+                              initiallyExpanded: false,
+                              backgroundColor: AppColors.transparent,
+                              childrenPadding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 3),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              title: Row(
                                 children: [
                                   Icon(Icons.access_time_rounded,
                                       size: 18, color: AppColors.black20),
                                   const SizedBox(width: 5),
-                                  FadeInDown(
-                                      from: 50,
-                                      duration:
-                                          const Duration(milliseconds: 600),
-                                      child: Text(timingText ?? '',
-                                          style: AppStyle.medium_14(
-                                              AppColors.black20)))
+                                  Text(timingText ?? '',
+                                      style:
+                                          AppStyle.normal_14(AppColors.black20))
                                 ],
-                              )),
+                              ),
+                              children: [
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: allTimings.entries.map((e) {
+                                      return Card(
+                                          color: AppColors.whiteColor,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 5),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child:
+                                                Text("${e.key} : ${e.value}"),
+                                          ));
+                                    }).toList()),
+                                if (holiday != null)
+                                  Card(
+                                      color: AppColors.whiteColor,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 5),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(holiday),
+                                      ))
+                              ]),
                         ),
                         Padding(
                           padding: EdgeInsets.only(
@@ -323,7 +353,7 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                                         return Flexible(
                                             child: Text(
                                                 "${vendorsData.businessDetails!.address ?? ''}  • $distance",
-                                                style: AppStyle.medium_14(
+                                                style: AppStyle.normal_14(
                                                     AppColors.black20)));
                                       }),
                                 ],
@@ -391,7 +421,7 @@ class _OffersDetailsPageState extends State<OffersDetailsPage> {
                                             : offersData.percentage!.title
                                                 .toString(),
                                         amount:
-                                            "on orders above ₹${offersData.flat != null ? offersData.flat!.minBillAmount.toString() : offersData.percentage!.minBillAmount.toString()}",
+                                            "Offer Amount ₹${offersData.flat != null ? offersData.flat!.amount.toString() : offersData.percentage!.amount.toString()}",
                                         offerText: offersData.flat != null
                                             ? "Flat ₹${offersData.flat!.discountPercentage.toString()}"
                                             : "Flat ${offersData.percentage!.discountPercentage.toString()}%",

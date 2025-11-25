@@ -258,10 +258,10 @@ class _HomePageState extends State<HomePage> {
                     child: ViewAllWidget(
                       title: 'Most Visited Vendors',
                       onPressed: () => AppRouter().navigateTo(
-                        context,
-                        ViewAllVendorsPage(
-                            popularCategory: popularCategory, type: "popular"),
-                      ),
+                          context,
+                          ViewAllVendorsPage(
+                              popularCategory: popularCategory,
+                              type: "popular")),
                     ),
                   )),
                   SliverToBoxAdapter(

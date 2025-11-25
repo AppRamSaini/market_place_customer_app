@@ -1,4 +1,5 @@
 import 'package:market_place_customer/data/models/order_history_%20model.dart';
+import 'package:market_place_customer/data/models/saved_bill_model.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class OrderHistoryRepo {
@@ -21,11 +22,11 @@ class OrderHistoryRepo {
   Future saveBill(BuildContext context, String offerId, var data) async {
     final result =
         await api.post(url: "${ApiEndPoints.saveBill}/$offerId", data: data);
-    print('---------->>>>>$result');
+
     if (result is String) {
-      snackBar(context, result, AppColors.redColor);
-    } else {
       return result;
+    } else {
+      return SavedBillModel.fromJson(result);
     }
   }
 }

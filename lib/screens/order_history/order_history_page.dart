@@ -1,8 +1,6 @@
-import 'package:market_place_customer/bloc/order_history_bloc/order_history/order_history_bloc.dart';
 import 'package:market_place_customer/bloc/order_history_bloc/order_history/order_history_event.dart';
 import 'package:market_place_customer/bloc/order_history_bloc/order_history/order_history_state.dart';
-import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_bloc.dart';
-import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_gallery_state.dart';
+import 'package:market_place_customer/bloc/order_history_bloc/save_bill_bloc/upload_bill_state.dart';
 import 'package:market_place_customer/data/models/order_history_%20model.dart';
 import 'package:market_place_customer/screens/order_history/order_history_helper_widget.dart';
 
@@ -69,7 +67,6 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             EasyLoading.dismiss();
           } else if (state is SaveBillSuccess) {
             final message = state.saveBillModel.message;
-
             snackBar(context, message.toString());
             _page = 1;
             _fetchData();

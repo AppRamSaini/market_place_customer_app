@@ -39,10 +39,12 @@ class SubCategoryCard extends StatelessWidget {
               height: imgHeight,
               width: double.infinity,
               placeholder: const AssetImage(Assets.dummy),
-              image: imageUrl.isNotEmpty
+              image: (imageUrl != null &&
+                      imageUrl.trim().isNotEmpty &&
+                      imageUrl != "null")
                   ? NetworkImage(imageUrl)
-                  : const AssetImage(Assets.dummy) as ImageProvider,
-              imageErrorBuilder: (_, child, st) => Image.asset(
+                  : const AssetImage(Assets.dummy),
+              imageErrorBuilder: (_, __, ___) => Image.asset(
                 Assets.dummy,
                 height: imgHeight,
                 width: double.infinity,
@@ -133,37 +135,16 @@ class CategoryCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Image.network(
-            imageUrl,
-            height: imgHeight,
-            width: carWidth,
-            fit: BoxFit.fill,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Shimmer.fromColors(
-                baseColor: Colors.grey.shade400,
-                highlightColor: Colors.grey.shade200,
-                period: const Duration(seconds: 1),
-                child: Container(
-                  width: carWidth,
-                  height: imgHeight,
-                  color: Colors.white,
-                ),
-              );
-            },
-            errorBuilder: (context, error, stackTrace) {
-              return Shimmer.fromColors(
-                baseColor: Colors.grey.shade400,
-                highlightColor: Colors.grey.shade200,
-                period: const Duration(seconds: 1),
-                child: Container(
-                  width: carWidth,
-                  height: imgHeight,
-                  color: Colors.white,
-                ),
-              );
-            },
-          ),
+          child: Image.network(imageUrl,
+              height: imgHeight, width: carWidth, fit: BoxFit.fill,
+              loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Image.asset(Assets.dummy,
+                fit: BoxFit.cover, height: imgHeight, width: carWidth);
+          }, errorBuilder: (context, error, stackTrace) {
+            return Image.asset(Assets.dummy,
+                fit: BoxFit.cover, height: imgHeight, width: carWidth);
+          }),
         ),
         SizedBox(height: size.height * 0.005),
         Text(name,

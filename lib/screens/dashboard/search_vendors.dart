@@ -112,7 +112,10 @@ class _SearchVendorsPageState extends State<SearchVendorsPage> {
                       borderRadius: BorderRadius.circular(5),
                       color: AppColors.theme10.withOpacity(0.1)),
                   child: IconButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {
+                      _fetchData();
+                      Navigator.pop(context);
+                    },
                     icon: Icon(Icons.arrow_back_ios_new,
                         size: 22,
                         color: _flexTitleOpacity == 1.0
@@ -153,6 +156,12 @@ class _SearchVendorsPageState extends State<SearchVendorsPage> {
                 } else if (state is FetchVendorsSuccess) {
                   final vendorsList = state.model.data!.data ?? [];
 
+                  if (vendorsList.isEmpty) {
+                    return SliverToBoxAdapter(
+                        child: errorMessage("Vendors not found",
+                            topSize: size.height * 0.35));
+                  }
+
                   return SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final vendor = vendorsList[index];
@@ -164,17 +173,13 @@ class _SearchVendorsPageState extends State<SearchVendorsPage> {
                         future: getVendorAddressAndDistance(
                             lat.toString(), lng.toString()),
                         builder: (context, snapshot) {
-                          String location = 'Fetching...';
                           String distance = '';
 
                           if (snapshot.connectionState ==
                                   ConnectionState.done &&
                               snapshot.hasData) {
-                            location = snapshot.data!['address']!;
                             distance = snapshot.data!['distance']!;
                           } else if (locationCache.containsKey(key)) {
-                            // Use cached data even while building
-                            location = locationCache[key]!['address']!;
                             distance = locationCache[key]!['distance']!;
                           }
 
@@ -194,7 +199,8 @@ class _SearchVendorsPageState extends State<SearchVendorsPage> {
                                           vendor.vendor!.user!.id.toString())),
                               imgUrl: vendor.vendor!.businessLogo ?? '',
                               businessName: vendor.vendor!.businessName ?? '',
-                              location: location,
+                              location:
+                                  "${vendor.vendor!.area}, ${vendor.vendor!.city}",
                               distance: distance,
                               category: vendor.vendor!.category!.name ?? '',
                               offers: vendor.maxOffer != null
@@ -227,98 +233,101 @@ Widget searchVendorWidget(
     String? distance,
     String? offers,
     Function()? onTap}) {
-  return Container(
-    margin: const EdgeInsets.only(top: 8),
-    padding: const EdgeInsets.all(8),
-    decoration: BoxDecoration(
-      color: AppColors.whiteColor,
-      borderRadius: BorderRadius.circular(10),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.05),
-          blurRadius: 4,
-          offset: const Offset(0, 3),
-        ),
-      ],
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: FadeInImage(
-            height: size.height * 0.09,
-            width: size.height * 0.08,
-            fit: BoxFit.cover,
-            placeholder: const AssetImage(Assets.dummy),
-            image: imgUrl!.isNotEmpty
-                ? NetworkImage(imgUrl!)
-                : const AssetImage(Assets.dummy) as ImageProvider,
-            imageErrorBuilder: (_, __, ___) => Image.asset(
-              Assets.dummy,
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: AppColors.whiteColor,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: FadeInImage(
               height: size.height * 0.09,
               width: size.height * 0.08,
               fit: BoxFit.cover,
+              placeholder: const AssetImage(Assets.dummy),
+              image: imgUrl!.isNotEmpty
+                  ? NetworkImage(imgUrl!)
+                  : const AssetImage(Assets.dummy) as ImageProvider,
+              imageErrorBuilder: (_, __, ___) => Image.asset(
+                Assets.dummy,
+                height: size.height * 0.09,
+                width: size.height * 0.08,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
 
-        const SizedBox(width: 10),
+          const SizedBox(width: 10),
 
-        /// Center: Vendor Info
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// Business Name + Category
-              Text.rich(
-                TextSpan(
+          /// Center: Vendor Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// Business Name + Category
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                          text: businessName ?? '',
+                          style: AppStyle.semiBold_15(AppColors.blackColor)),
+                      TextSpan(
+                          text: "  (${category ?? ''})",
+                          style: AppStyle.medium_13(AppColors.themeColor)),
+                    ],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                /// Location + Distance
+                Text("${location ?? ''} • ${distance ?? ''}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppStyle.medium_12(AppColors.black70)),
+
+                /// offers
+                Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextSpan(
-                        text: businessName ?? '',
-                        style: AppStyle.semiBold_15(AppColors.blackColor)),
-                    TextSpan(
-                        text: "  (${category ?? ''})",
-                        style: AppStyle.medium_13(AppColors.themeColor)),
+                    Image.asset(Assets.offersIcon,
+                        color: Colors.green, height: 18),
+                    const SizedBox(width: 5),
+                    Text(offers.toString(),
+                        style: AppStyle.medium_14(AppColors.green)),
                   ],
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-
-              /// Location + Distance
-              Text("${location ?? ''} • ${distance ?? ''}",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppStyle.medium_12(AppColors.black70)),
-
-              /// offers
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(Assets.offersIcon,
-                      color: Colors.green, height: 18),
-                  const SizedBox(width: 5),
-                  Text(offers.toString(),
-                      style: AppStyle.medium_14(AppColors.green)),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
+          const SizedBox(width: 8),
 
-        /// Right: Offer Section
-        GestureDetector(
-          onTap: onTap,
-          child: CircleAvatar(
-              radius: 20,
-              backgroundColor: AppColors.theme10,
-              child: const Icon(Icons.arrow_forward_ios,
-                  size: 17, color: AppColors.themeColor)),
-        )
-      ],
+          /// Right: Offer Section
+          GestureDetector(
+            onTap: onTap,
+            child: CircleAvatar(
+                radius: 20,
+                backgroundColor: AppColors.theme10,
+                child: const Icon(Icons.arrow_forward_ios,
+                    size: 17, color: AppColors.themeColor)),
+          )
+        ],
+      ),
     ),
   );
 }
