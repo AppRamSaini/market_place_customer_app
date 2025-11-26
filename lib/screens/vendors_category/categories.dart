@@ -33,14 +33,14 @@ class _CategoriesListState extends State<CategoriesList> {
           (index) => GestureDetector(
             onTap: () {
               setState(() => selectedIndex = index);
-              final categoryName = widget.popularCategory?[index].name;
-              if (widget.onTap != null && categoryName != null) {
-                widget.onTap!(categoryName);
+              final categoryId = widget.popularCategory?[index].id;
+              if (widget.onTap != null && categoryId != null) {
+                widget.onTap!(categoryId);
               }
 
               context.read<FetchVendorsBloc>().add(GetVendorsEvent(
                   context: context,
-                  category: widget.popularCategory![index].name.toString(),
+                  category: widget.popularCategory![index].id.toString(),
                   type: widget.type,
                   page: widget.page));
             },
