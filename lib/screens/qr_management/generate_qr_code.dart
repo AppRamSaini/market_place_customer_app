@@ -48,14 +48,11 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ///  Firebase me verifying status create/update
       verifyPaymentForUsedOffers(offers: widget.qrContent, context: context);
 
-      ///  Real-time listener activate
       listenSpecificOfferVerificationForUsedOffers(
           context: context, offerId: widget.qrContent.offerId);
 
-      ///  Fetch UI updates
       onRefreshData();
     });
   }
@@ -75,6 +72,13 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
             if (state is UpdateBillAmountLoading) {
               EasyLoading.show();
             } else if (state is UpdateBillAmountSuccess) {
+              updatePaymentDataOnFirebaseForUsedOffers(
+                offerId: widget.qrContent.offerId,
+                status: 'verifying',
+                from: 'customer_side',
+                isAmountUpdate: true,
+                amount: amountController.text,
+              );
               onRefreshData();
             }
           },
@@ -109,10 +113,7 @@ class _OfferQRCodeCardState extends State<OfferQRCodeCard> {
               final finalBill =
                   double.tryParse("${offersData.finalAmount}") ?? 0.0;
 
-              final totalAmount =
-                  double.tryParse("${offersData.totalAmount}") ?? 0.0;
-
-              amountController.text = totalAmount.toString();
+              amountController.text = offersData.totalAmount.toString();
 
               return RefreshIndicator(
                 onRefresh: onRefreshData,

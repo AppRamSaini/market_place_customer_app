@@ -1,4 +1,4 @@
-import 'package:market_place_customer/utils/exports.dart';
+import '../../utils/exports.dart';
 
 Future<void> updateBillAmount({
   required BuildContext context,
@@ -7,14 +7,9 @@ Future<void> updateBillAmount({
   void Function()? onPressed,
 }) async {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  if (amountController.text.isNotEmpty) {
-    double value = double.tryParse(amountController.text) ?? 0.0;
-    if (value == value.toInt()) {
-      amountController.text = value.toInt().toString();
-    } else {
-      amountController.text = value.toString();
-    }
-  }
+
+  /// 🟢 Create LOCAL CONTROLLER to avoid resetting issue
+  final localController = TextEditingController(text: amountController.text);
 
   await showModalBottomSheet(
     isScrollControlled: true,
@@ -27,8 +22,9 @@ Future<void> updateBillAmount({
         child: AnimatedPadding(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeOut,
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
           child: Container(
             decoration: BoxDecoration(
               color: AppColors.whiteColor,
@@ -52,7 +48,7 @@ Future<void> updateBillAmount({
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Drag handle
+                  /// Handle Bar
                   Container(
                     height: 5,
                     width: 55,
@@ -63,7 +59,7 @@ Future<void> updateBillAmount({
                     ),
                   ),
 
-                  // Header Row
+                  /// Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -81,17 +77,17 @@ Future<void> updateBillAmount({
 
                   const SizedBox(height: 8),
 
-                  // Sub info
                   Text(
-                      "Enter the updated bill amount below to modify the payable total.",
-                      textAlign: TextAlign.center,
-                      style: AppStyle.normal_14(AppColors.black50)),
+                    "Enter the updated bill amount below to modify the payable total.",
+                    textAlign: TextAlign.center,
+                    style: AppStyle.normal_14(AppColors.black50),
+                  ),
 
                   const SizedBox(height: 25),
 
-                  // Text Field
+                  /// TEXT FIELD (using local controller)
                   CustomTextField(
-                    controller: amountController,
+                    controller: localController,
                     hintText: "Enter amount",
                     keyboardType: TextInputType.number,
                     maxLength: 10,
@@ -99,10 +95,9 @@ Future<void> updateBillAmount({
                     prefix: const Icon(Icons.currency_rupee_rounded,
                         color: AppColors.themeColor),
                     validator: (value) {
-                      if (amountController == null ||
-                          amountController.text.isEmpty) {
+                      if (localController.text.isEmpty) {
                         return 'Please enter total bill amount';
-                      } else if (int.tryParse(amountController.text)! <
+                      } else if (int.tryParse(localController.text)! <
                           minBillAmount) {
                         return 'Bill amount must be at least ₹$minBillAmount';
                       }
@@ -111,10 +106,14 @@ Future<void> updateBillAmount({
                   ),
 
                   const SizedBox(height: 20),
-                  // Update Button
+
+                  /// UPDATE BUTTON
                   CustomButtons.rounded(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        /// 🟢 Transfer back final value (only once)
+                        amountController.text = localController.text;
+
                         Navigator.pop(context);
                         onPressed?.call();
                       }
@@ -127,7 +126,6 @@ Future<void> updateBillAmount({
 
                   const SizedBox(height: 10),
 
-                  // Tip Section (optional but nice touch)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

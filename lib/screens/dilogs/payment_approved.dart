@@ -1,16 +1,22 @@
 import 'dart:ui';
 
-import '../../utils/exports.dart'; // adjust your import paths
+import 'package:market_place_customer/utils/dialog_controller.dart';
 
-void showPaymentApprovedDialog(BuildContext context,
-    {required VoidCallback onClose}) {
+import '../../utils/exports.dart';
+
+void showPaymentApprovedDialog(
+    {required BuildContext context, required VoidCallback onClose}) {
+  closeActiveDialog(); // CLOSE PREVIOUS DIALOG
+
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
     barrierLabel: "Payment Approved Dialog",
     barrierColor: Colors.black.withOpacity(0.45),
     transitionDuration: const Duration(milliseconds: 350),
-    pageBuilder: (context, anim1, anim2) {
+    pageBuilder: (ctx, anim1, anim2) {
+      activeDialogContext = ctx; // IMPORTANT
+
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
         child: Center(
@@ -33,7 +39,7 @@ void showPaymentApprovedDialog(BuildContext context,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // ✅ Animated Success Circle
+                  // ✓ Success Icon
                   Container(
                     decoration: BoxDecoration(
                       color: AppColors.green.withOpacity(0.1),
@@ -43,9 +49,10 @@ void showPaymentApprovedDialog(BuildContext context,
                     child: const Icon(Icons.check_circle_rounded,
                         color: AppColors.green, size: 60),
                   ),
+
                   const SizedBox(height: 20),
 
-                  // 🏷️ Title
+                  // Title
                   const Text(
                     "Payment Approved!",
                     textAlign: TextAlign.center,
@@ -58,7 +65,7 @@ void showPaymentApprovedDialog(BuildContext context,
 
                   const SizedBox(height: 10),
 
-                  // ✨ Subtitle
+                  // Subtitle
                   const Text(
                     "Your payment has been successfully approved.\nThank you for confirming the transaction.",
                     textAlign: TextAlign.center,
@@ -71,12 +78,9 @@ void showPaymentApprovedDialog(BuildContext context,
 
                   const SizedBox(height: 25),
 
-                  // 🟢 OK Button
+                  // OK Button
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onClose();
-                    },
+                    onPressed: onClose,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.green,
                       shape: RoundedRectangleBorder(
@@ -101,6 +105,7 @@ void showPaymentApprovedDialog(BuildContext context,
       );
     },
     transitionBuilder: (context, anim1, anim2, child) {
+      activeDialogContext = context; // <-- store dialog context
       return FadeTransition(
         opacity: CurvedAnimation(parent: anim1, curve: Curves.easeOut),
         child: ScaleTransition(
