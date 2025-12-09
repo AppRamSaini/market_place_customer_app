@@ -30,11 +30,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Navigate after 2.5 seconds
     Future.delayed(const Duration(milliseconds: 1500), () async {
+      final locationService = LocationService();
+      await locationService.fetchAndSaveCurrentLocation();
       try {
-        final locationService = LocationService();
-        await locationService.fetchAndSaveCurrentLocation();
-
-        // Decide navigation
         if (token != null) {
           AppRouter().navigateAndClearStack(context, const CustomerDashboard());
         } else {

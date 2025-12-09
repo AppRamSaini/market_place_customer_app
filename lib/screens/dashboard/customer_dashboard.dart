@@ -3,8 +3,6 @@ import 'package:market_place_customer/screens/order_history/order_history_page.d
 
 import '../../utils/exports.dart';
 
-///
-
 class CustomerDashboard extends StatefulWidget {
   final int? selectedTabIndex;
 

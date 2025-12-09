@@ -1,5 +1,4 @@
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:market_place_customer/screens/location/search_manual_location.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 class DetectLocation extends StatefulWidget {
@@ -63,8 +62,8 @@ class _DetectLocationState extends State<DetectLocation> {
                       bgColor: AppColors.yellowColor),
                   SizedBox(height: size.height * 0.01),
                   TextButton(
-                    onPressed: () => AppRouter()
-                        .navigateTo(context, const SearchLocationPage()),
+                    onPressed: () => AppRouter().navigateAndClearStack(
+                        context, const CustomerDashboard()),
                     child: RichText(
                       text: TextSpan(
                         children: [
@@ -72,7 +71,7 @@ class _DetectLocationState extends State<DetectLocation> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text("Set Location Manually",
+                                Text("SKIP",
                                     style: AppStyle.medium_14(
                                         AppColors.whiteColor)),
                                 const SizedBox(height: 1),
