@@ -4,7 +4,6 @@ import 'package:market_place_customer/screens/order_history/order_history_page.d
 import '../../utils/exports.dart';
 
 /// new update
-
 class CustomerDashboard extends StatefulWidget {
   final int? selectedTabIndex;
 
@@ -57,10 +56,15 @@ class CustomerDashboardState extends State<CustomerDashboard> {
               elevation: 0,
               currentIndex: currentIndex,
               onTap: (index) async {
-                if (index == 1 || index == 3) {
+                // Allow tap only on index 0 if user is NOT logged in
+                if (index != 0) {
                   bool isLoggedIn = await checkedLogin(context);
-                  if (!isLoggedIn) return;
+                  if (!isLoggedIn) {
+                    return; // Stop navigation
+                  }
                 }
+
+                // If allowed, update bottom bar
                 setState(() => currentIndex = index);
               },
               backgroundColor: AppColors.whiteColor,

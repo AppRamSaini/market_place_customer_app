@@ -237,9 +237,8 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () => AppRouter().navigateTo(
                             context,
                             ViewAllPopularCategories(
-                              categoryData: popularCategory,
-                              type: 'category',
-                            ))),
+                                categoryData: popularCategory,
+                                type: 'category'))),
                   )),
                   SliverToBoxAdapter(
                       child: SizedBox(height: size.height * 0.015)),

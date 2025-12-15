@@ -26,15 +26,13 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
     final vendor = order.vendor!;
     final offers = order.offer;
 
-    final bool hasFlat = offers != null && offers.flat != null;
-
     final dateTime = order.usedTime ?? order.createdAt.toString();
     final purchasedPaymentDate = order.paymentId!.paymentDate;
 
     final payment = order.paymentId!;
     final savedBill = order.bill != null;
     return FadeInUp(
-      duration: Duration(milliseconds: 300 + (widget.index * 100)),
+      duration: const Duration(milliseconds: 500),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeOutCubic,
@@ -93,9 +91,11 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                               ),
                             ),
                             Text(
-                              hasFlat
-                                  ? order.offer!.flat!.title ?? ''
-                                  : order.offer!.percentage!.title ?? '',
+                              offers != null
+                                  ? offers.flat != null
+                                      ? order.offer!.flat!.title ?? ''
+                                      : order.offer!.percentage!.title ?? ''
+                                  : '',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.black54,
@@ -219,9 +219,11 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                               "Final Paid Amount", "₹${order.finalAmount}"),
                           _infoRow(
                               "Offer",
-                              hasFlat
-                                  ? order.offer!.flat!.description ?? ''
-                                  : order.offer!.percentage!.description ?? ''),
+                              offers != null
+                                  ? offers.flat != null
+                                      ? order.offer!.flat!.title ?? ''
+                                      : order.offer!.percentage!.title ?? ''
+                                  : ''),
                         ],
                       ),
                     ),

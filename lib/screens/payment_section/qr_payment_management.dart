@@ -103,12 +103,23 @@ listenSpecificOfferVerificationForUsedOffers({
     // -------------------------------------------
     if (status == "approved") {
       showPaymentApprovedDialog(context: context, onClose: () {});
+
+      // Fetch histories
       context.read<OrderHistoryBloc>().add(
           GetOrderHistoryEvent(context: context, page: 1, isLoadMore: false));
+
       context.read<PurchasedOffersHistoryBloc>().add(
           GetPurchasedOffersHistoryEvent(
               context: context, page: 1, isLoadMore: false));
-      Timer.periodic(const Duration(milliseconds: 300), (timer) {
+
+      // Delay once and redirect
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (!context.mounted) return;
+
+        // Close dialog if open
+        Navigator.of(context, rootNavigator: true).pop();
+
+        // Redirect to dashboard (tab 1)
         AppRouter().navigateAndClearStack(
             context, const CustomerDashboard(selectedTabIndex: 1));
       });

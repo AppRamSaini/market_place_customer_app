@@ -25,6 +25,7 @@ class _ViewAllVendorsPageState extends State<ViewAllVendorsPage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _fetchData();
   }
 
   @override
@@ -82,7 +83,6 @@ class _ViewAllVendorsPageState extends State<ViewAllVendorsPage> {
 
       await _fetchData(
           isLoadMore: true, type: widget.type.toString(), category: _category);
-
       _isFetchingMore = false;
     }
   }

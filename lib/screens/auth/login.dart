@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               SizedBox(height: size.height * 0.05),
               GestureDetector(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => SystemNavigator.pop(),
                   child: const CircleAvatar(
                       backgroundColor: AppColors.white10,
                       child: Icon(Icons.arrow_back_ios_new,

@@ -107,7 +107,6 @@ class _PopularCategoriesState extends State<PopularCategories> {
               builder: (context, snap) {
                 final distance = snap.hasData ? snap.data!['distance']! : '';
 
-                print(vendor.vendor!.businessLogo!);
                 return SubCategoryCard(
                   onTap: () => AppRouter().navigateTo(
                       context,
