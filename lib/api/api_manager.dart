@@ -13,7 +13,7 @@ class ApiManager {
     try {
       final token = useToken ? LocalStorage.getString(Pref.token) : null;
 
-      print('$url \n$token ');
+      print('$url \n$token');
 
       final headers = {
         if (useToken && token != null) 'Authorization': 'Bearer $token',
@@ -48,6 +48,7 @@ class ApiManager {
         requestData = FormData.fromMap(formMap);
         headers['Content-Type'] = 'multipart/form-data';
       } else {
+        print('object');
         requestData = jsonEncode(data);
       }
 
@@ -63,18 +64,22 @@ class ApiManager {
             return status != null &&
                 (status >= 200 && status < 300 ||
                     status == 401 ||
+                    status == 403 ||
+                    status == 404 ||
                     status == 500);
           },
         ),
       );
 
+      print(response.statusCode);
+
       return _handleStatusCode(response, context: context);
     } on DioException catch (e) {
+      print("DioException: $e");
       return _handleDioError(e);
     } on SocketException {
       return "Internet connection error!. Please try again";
     } catch (e) {
-      print("Unknown error: $e");
       return "Something went wrong. Please try again.";
     }
   }
@@ -87,8 +92,9 @@ class ApiManager {
     BuildContext? context,
   }) async {
     final token = useToken ? LocalStorage.getString(Pref.token) : null;
+    print('$url \n\n$token');
+
     try {
-      print('$url \n$token ');
       final response = await _dio.get(
         url,
         queryParameters: queryParams,
@@ -103,10 +109,12 @@ class ApiManager {
             return status != null &&
                 (status >= 200 && status < 300 ||
                     status == 401 ||
+                    status == 403 ||
                     status == 500);
           },
         ),
       );
+      print(response.statusCode);
       return _handleStatusCode(response, context: context);
     } on DioException catch (e) {
       return _handleDioError(e);
@@ -126,15 +134,14 @@ class ApiManager {
       case 400:
         return "Bad Request: ${response.data['message'] ?? 'Invalid input.'}";
       case 401:
-        if (context != null) {
-          LocalStorage.clearAll(context);
-          showLoginRequiredDialog(context, onClose: () {});
-        }
-        return "Unauthorized: Login required";
+        // if (context != null) {
+        //   LocalStorage.clearAll(context);
+        // }
+        return "unauthorized";
       case 403:
-        return "Forbidden: Access denied.";
+        return "access_denied";
       case 404:
-        return "Not Found: ${response.requestOptions.path}";
+        return "not_found";
       case 500:
         return "Internal Server Error: Please try again later.";
       default:
@@ -155,9 +162,14 @@ class ApiManager {
       case DioExceptionType.cancel:
         return "Request cancelled.";
       case DioExceptionType.unknown:
-        return "Unexpected error: ${e.message}";
+        // mostly internet OFF
+        if (e.error is SocketException) {
+          return "no_internet";
+        }
+        return "No Internet Connection. \nPlease check your internet connection.";
+
       default:
-        return "Network error occurred.";
+        return "no_internet";
     }
   }
 }

@@ -6,7 +6,9 @@ import 'package:market_place_customer/data/models/purchased_offers_details_model
 import 'package:market_place_customer/data/models/vendor_details_model.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
+import '../../bloc/vendors_data_bloc/used_offers_details/used_offers_event.dart';
 import '../models/purchased_offers_history_model.dart';
+import '../models/used_offers_details.dart';
 
 class OffersRepository {
   final api = ApiManager();
@@ -89,6 +91,19 @@ class OffersRepository {
       return result;
     } else {
       return PurchasedOffersDetailModel.fromJson(result);
+    }
+  }
+
+  /// fetch used offers details data
+  Future fetchUsedOffersDetailsApi(UsedOffersDetailsEvent event) async {
+    final result = await api.get(
+        url: "${ApiEndPoints.usedOffersDetails}/${event.offersId.toString()}",
+        context: event.context);
+    print("====================>>>>>$result");
+    if (result is String) {
+      return result;
+    } else {
+      return UsedOffersDetailsModel.fromJson(result);
     }
   }
 }

@@ -147,8 +147,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
         await LocalStorage.setString(Pref.location, address);
 
         controller.clear();
-        snackBar(context, 'Location saved successfully');
-        Future.delayed(const Duration(seconds: 1), () {
+        Future.delayed(const Duration(milliseconds: 500), () {
           EasyLoading.dismiss();
           AppRouter().navigateAndClearStack(context, const CustomerDashboard());
         });

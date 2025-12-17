@@ -1,3 +1,4 @@
+import 'package:market_place_customer/bloc/vendors_data_bloc/used_offers_details/used_offers_bloc.dart';
 import '../utils/exports.dart';
 
 class AppBlocProviders extends StatelessWidget {
@@ -35,6 +36,7 @@ class AppBlocProviders extends StatelessWidget {
         BlocProvider<UpdateProfileBloc>(
             create: (context) => UpdateProfileBloc()),
         BlocProvider<UpdateMobileBloc>(create: (context) => UpdateMobileBloc()),
+        BlocProvider<UsedOffersBloc>(create: (context) => UsedOffersBloc()),
       ],
       child: child,
     );

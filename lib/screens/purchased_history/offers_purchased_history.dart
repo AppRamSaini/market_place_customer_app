@@ -1,6 +1,6 @@
 import 'package:market_place_customer/data/models/purchased_offers_history_model.dart';
-import 'package:market_place_customer/screens/dilogs/already_used_this_offers.dart';
 import 'package:market_place_customer/screens/purchased_history/purchased_offers_details.dart';
+import 'package:market_place_customer/screens/purchased_history/used_offers_details.dart';
 import 'package:market_place_customer/utils/exports.dart';
 
 import 'helper_widgets.dart';
@@ -238,20 +238,26 @@ class _PurchasedOffersHistoryState extends State<PurchasedOffersHistory>
                 horizontal: size.width * 0.03, vertical: size.height * 0.005),
             child: GestureDetector(
                 onTap: () {
-                  if (isExpired) {
-                    showOfferExpiredDialog(context);
-                    return;
+                  // if (isExpired) {
+                  //   showOfferExpiredDialog(context);
+                  //   return;
+                  // }
+
+                  //
+                  // if (isPurchased) {
+                  //   showAlreadyUsedOfferDialog(context);
+                  //   return;
+                  // }
+
+                  if (label == 'Active') {
+                    AppRouter().navigateTo(context,
+                        PurchasedOfferDetailsPage(offersId: offer.id ?? ''));
                   }
 
-                  if (isPurchased) {
-                    showAlreadyUsedOfferDialog(context);
-                    return;
+                  if (label == 'Used') {
+                    AppRouter().navigateTo(context,
+                        UsedOfferDetailsPage(offersId: offer.id ?? ''));
                   }
-
-                  /// mmm
-
-                  AppRouter().navigateTo(context,
-                      PurchasedOfferDetailsPage(offersId: offer.id ?? ''));
                 },
                 child: FadeInRightBig(
                   duration: Duration(milliseconds: 300 + (index * 120)),

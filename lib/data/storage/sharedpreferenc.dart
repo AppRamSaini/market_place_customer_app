@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:market_place_customer/screens/auth/login.dart';
 import 'package:market_place_customer/utils/app_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
   static SharedPreferences? _preferences;
@@ -29,8 +29,11 @@ class LocalStorage {
 
   // Get data
   static String? getString(String key) => _preferences?.getString(key);
+
   static bool? getBool(String key) => _preferences?.getBool(key);
+
   static int? getInt(String key) => _preferences?.getInt(key);
+
   static double? getDouble(String key) => _preferences?.getDouble(key);
 
   // Remove data
@@ -54,4 +57,5 @@ class Pref {
   static const location = 'location';
   static const userLat = 'user_lat';
   static const userLng = 'userLng';
+  static const isLogged = 'is_logged';
 }

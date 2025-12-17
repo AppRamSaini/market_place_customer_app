@@ -10,7 +10,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController mobileController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -105,7 +104,6 @@ class _LoginScreenState extends State<LoginScreen> {
             final status = state.user.status;
             if (status == true) {
               if (state.type == AuthFlowType.login) {
-                snackBar(context, message, AppColors.green);
                 AppRouter().navigateTo(
                     context,
                     OtpVerify(

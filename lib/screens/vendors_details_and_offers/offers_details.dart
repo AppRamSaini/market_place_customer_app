@@ -1,3 +1,4 @@
+import 'package:market_place_customer/screens/checkout/offers_checkout.dart';
 import 'package:market_place_customer/screens/payment_section/payment_services.dart';
 import 'package:market_place_customer/screens/payment_section/payment_verifications.dart';
 import 'package:market_place_customer/screens/simmer_effects/offers_details_simmer.dart';
@@ -85,16 +86,7 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
             if (state is ViewOffersLoading) {
               return const ViewOffersDetailsShimmer();
             } else if (state is ViewOffersFailure) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(40),
-                  child: Text(
-                    state.error,
-                    textAlign: TextAlign.center,
-                    style: AppStyle.medium_14(AppColors.redColor),
-                  ),
-                ),
-              );
+              return Center(child: errorMessage(state.error.toString()));
             } else if (state is ViewOffersSuccess) {
               final offersData = state.offersDetailModel.data;
               final singleOffer = offersData?.record;
@@ -185,11 +177,11 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                singleOffer.flat?.title ??
-                                    singleOffer.percentage?.title ??
-                                    '',
-                                style: AppStyle.medium_20(AppColors.themeColor),
-                              ),
+                                  singleOffer.flat?.title ??
+                                      singleOffer.percentage?.title ??
+                                      '',
+                                  style:
+                                      AppStyle.medium_20(AppColors.themeColor)),
                               Text(
                                   "Offer Amount ₹${singleOffer.flat != null ? singleOffer.flat!.amount.toString() : singleOffer.percentage!.amount.toString()}",
                                   style: AppStyle.medium_14(AppColors.black50)),
@@ -272,18 +264,6 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                     SliverToBoxAdapter(
                       child: CustomButtons.primary(
                         onPressed: () async {
-                          var userId = LocalStorage.getString(Pref.userId);
-                          var customerName =
-                              LocalStorage.getString(Pref.userName);
-                          double amount = double.parse(
-                              singleOffer.flat?.amount?.toString() ??
-                                  singleOffer.percentage!.amount.toString());
-
-                          String vendorId =
-                              offersData!.record!.vendor!.id.toString();
-                          String offerId = singleOffer.id.toString();
-
-                          // bool isPurchased = offersData.purchaseStatus ?? false;
                           bool isExpired = singleOffer.flat != null
                               ? (singleOffer.flat!.isExpired ?? false)
                               : (singleOffer.percentage?.isExpired ?? false);
@@ -294,23 +274,11 @@ class _ViewOffersDetailsState extends State<ViewOffersDetails> {
                             showOfferExpiredDialog(context);
                             return;
                           }
-                          // if (isPurchased) {
-                          //   showAlreadyPurchasedDialog(context);
-                          //   return;
-                          // }
 
-                          context.read<PaymentBloc>().add(
-                                SubmitPaymentEvent(
-                                  customerName.toString(),
-                                  context,
-                                  amount,
-                                  vendorId,
-                                  offerId,
-                                  userId.toString(),
-                                ),
-                              );
+                          AppRouter().navigateTo(
+                              context, CheckoutPage(offersData: offersData));
                         },
-                        text: "Buy Now",
+                        text: "CheckOut",
                       ),
                     ),
 
